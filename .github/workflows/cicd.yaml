@@ -1,0 +1,52 @@
+name: NuGet Package CI/CD
+
+on:
+  push:
+    branches: ["main", "develop"]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Fetch unshallow
+        run: git fetch --unshallow
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
+        with:
+          versionSpec: "5.x"
+
+      - name: Run GitVersion
+        uses: gittools/actions/gitversion/execute@v0.9.7
+        with:
+          versionSpec: "5.x"
+
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '7.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Test
+        run: dotnet test --configuration Release
+
+      - name: Install NuGet
+        uses: nuget/setup-nuget@v1
+
+      - name: Create NuGet package
+        run: dotnet pack --configuration Release --include-source /p:PackageVersion=$GitVersion.FullSemVer
+        working-directory: DotNetJet.FluentValidation.DependencyInjection
+
+      - name: Push NuGet package
+        run: nuget push **/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_GALLERY_APIKEY }}
+        working-directory: DotNetJet.FluentValidation.DependencyInjection/bin/Release

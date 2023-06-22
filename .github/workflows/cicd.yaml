@@ -44,7 +44,7 @@ jobs:
         uses: nuget/setup-nuget@v1
 
       - name: Create NuGet package
-        run: dotnet pack --configuration Release --include-source /p:PackageVersion=$GitVersion.FullSemVer
+        run: dotnet pack --configuration Release --include-source /p:PackageVersion=${{ env.GitVersion_FullSemVer }}
         working-directory: DotNetJet.FluentValidation.DependencyInjection
 
       - name: Push NuGet package

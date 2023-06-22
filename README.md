@@ -4,7 +4,7 @@ DotNetJet is a collection of powerful, open-source packages designed to enhance 
 
 ## Contributing
 
-We welcome contributions to the PSGitHubCopilotCLI project! If you would like to contribute, please follow these steps:
+We welcome contributions to the dotNetJet project! If you would like to contribute, please follow these steps:
 
 1. Fork the repository.
 2. Create a new branch for your changes.

@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -9,7 +10,7 @@ public static class OptionsBuilderFluentValidationExtensions
         this OptionsBuilder<TOptions> optionsBuilder) where TOptions : class
     {
         optionsBuilder.Services.AddSingleton<IValidateOptions<TOptions>>(
-            provider => new FluentValidationOptions<TOptions>(optionsBuilder.Name, provider));
+            provider => new FluentValidationOptions<TOptions>(optionsBuilder.Name, provider.GetRequiredService<IValidator<TOptions>>()));
         return optionsBuilder;
     }
 }

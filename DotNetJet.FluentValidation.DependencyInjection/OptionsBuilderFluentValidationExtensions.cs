@@ -11,14 +11,8 @@ public static class OptionsBuilderFluentValidationExtensions
     {
         optionsBuilder.Services.AddSingleton<IValidateOptions<TOptions>>(provider =>
         {
-            var validator = provider.GetService<IValidator<TOptions>>();
-
-            if (validator is null)
-            {
-                var scope = provider.CreateScope();
-                validator = scope.ServiceProvider.GetRequiredService<IValidator<TOptions>>();
-            }
-
+            using var scope = provider.CreateScope();
+            var validator = scope.ServiceProvider.GetRequiredService<IValidator<TOptions>>();
             return new FluentValidationOptions<TOptions>(optionsBuilder.Name, validator);
         });
         

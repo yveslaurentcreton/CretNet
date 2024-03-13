@@ -1,7 +1,8 @@
+using DotNetJet.FluentValidation.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
-namespace DotNetJet.FluentValidation.DependencyInjection;
+// ReSharper disable once CheckNamespace
+namespace Microsoft.Extensions.Options;
 
 public static class OptionsBuilderFluentValidationExtensions
 {

@@ -10,43 +10,59 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
 
-      - name: Fetch unshallow
-        run: git fetch --unshallow
+    - name: Fetch unshallow
+      run: git fetch --unshallow
 
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.7
-        with:
-          versionSpec: "5.x"
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v0.9.7
+      with:
+        versionSpec: "5.x"
 
-      - name: Run GitVersion
-        uses: gittools/actions/gitversion/execute@v0.9.7
-        with:
-          versionSpec: "5.x"
+    - name: Run GitVersion
+      uses: gittools/actions/gitversion/execute@v0.9.7
+      with:
+        versionSpec: "5.x"
 
-      - name: Install .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '7.0.x'
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x'
 
-      - name: Restore dependencies
-        run: dotnet restore
+    - name: Restore dependencies
+      run: dotnet restore
 
-      - name: Build
-        run: dotnet build --configuration Release
+    - name: Build
+      run: dotnet build --configuration Release
 
-      - name: Test
-        run: dotnet test --configuration Release
+    - name: Test
+      run: dotnet test --configuration Release
 
-      - name: Install NuGet
-        uses: nuget/setup-nuget@v1
+    - name: Install NuGet
+      uses: nuget/setup-nuget@v1
 
-      - name: Create NuGet package
-        run: dotnet pack --configuration Release /p:PackageVersion=${{ env.GitVersion_FullSemVer }}
-        working-directory: DotNetJet.FluentValidation.DependencyInjection
+    - name: Create DotNetJet NuGet package
+      run: dotnet pack --configuration Release /p:PackageVersion=${{ env.GitVersion_FullSemVer }}
+      working-directory: DotNetJet
 
-      - name: Push NuGet package
-        run: nuget push **/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_GALLERY_APIKEY }}
-        working-directory: DotNetJet.FluentValidation.DependencyInjection/bin/Release
+    - name: Push DotNetJet NuGet package
+      run: nuget push **/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_GALLERY_APIKEY }}
+      working-directory: DotNetJet/bin/Release
+
+    - name: Create DotNetJet.Blazor NuGet package
+      run: dotnet pack --configuration Release /p:PackageVersion=${{ env.GitVersion_FullSemVer }}
+      working-directory: DotNetJet.Blazor
+
+    - name: Push DotNetJet.Blazor NuGet package
+      run: nuget push **/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_GALLERY_APIKEY }}
+      working-directory: DotNetJet.Blazor/bin/Release
+
+    - name: Create DotNetJet.FluentValidation.DependencyInjection NuGet package
+      run: dotnet pack --configuration Release /p:PackageVersion=${{ env.GitVersion_FullSemVer }}
+      working-directory: DotNetJet.FluentValidation.DependencyInjection
+
+    - name: Push DotNetJet.FluentValidation.DependencyInjection NuGet package
+      run: nuget push **/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_GALLERY_APIKEY }}
+      working-directory: DotNetJet.FluentValidation.DependencyInjection/bin/Release

@@ -1,10 +1,16 @@
 # dotNetJet
 
-DotNetJet is a collection of powerful, open-source packages designed to enhance and streamline your .NET development experience. Our goal is to provide developers with tools and libraries that can help accelerate their .NET application development.
+DotNetJet is a collection of powerful, open-source packages designed to enhance and streamline your .NET development experience. Our project consists of various tools and libraries aimed at different aspects of .NET application development, including `DotNetJet`, `DotNetJet.Blazor`, and `DotNetJet.FluentValidation.DependencyInjection`. Our goal is to provide developers with comprehensive tools that help accelerate the development of .NET applications.
+
+## Packages
+
+- **DotNetJet:** A core library providing a wide range of utilities and extensions that enhance the basic .NET framework functionalities.
+- **DotNetJet.Blazor:** Tailored for Blazor applications, this package offers components and tools specifically designed to improve the development of Blazor web apps.
+- **DotNetJet.FluentValidation.DependencyInjection:** Integrates FluentValidation with .NET's dependency injection, simplifying the process of adding and configuring validation in your projects.
 
 ## Contributing
 
-We welcome contributions to the dotNetJet project! If you would like to contribute, please follow these steps:
+We welcome contributions to the dotNetJet project! If you'd like to contribute, especially to one of our specific packages, please follow these steps:
 
 1. Fork the repository.
 2. Create a new branch for your changes.
@@ -16,11 +22,11 @@ Please ensure your changes adhere to the existing coding style and that your com
 
 ### Reporting Issues
 
-If you encounter any issues or have suggestions for improvements, please [open an issue](https://github.com/yveslaurentcreton/dotNetJet/issues) in the GitHub repository. Be sure to provide a clear description of the issue and any relevant information to help us understand and reproduce the problem.
+Encounter an issue or have a suggestion? Please [open an issue](https://github.com/yveslaurentcreton/dotNetJet/issues) in the GitHub repository, specifying the package it relates to. Provide a clear description of the issue and any relevant details to help us understand and address the problem.
 
 ### Feature Requests
 
-We're always open to new ideas! If you have a feature request, please [open an issue](https://github.com/yveslaurentcreton/dotNetJet/issues) and describe the feature, explaining how it would benefit users of the dotNetJet package.
+We're always looking for new ideas that can benefit the dotNetJet community! If you have a feature request, especially one that enhances one of our specific packages, please [open an issue](https://github.com/yveslaurentcreton/dotNetJet/issues) describing the feature and its potential benefits.
 
 ## License
 

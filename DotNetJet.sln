@@ -5,6 +5,10 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetJet.FluentValidation.DependencyInjection", "DotNetJet.FluentValidation.DependencyInjection\DotNetJet.FluentValidation.DependencyInjection.csproj", "{B6AFD2F8-B80A-41ED-ADD4-292204FE205A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetJet.Blazor", "DotNetJet.Blazor\DotNetJet.Blazor.csproj", "{B0209A1A-E292-475A-B3A5-AEA5EDF93253}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetJet", "DotNetJet\DotNetJet.csproj", "{58C22E6F-8FD3-44DA-93BC-593CC0B1CA87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{B6AFD2F8-B80A-41ED-ADD4-292204FE205A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6AFD2F8-B80A-41ED-ADD4-292204FE205A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6AFD2F8-B80A-41ED-ADD4-292204FE205A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0209A1A-E292-475A-B3A5-AEA5EDF93253}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0209A1A-E292-475A-B3A5-AEA5EDF93253}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0209A1A-E292-475A-B3A5-AEA5EDF93253}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0209A1A-E292-475A-B3A5-AEA5EDF93253}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58C22E6F-8FD3-44DA-93BC-593CC0B1CA87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58C22E6F-8FD3-44DA-93BC-593CC0B1CA87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58C22E6F-8FD3-44DA-93BC-593CC0B1CA87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58C22E6F-8FD3-44DA-93BC-593CC0B1CA87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

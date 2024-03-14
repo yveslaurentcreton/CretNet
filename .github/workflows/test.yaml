@@ -19,8 +19,5 @@ jobs:
       with:
         dotnet-version: ${{ matrix.dotnet }}.x
 
-    - name: Restore dependencies
-      run: dotnet restore
-
     - name: Test
       run: dotnet test --configuration Release --framework net${{ matrix.dotnet }}

@@ -16,5 +16,8 @@ jobs:
       with:
         global-json-file: ./global.json
 
+    - name: Restore dependencies
+      run: dotnet restore
+      
     - name: Test
       run: dotnet test --configuration Release

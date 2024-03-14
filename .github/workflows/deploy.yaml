@@ -1,0 +1,46 @@
+name: Deploy to PowerShell Gallery
+
+on:
+  workflow_call:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Install NuGet
+      uses: nuget/setup-nuget@v1
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Create DotNetJet NuGet package
+      run: dotnet pack --configuration Release /p:PackageVersion=${{ env.GitVersion_FullSemVer }}
+      working-directory: DotNetJet
+
+    - name: Push DotNetJet NuGet package
+      run: nuget push **/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_GALLERY_APIKEY }}
+      working-directory: DotNetJet/bin/Release
+
+    - name: Create DotNetJet.Blazor NuGet package
+      run: dotnet pack --configuration Release /p:PackageVersion=${{ env.GitVersion_FullSemVer }}
+      working-directory: DotNetJet.Blazor
+
+    - name: Push DotNetJet.Blazor NuGet package
+      run: nuget push **/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_GALLERY_APIKEY }}
+      working-directory: DotNetJet.Blazor/bin/Release
+
+    - name: Create DotNetJet.FluentValidation.DependencyInjection NuGet package
+      run: dotnet pack --configuration Release /p:PackageVersion=${{ env.GitVersion_FullSemVer }}
+      working-directory: DotNetJet.FluentValidation.DependencyInjection
+
+    - name: Push DotNetJet.FluentValidation.DependencyInjection NuGet package
+      run: nuget push **/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_GALLERY_APIKEY }}
+      working-directory: DotNetJet.FluentValidation.DependencyInjection/bin/Release

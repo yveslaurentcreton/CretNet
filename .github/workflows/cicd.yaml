@@ -15,7 +15,7 @@ jobs:
     uses: ./.github/workflows/test.yaml
   
   deploy:
-    name: Deploy to PowerShell Gallery
+    name: Deploy to NuGet Gallery
     needs: test
     uses: ./.github/workflows/deploy.yaml
     secrets: inherit

@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetJet.Blazor", "DotNetJ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetJet", "DotNetJet\DotNetJet.csproj", "{58C22E6F-8FD3-44DA-93BC-593CC0B1CA87}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetJet.Tests", "DotNetJet.Tests\DotNetJet.Tests.csproj", "{7AA72ABA-D009-4A54-81CB-8461508BD761}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3F0FA462-651E-4FC2-8486-876C0E8FF6B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,11 +31,18 @@ Global
 		{58C22E6F-8FD3-44DA-93BC-593CC0B1CA87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58C22E6F-8FD3-44DA-93BC-593CC0B1CA87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58C22E6F-8FD3-44DA-93BC-593CC0B1CA87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AA72ABA-D009-4A54-81CB-8461508BD761}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AA72ABA-D009-4A54-81CB-8461508BD761}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AA72ABA-D009-4A54-81CB-8461508BD761}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AA72ABA-D009-4A54-81CB-8461508BD761}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A5EA4C5-892F-4C9D-BBF6-50EB2A346D26}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7AA72ABA-D009-4A54-81CB-8461508BD761} = {3F0FA462-651E-4FC2-8486-876C0E8FF6B1}
 	EndGlobalSection
 EndGlobal

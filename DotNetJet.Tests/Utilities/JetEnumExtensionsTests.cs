@@ -91,7 +91,10 @@ public class JetEnumExtensionsTests
         // Arrange
         var enumValue = NonFlagsEnum.Value1;
 
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => enumValue.ToFlagsCollection<NonFlagsEnum, List<NonFlagsEnum>>());
+        // Act
+        var act = () => enumValue.ToFlagsCollection<NonFlagsEnum, List<NonFlagsEnum>>();
+        
+        // Assert
+        act.Should().Throw<ArgumentException>();
     }
 }

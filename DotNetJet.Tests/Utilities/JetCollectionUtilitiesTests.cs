@@ -35,8 +35,11 @@ public class JetCollectionUtilitiesTests
         TestCollection<int> collection = null;
         var itemsToAdd = new TestCollection<int> { _faker.Random.Int(), _faker.Random.Int() };
 
-        // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => collection.AddRange(itemsToAdd));
+        // Act
+        var act = new Action(() => collection.AddRange(itemsToAdd));
+        
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
@@ -46,8 +49,11 @@ public class JetCollectionUtilitiesTests
         var collection = new TestCollection<int>();
         TestCollection<int> itemsToAdd = null;
 
-        // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => collection.AddRange(itemsToAdd));
+        // Act
+        var act = new Action(() => collection.AddRange(itemsToAdd));
+        
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
@@ -74,8 +80,11 @@ public class JetCollectionUtilitiesTests
         TestCollection<int> collection = null;
         var itemsToRemove = new TestCollection<int> { _faker.Random.Int() };
 
-        // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => collection.RemoveRange(itemsToRemove));
+        // Act
+        var act = new Action(() => collection.RemoveRange(itemsToRemove));
+        
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
@@ -85,8 +94,11 @@ public class JetCollectionUtilitiesTests
         var collection = new TestCollection<int> { _faker.Random.Int() };
         TestCollection<int> itemsToRemove = null;
 
-        // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => collection.RemoveRange(itemsToRemove));
+        // Act
+        var act = new Action(() => collection.RemoveRange(itemsToRemove));
+        
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]

@@ -3,10 +3,10 @@ name: NuGet Package CI/CD
 on:
   push:
     branches: 
-      - "main"
-      - "feature/*"
-      - "bugfix/*"
-  workflow_dispatch:
+      - main
+      - dev/*
+      - feature/*
+      - hotfix/*
 
 jobs:
   cicd:
@@ -14,40 +14,41 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      issues: write
-      pull-requests: write
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
-    - name: Install .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        global-json-file: ./global.json
-
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: "lts/*"
 
-    - name: Install semantic-release plugins
-      run: |
-        npm install --save-dev conventional-changelog-conventionalcommits
+    - name: Prepare prerelease semantic
+      if: github.ref != 'refs/heads/main'
+      run: mv .releaserc.prerelease.yaml .releaserc.yaml
 
     - name: Semantic Release
       uses: cycjimmy/semantic-release-action@v4
       id: semantic
       with:
         extra_plugins: |
-          @semantic-release/changelog
-          @semantic-release/git
-          conventional-changelog-conventionalcommits
+            @semantic-release/changelog
+            @semantic-release/exec
+            @semantic-release/git
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Install .NET
+      uses: actions/setup-dotnet@v4
+      if: steps.semantic.outputs.new_release_published == 'true'
+      with:
+        global-json-file: ./global.json
+
     - name: Restore dependencies
+      if: steps.semantic.outputs.new_release_published == 'true'
       run: dotnet restore
 
     - name: Build
@@ -63,6 +64,7 @@ jobs:
           -p:InformationalVersion="$VERSION"
 
     - name: Test
+      if: steps.semantic.outputs.new_release_published == 'true'
       run: dotnet test --configuration Release
 
     - name: Create NuGet packages

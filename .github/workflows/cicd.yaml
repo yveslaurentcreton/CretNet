@@ -42,7 +42,7 @@ jobs:
 
     - name: Create NuGet packages
       run: |
-        dotnet pack --configuration Release /p:PackageVersion=${{ env.GitVersion_FullSemVer }} "**/DotNetJet*.csproj" --output packages
+        dotnet pack --configuration Release /p:PackageVersion=${{ env.GitVersion_FullSemVer }} (Get-ChildItem -Recurse -Filter "DotNetJet*.csproj" | Select-Object -ExpandProperty FullName) --output packages
 
     - name: Push NuGet packages
       run: |

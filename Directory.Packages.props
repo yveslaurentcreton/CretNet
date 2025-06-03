@@ -9,7 +9,6 @@
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="FluentAssertions" Version="6.12.0" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="[12.0.0,]" />
-    <PackageVersion Include="GitVersion.MsBuild" Version="6.3.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="[8.0.16,]" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="[9.0.5,]" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.0" />

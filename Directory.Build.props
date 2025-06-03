@@ -1,6 +1,5 @@
 <Project>
 	<PropertyGroup>
-    <UpdateVersionProperties>true</UpdateVersionProperties>
 		<Authors>Yves-Laurent Creton</Authors>
 		<Company></Company>
 		<Product>dotNetJet</Product>

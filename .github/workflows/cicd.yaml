@@ -56,11 +56,16 @@ jobs:
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --configuration Release `
-        /p:Version=${RELEASE_VERSION} `
-        /p:AssemblyVersion=${RELEASE_VERSION%%-*}.0 `
-        /p:FileVersion=${RELEASE_VERSION%%-*}.0 `
-        /p:InformationalVersion=${RELEASE_VERSION}
+      run: |
+        MAIN_VERSION=${RELEASE_VERSION%%-*}
+        if [[ "$MAIN_VERSION" == "" ]]; then
+          MAIN_VERSION="0.0.0"
+        fi
+        dotnet build --configuration Release `
+          /p:Version=${RELEASE_VERSION} `
+          /p:AssemblyVersion="$MAIN_VERSION.0" `
+          /p:FileVersion="$MAIN_VERSION.0" `
+          /p:InformationalVersion=${RELEASE_VERSION}
 
     - name: Test
       run: dotnet test --configuration Release

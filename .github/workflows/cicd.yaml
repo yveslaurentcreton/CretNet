@@ -45,7 +45,7 @@ jobs:
       working-directory: DotNetJet
 
     - name: Push DotNetJet NuGet package
-      run: nuget push **/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_GALLERY_APIKEY }}
+      run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_GALLERY_APIKEY }}
       working-directory: DotNetJet/bin/Release
 
     - name: Create DotNetJet.Blazor NuGet package
@@ -53,7 +53,7 @@ jobs:
       working-directory: DotNetJet.Blazor
 
     - name: Push DotNetJet.Blazor NuGet package
-      run: nuget push **/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_GALLERY_APIKEY }}
+      run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_GALLERY_APIKEY }}
       working-directory: DotNetJet.Blazor/bin/Release
 
     - name: Create DotNetJet.FluentValidation.DependencyInjection NuGet package
@@ -61,5 +61,5 @@ jobs:
       working-directory: DotNetJet.FluentValidation.DependencyInjection
 
     - name: Push DotNetJet.FluentValidation.DependencyInjection NuGet package
-      run: nuget push **/*.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_GALLERY_APIKEY }}
+      run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_GALLERY_APIKEY }}
       working-directory: DotNetJet.FluentValidation.DependencyInjection/bin/Release

@@ -9,5 +9,19 @@
 		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+		<!-- Package Metadata -->
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageProjectUrl>https://github.com/yveslaurentcreton/dotNetJet</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/yveslaurentcreton/dotNetJet</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Include License file in NuGet package -->
+		<None Include="$(MSBuildThisFileDirectory)LICENSE" Pack="true" PackagePath=""/>
+		<!-- Include README file in NuGet package -->
+		<None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath=""/>
+	</ItemGroup>
 </Project>

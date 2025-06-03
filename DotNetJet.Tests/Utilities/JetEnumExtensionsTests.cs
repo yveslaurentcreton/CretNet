@@ -1,5 +1,5 @@
 ﻿using DotNetJet.Utilities;
-using FluentAssertions;
+using Shouldly;
 
 namespace DotNetJet.Tests.Utilities;
 
@@ -25,12 +25,13 @@ public class JetEnumExtensionsTests
     {
         // Arrange
         var enumValue = TestFlags.Flag1 | TestFlags.Flag2;
+        var expected = new HashSet<TestFlags> { TestFlags.Flag1, TestFlags.Flag2 };
 
         // Act
         var result = enumValue.ToFlagsCollection<TestFlags, HashSet<TestFlags>>();
 
         // Assert
-        result.Should().BeEquivalentTo(new HashSet<TestFlags> { TestFlags.Flag1, TestFlags.Flag2 });
+        result.ShouldBe(expected);
     }
 
     [Fact]
@@ -38,12 +39,13 @@ public class JetEnumExtensionsTests
     {
         // Arrange
         var enumValue = TestFlags.Flag1 | TestFlags.Flag3;
+        var expected = new List<TestFlags> { TestFlags.Flag1, TestFlags.Flag3 };
 
         // Act
         var result = enumValue.ToFlagsList();
 
         // Assert
-        result.Should().BeEquivalentTo(new List<TestFlags> { TestFlags.Flag1, TestFlags.Flag3 });
+        result.ShouldBe(expected);
     }
 
     [Fact]
@@ -51,12 +53,13 @@ public class JetEnumExtensionsTests
     {
         // Arrange
         var enumValue = TestFlags.Flag2 | TestFlags.Flag3;
+        var expected = new HashSet<TestFlags> { TestFlags.Flag2, TestFlags.Flag3 };
 
         // Act
         var result = enumValue.ToFlagsHashSet();
 
         // Assert
-        result.Should().BeEquivalentTo(new HashSet<TestFlags> { TestFlags.Flag2, TestFlags.Flag3 });
+        result.ShouldBe(expected);
     }
 
     [Fact]
@@ -69,7 +72,7 @@ public class JetEnumExtensionsTests
         var result = enumValues.CombineFlags();
 
         // Assert
-        result.Should().Be(TestFlags.Flag1 | TestFlags.Flag2);
+        result.ShouldBe(TestFlags.Flag1 | TestFlags.Flag2);
     }
 
     [Fact]
@@ -82,7 +85,7 @@ public class JetEnumExtensionsTests
         var result = enumValues.CombineFlags();
 
         // Assert
-        result.Should().Be(TestFlags.None);
+        result.ShouldBe(TestFlags.None);
     }
 
     [Fact]
@@ -91,10 +94,7 @@ public class JetEnumExtensionsTests
         // Arrange
         var enumValue = NonFlagsEnum.Value1;
 
-        // Act
-        var act = () => enumValue.ToFlagsCollection<NonFlagsEnum, List<NonFlagsEnum>>();
-        
-        // Assert
-        act.Should().Throw<ArgumentException>();
+        // Act & Assert
+        Should.Throw<ArgumentException>(() => enumValue.ToFlagsCollection<NonFlagsEnum, List<NonFlagsEnum>>());
     }
 }

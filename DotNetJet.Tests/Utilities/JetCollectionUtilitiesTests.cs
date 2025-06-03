@@ -1,6 +1,6 @@
 ﻿using Bogus;
 using DotNetJet.Utilities;
-using FluentAssertions;
+using Shouldly;
 using System.Collections;
 
 namespace DotNetJet.Tests.Utilities;
@@ -25,21 +25,18 @@ public class JetCollectionUtilitiesTests
         collection.AddRange(itemsToAdd);
 
         // Assert
-        collection.Should().BeEquivalentTo(itemsToAdd);
+        collection.ShouldBe(itemsToAdd);
     }
 
     [Fact]
     public void AddRange_ShouldThrowArgumentNullException_WhenCollectionIsNull()
     {
         // Arrange
-        TestCollection<int> collection = null;
+        TestCollection<int> collection = null!;
         var itemsToAdd = new TestCollection<int> { _faker.Random.Int(), _faker.Random.Int() };
 
-        // Act
-        var act = new Action(() => collection.AddRange(itemsToAdd));
-        
-        // Assert
-        act.Should().Throw<ArgumentNullException>();
+        // Act & Assert
+        Should.Throw<ArgumentNullException>(() => collection.AddRange(itemsToAdd));
     }
 
     [Fact]
@@ -47,13 +44,10 @@ public class JetCollectionUtilitiesTests
     {
         // Arrange
         var collection = new TestCollection<int>();
-        TestCollection<int> itemsToAdd = null;
+        TestCollection<int> itemsToAdd = null!;
 
-        // Act
-        var act = new Action(() => collection.AddRange(itemsToAdd));
-        
-        // Assert
-        act.Should().Throw<ArgumentNullException>();
+        // Act & Assert
+        Should.Throw<ArgumentNullException>(() => collection.AddRange(itemsToAdd));
     }
 
     [Fact]
@@ -69,22 +63,22 @@ public class JetCollectionUtilitiesTests
         collection.RemoveRange(itemsToRemove);
 
         // Assert
-        collection.Should().NotContain(itemsToRemove);
-        collection.Should().Contain(item2);
+        foreach (var item in itemsToRemove)
+        {
+            collection.ShouldNotContain(item);
+        }
+        collection.ShouldContain(item2);
     }
 
     [Fact]
     public void RemoveRange_ShouldThrowArgumentNullException_WhenCollectionIsNull()
     {
         // Arrange
-        TestCollection<int> collection = null;
+        TestCollection<int> collection = null!;
         var itemsToRemove = new TestCollection<int> { _faker.Random.Int() };
 
-        // Act
-        var act = new Action(() => collection.RemoveRange(itemsToRemove));
-        
-        // Assert
-        act.Should().Throw<ArgumentNullException>();
+        // Act & Assert
+        Should.Throw<ArgumentNullException>(() => collection.RemoveRange(itemsToRemove));
     }
 
     [Fact]
@@ -92,13 +86,10 @@ public class JetCollectionUtilitiesTests
     {
         // Arrange
         var collection = new TestCollection<int> { _faker.Random.Int() };
-        TestCollection<int> itemsToRemove = null;
+        TestCollection<int> itemsToRemove = null!;
 
-        // Act
-        var act = new Action(() => collection.RemoveRange(itemsToRemove));
-        
-        // Assert
-        act.Should().Throw<ArgumentNullException>();
+        // Act & Assert
+        Should.Throw<ArgumentNullException>(() => collection.RemoveRange(itemsToRemove));
     }
 
     [Fact]
@@ -114,8 +105,11 @@ public class JetCollectionUtilitiesTests
         collection.RemoveRange(itemsToRemove);
 
         // Assert
-        collection.Should().NotContain(itemsToRemove);
-        collection.Should().Contain(item2);
+        foreach (var item in itemsToRemove)
+        {
+            collection.ShouldNotContain(item);
+        }
+        collection.ShouldContain(item2);
     }
 }
 

@@ -1,0 +1,13 @@
+<Project>
+	<PropertyGroup>
+    <UpdateVersionProperties>true</UpdateVersionProperties>
+		<Authors>Yves-Laurent Creton</Authors>
+		<Company></Company>
+		<Product>dotNetJet</Product>
+		<Copyright>© $([System.DateTime]::Now.Year) Yves-Laurent Creton</Copyright>
+		<Description>DotNetJet is a collection of powerful, open-source packages designed to enhance and streamline your .NET development experience.</Description>
+		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	</PropertyGroup>
+</Project>

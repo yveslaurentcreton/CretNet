@@ -1,7 +1,6 @@
 ﻿using Bogus;
 using DotNetJet.Utilities;
-using FluentAssertions;
-using Xunit;
+using Shouldly;
 
 namespace DotNetJet.Tests.Utilities;
 
@@ -26,35 +25,31 @@ public class JetLinqUtilitiesTests
         var result = await JetLinqUtilities.SelectManyAsync(input, func);
 
         // Assert
-        result.Should().BeEquivalentTo(expectedResult);
+        result.ShouldBe(expectedResult);
     }
 
     [Fact]
-    public void SelectManyAsync_ShouldThrowArgumentNullException_WhenInputIsNull()
+    public async Task SelectManyAsync_ShouldThrowArgumentNullException_WhenInputIsNull()
     {
         // Arrange
-        IEnumerable<int> input = null;
+        IEnumerable<int> input = null!;
         Func<int, Task<IEnumerable<int>>> func = x => Task.FromResult<IEnumerable<int>>(new[] { x });
 
-        // Act
-        Func<Task> act = async () => await JetLinqUtilities.SelectManyAsync(input, func);
-
-        // Assert
-        act.Should().ThrowAsync<ArgumentNullException>();
+        // Act & Assert
+        await Should.ThrowAsync<ArgumentNullException>(async () => 
+            await JetLinqUtilities.SelectManyAsync(input, func));
     }
 
     [Fact]
-    public void SelectManyAsync_ShouldThrowArgumentNullException_WhenFuncIsNull()
+    public async Task SelectManyAsync_ShouldThrowArgumentNullException_WhenFuncIsNull()
     {
         // Arrange
         var input = Enumerable.Range(1, 10).Select(_ => _faker.Random.Int()).ToList();
-        Func<int, Task<IEnumerable<int>>> func = null;
+        Func<int, Task<IEnumerable<int>>> func = null!;
 
-        // Act
-        Func<Task> act = async () => await JetLinqUtilities.SelectManyAsync(input, func);
-
-        // Assert
-        act.Should().ThrowAsync<ArgumentNullException>();
+        // Act & Assert
+        await Should.ThrowAsync<ArgumentNullException>(async () => 
+            await JetLinqUtilities.SelectManyAsync(input, func));
     }
 
     [Fact]
@@ -68,7 +63,7 @@ public class JetLinqUtilitiesTests
         var result = await JetLinqUtilities.SelectManyAsync(input, func);
 
         // Assert
-        result.Should().BeEmpty();
+        result.ShouldBeEmpty();
     }
 
     [Fact]
@@ -78,10 +73,8 @@ public class JetLinqUtilitiesTests
         var input = Enumerable.Range(1, 10).Select(_ => _faker.Random.Int()).ToList();
         Func<int, Task<IEnumerable<int>>> func = x => throw new InvalidOperationException();
 
-        // Act
-        Func<Task> act = async () => await JetLinqUtilities.SelectManyAsync(input, func);
-
-        // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        // Act & Assert
+        await Should.ThrowAsync<InvalidOperationException>(async () => 
+            await JetLinqUtilities.SelectManyAsync(input, func));
     }
 }

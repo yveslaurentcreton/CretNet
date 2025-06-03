@@ -40,26 +40,10 @@ jobs:
     - name: Test
       run: dotnet test --configuration Release
 
-    - name: Create DotNetJet NuGet package
-      run: dotnet pack --configuration Release /p:PackageVersion=${{ env.GitVersion_FullSemVer }}
-      working-directory: DotNetJet
+    - name: Create NuGet packages
+      run: |
+        dotnet pack --configuration Release /p:PackageVersion=${{ env.GitVersion_FullSemVer }} "**/DotNetJet*.csproj" --output packages
 
-    - name: Push DotNetJet NuGet package
-      run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_GALLERY_APIKEY }}
-      working-directory: DotNetJet/bin/Release
-
-    - name: Create DotNetJet.Blazor NuGet package
-      run: dotnet pack --configuration Release /p:PackageVersion=${{ env.GitVersion_FullSemVer }}
-      working-directory: DotNetJet.Blazor
-
-    - name: Push DotNetJet.Blazor NuGet package
-      run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_GALLERY_APIKEY }}
-      working-directory: DotNetJet.Blazor/bin/Release
-
-    - name: Create DotNetJet.FluentValidation.DependencyInjection NuGet package
-      run: dotnet pack --configuration Release /p:PackageVersion=${{ env.GitVersion_FullSemVer }}
-      working-directory: DotNetJet.FluentValidation.DependencyInjection
-
-    - name: Push DotNetJet.FluentValidation.DependencyInjection NuGet package
-      run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_GALLERY_APIKEY }}
-      working-directory: DotNetJet.FluentValidation.DependencyInjection/bin/Release
+    - name: Push NuGet packages
+      run: |
+        dotnet nuget push "packages/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_GALLERY_APIKEY }}

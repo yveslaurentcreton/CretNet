@@ -1,3 +1,10 @@
+# [1.0.0-alpha.3](https://github.com/yveslaurentcreton/dotNetJet/compare/v1.0.0-alpha.2...v1.0.0-alpha.3) (2025-06-03)
+
+
+### Bug Fixes
+
+* streamline dotnet build command by removing line breaks ([d09a3fc](https://github.com/yveslaurentcreton/dotNetJet/commit/d09a3fc2fae240cc1e22117c8fd1e893e07fbc46))
+
 # [1.0.0-alpha.2](https://github.com/yveslaurentcreton/dotNetJet/compare/v1.0.0-alpha.1...v1.0.0-alpha.2) (2025-06-03)
 
 

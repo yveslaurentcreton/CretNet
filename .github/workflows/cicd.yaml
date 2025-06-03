@@ -61,11 +61,7 @@ jobs:
         if [[ "$MAIN_VERSION" == "" ]]; then
           MAIN_VERSION="0.0.0"
         fi
-        dotnet build --configuration Release `
-          /p:Version=${RELEASE_VERSION} `
-          /p:AssemblyVersion="$MAIN_VERSION.0" `
-          /p:FileVersion="$MAIN_VERSION.0" `
-          /p:InformationalVersion=${RELEASE_VERSION}
+        dotnet build --configuration Release "/p:Version=${RELEASE_VERSION}" "/p:AssemblyVersion=${MAIN_VERSION}.0" "/p:FileVersion=${MAIN_VERSION}.0" "/p:InformationalVersion=${RELEASE_VERSION}"
 
     - name: Test
       run: dotnet test --configuration Release

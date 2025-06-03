@@ -1,3 +1,10 @@
+# [1.0.0-alpha.2](https://github.com/yveslaurentcreton/dotNetJet/compare/v1.0.0-alpha.1...v1.0.0-alpha.2) (2025-06-03)
+
+
+### Bug Fixes
+
+* improve version handling in build step and update release configuration ([ac50749](https://github.com/yveslaurentcreton/dotNetJet/commit/ac507493a3df074eda638470789cd3f05448f698))
+
 # 1.0.0-alpha.1 (2025-06-03)
 
 

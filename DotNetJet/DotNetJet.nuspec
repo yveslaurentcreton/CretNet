@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>DotNetJet</id>
+        <authors>Yves-Laurent Creton</authors>
+        <owners>Yves-Laurent Creton</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>DotNetJet is a library designed to extend the basic functionalities of .NET
+            with a variety of tools and utilities. Its aim is to enhance the development experience
+            by providing straightforward solutions to common programming needs, thereby streamlining
+            project workflows. Whether it's simplifying routine tasks or adding new capabilities,
+            DotNetJet helps developers focus on their core application logic.</description>
+        <releaseNotes>Initial release.</releaseNotes>
+    </metadata>
+    <files>
+        <file src="bin\Release\net6.0\**" target="lib\net6.0" />
+        <file src="bin\Release\net7.0\**" target="lib\net7.0" />
+        <file src="bin\Release\net8.0\**" target="lib\net8.0" />
+    </files>
+</package>

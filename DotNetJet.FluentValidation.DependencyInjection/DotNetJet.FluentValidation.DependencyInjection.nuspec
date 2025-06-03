@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>DotNetJet.FluentValidation.DependencyInjection</id>
+        <authors>Yves-Laurent Creton</authors>
+        <owners>Yves-Laurent Creton</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>DotNetJet.FluentValidation.DependencyInjection is a tool that provides extra
+            methods to use FluentValidation with dependency injection in .NET applications. This
+            package includes the FluentValidation.DependencyInjectionExtensions and
+            Microsoft.Extensions.Options packages as dependencies. With this tool, you can easily
+            configure your application to use FluentValidation with dependency injection, making it
+            easier to write and maintain validation logic in your code.</description>
+        <releaseNotes>Initial release.</releaseNotes>
+    </metadata>
+    <files>
+        <file src="bin\Release\net6.0\**" target="lib\net6.0" />
+        <file src="bin\Release\net7.0\**" target="lib\net7.0" />
+        <file src="bin\Release\net7.0\**" target="lib\net8.0" />
+    </files>
+</package>

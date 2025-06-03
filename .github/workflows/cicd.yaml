@@ -1,0 +1,86 @@
+name: NuGet Package CI/CD
+
+on:
+  push:
+    branches: 
+      - main
+      - dev/*
+      - feature/*
+      - hotfix/*
+
+jobs:
+  cicd:
+    name: CI/CD
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "lts/*"
+
+    - name: Prepare prerelease semantic
+      if: github.ref != 'refs/heads/main'
+      run: mv .releaserc.prerelease.yaml .releaserc.yaml
+
+    - name: Semantic Release
+      uses: cycjimmy/semantic-release-action@v4
+      id: semantic
+      with:
+        extra_plugins: |
+            @semantic-release/changelog
+            @semantic-release/exec
+            @semantic-release/git
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Install .NET
+      uses: actions/setup-dotnet@v4
+      if: steps.semantic.outputs.new_release_published == 'true'
+      with:
+        global-json-file: ./global.json
+
+    - name: Restore dependencies
+      if: steps.semantic.outputs.new_release_published == 'true'
+      run: dotnet restore
+
+    - name: Build
+      if: steps.semantic.outputs.new_release_published == 'true'
+      run: |
+        VERSION="${{ steps.semantic.outputs.new_release_version }}"
+        MAIN_VERSION="${{ steps.semantic.outputs.new_release_major_version }}.${{ steps.semantic.outputs.new_release_minor_version }}.${{ steps.semantic.outputs.new_release_patch_version }}"
+        
+        dotnet build --configuration Release \
+          -p:Version="$VERSION" \
+          -p:AssemblyVersion="$MAIN_VERSION.0" \
+          -p:FileVersion="$MAIN_VERSION.0" \
+          -p:InformationalVersion="$VERSION"
+
+    - name: Test
+      if: steps.semantic.outputs.new_release_published == 'true'
+      run: dotnet test --configuration Release
+
+    - name: Create NuGet packages
+      if: steps.semantic.outputs.new_release_published == 'true'
+      run: |
+        for proj in $(find . -name "DotNetJet*.csproj" ! -name "*.Tests.csproj"); do
+          dotnet pack "$proj" --configuration Release \
+            -p:PackageVersion="${{ steps.semantic.outputs.new_release_version }}" \
+            --output packages
+        done
+
+    - name: Push NuGet packages
+      if: steps.semantic.outputs.new_release_published == 'true'
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          dotnet nuget push "packages/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_GALLERY_APIKEY }}
+        else
+          dotnet nuget push "packages/*.nupkg" --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_GALLERY_APIKEY }} --no-symbols
+        fi

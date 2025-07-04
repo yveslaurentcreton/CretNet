@@ -1,4 +1,4 @@
-﻿namespace DotNetJet.Utilities;
+﻿namespace CretNet.Utilities;
 
 /// <summary>
 /// Provides utility methods for operations related to Enum types, such as flag manipulation and collection conversion.

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace DotNetJet.FluentValidation.DependencyInjection.Extensions;
+namespace CretNet.FluentValidation.DependencyInjection.Extensions;
 
 public static class OptionsBuilderFluentValidationExtensions
 {

@@ -1,9 +1,9 @@
 ﻿using Bogus;
-using DotNetJet.Utilities;
+using CretNet.Utilities;
 using Shouldly;
 using System.Collections;
 
-namespace DotNetJet.Tests.Utilities;
+namespace CretNet.Tests.Utilities;
 
 public class JetCollectionUtilitiesTests
 {

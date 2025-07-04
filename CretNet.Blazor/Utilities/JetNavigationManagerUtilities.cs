@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace DotNetJet.Blazor.Utilities;
+namespace CretNet.Blazor.Utilities;
 
 /// <summary>
 /// Provides extension methods for NavigationManager to simplify common operations, such as retrieving the relative URI and its parts.

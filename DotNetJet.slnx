@@ -1,8 +1,0 @@
-<Solution>
-  <Folder Name="/Tests/">
-    <Project Path="DotNetJet.Tests/DotNetJet.Tests.csproj" />
-  </Folder>
-  <Project Path="DotNetJet.Blazor/DotNetJet.Blazor.csproj" />
-  <Project Path="DotNetJet.FluentValidation.DependencyInjection/DotNetJet.FluentValidation.DependencyInjection.csproj" />
-  <Project Path="DotNetJet/DotNetJet.csproj" />
-</Solution>

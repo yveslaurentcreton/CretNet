@@ -1,4 +1,4 @@
-﻿namespace DotNetJet.Utilities;
+﻿namespace CretNet.Utilities;
 
 /// <summary>
 /// Provides extension and utility methods for LINQ to enhance and simplify common operations, including asynchronous operations on collections.

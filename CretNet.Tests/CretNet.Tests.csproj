@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DotNetJet\DotNetJet.csproj" />
+      <ProjectReference Include="..\CretNet\CretNet.csproj" />
     </ItemGroup>
 
 </Project>

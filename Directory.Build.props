@@ -2,9 +2,9 @@
 	<PropertyGroup>
 		<Authors>Yves-Laurent Creton</Authors>
 		<Company></Company>
-		<Product>dotNetJet</Product>
+		<Product>cretNet</Product>
 		<Copyright>© $([System.DateTime]::Now.Year) Yves-Laurent Creton</Copyright>
-		<Description>DotNetJet is a collection of powerful, open-source packages designed to enhance and streamline your .NET development experience.</Description>
+		<Description>CretNet is a collection of powerful, open-source packages designed to enhance and streamline your .NET development experience.</Description>
 		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -12,8 +12,8 @@
 		<!-- Package Metadata -->
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageProjectUrl>https://github.com/yveslaurentcreton/dotNetJet</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/yveslaurentcreton/dotNetJet</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/yveslaurentcreton/cretNet</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/yveslaurentcreton/cretNet</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 

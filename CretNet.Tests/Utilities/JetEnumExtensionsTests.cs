@@ -1,7 +1,7 @@
-﻿using DotNetJet.Utilities;
+﻿using CretNet.Utilities;
 using Shouldly;
 
-namespace DotNetJet.Tests.Utilities;
+namespace CretNet.Tests.Utilities;
 
 public class JetEnumExtensionsTests
 {

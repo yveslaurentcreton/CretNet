@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
-        <id>DotNetJet.Blazor</id>
+        <id>CretNet.Blazor</id>
         <authors>Yves-Laurent Creton</authors>
         <owners>Yves-Laurent Creton</owners>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>DotNetJet.Blazor is a set of tools and components designed to enhance Blazor
+        <description>CretNet.Blazor is a set of tools and components designed to enhance Blazor
             application development. It provides a collection of reusable UI components, utilities,
             and extensions that make it easier to build interactive and responsive web applications
             using Blazor. This package aims to improve developer productivity and application

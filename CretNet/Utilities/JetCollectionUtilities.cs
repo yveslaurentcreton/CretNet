@@ -1,4 +1,4 @@
-﻿namespace DotNetJet.Utilities;
+﻿namespace CretNet.Utilities;
 
 /// <summary>
 /// Provides extension and utility methods for collections to enhance and simplify common operations, such as adding or removing multiple items at once.

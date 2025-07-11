@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<Authors>Yves-Laurent Creton</Authors>
 		<Company></Company>
-		<Product>cretNet</Product>
+		<Product>CretNet</Product>
 		<Copyright>© $([System.DateTime]::Now.Year) Yves-Laurent Creton</Copyright>
 		<Description>CretNet is a collection of powerful, open-source packages designed to enhance and streamline your .NET development experience.</Description>
 		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
@@ -12,8 +12,8 @@
 		<!-- Package Metadata -->
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageProjectUrl>https://github.com/yveslaurentcreton/cretNet</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/yveslaurentcreton/cretNet</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/yveslaurentcreton/CretNet</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/yveslaurentcreton/CretNet</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 

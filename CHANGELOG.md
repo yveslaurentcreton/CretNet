@@ -1,3 +1,10 @@
+## [0.2.1](https://github.com/yveslaurentcreton/CretNet/compare/v0.2.0...v0.2.1) (2025-07-11)
+
+
+### Bug Fixes
+
+* Correct capitalization and links in documentation and metadata ([40c4c8d](https://github.com/yveslaurentcreton/CretNet/commit/40c4c8de0e4272293fe2704328bf1ec591cb6929))
+
 # [0.2.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.1.0...v0.2.0) (2025-07-04)
 
 

@@ -5,7 +5,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="DotNetJet.Blazor" />
+      <ProjectReference Include="..\CretNet.Blazor\CretNet.Blazor.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="DynamicData" />
         <PackageReference Include="Fluxor.Blazor.Web" />
         <PackageReference Include="ISO3166" />

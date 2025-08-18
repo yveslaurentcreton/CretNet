@@ -20,8 +20,6 @@
     <PackageVersion Include="Blazored.FluentValidation" Version="2.2.0" />
     <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageVersion Include="CommunityToolkit.Diagnostics" Version="8.4.0" />
-    <PackageVersion Include="DotNetJet.Blazor" Version="0.1.0" />
-    <PackageVersion Include="DotNetJet.FluentValidation.DependencyInjection" Version="0.1.0" />
     <PackageVersion Include="DynamicData" Version="9.4.1" />
     <PackageVersion Include="Fluxor" Version="5.9.1" />
     <PackageVersion Include="Fluxor.Blazor.Web" Version="5.9.1" />

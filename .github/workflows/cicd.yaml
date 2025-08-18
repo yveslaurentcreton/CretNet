@@ -4,8 +4,9 @@ on:
   push:
     branches: 
       - main
-      - dev/*
+      - develop/*
       - feature/*
+      - bugfix/*
       - hotfix/*
 
 jobs:
@@ -45,7 +46,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       if: steps.semantic.outputs.new_release_published == 'true'
       with:
-        global-json-file: ./global.json
+        global-json-file: ./src/global.json
 
     - name: Restore dependencies
       if: steps.semantic.outputs.new_release_published == 'true'
@@ -70,7 +71,7 @@ jobs:
     - name: Create NuGet packages
       if: steps.semantic.outputs.new_release_published == 'true'
       run: |
-        for proj in $(find . -name "CretNet*.csproj" ! -name "*.Tests.csproj"); do
+        for proj in $(find . -name "src/CretNet*.csproj" ! -name "src/*.Tests.csproj"); do
           dotnet pack "$proj" --configuration Release \
             -p:PackageVersion="${{ steps.semantic.outputs.new_release_version }}" \
             --output packages

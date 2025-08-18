@@ -1,0 +1,10 @@
+﻿@inherits CnpComponent
+
+@if (IsPrimary)
+{
+    <CnpButton FluentIconStart="@(new Icons.Regular.Size16.Delete().WithColor("#ffffff"))" FluentBackgroundColor="var(--error)" FluentColor="#ffffff" Label="@CnpLabels.Remove" ButtonRole="ButtonRole" OnClick="OnClick" Disabled="Disabled" Responsive />
+}
+else
+{
+    <CnpButton FluentIconStart="@(new Icons.Regular.Size16.Delete().WithColor("var(--error)"))" Label="@CnpLabels.Remove" ButtonRole="ButtonRole" OnClick="OnClick" Disabled="Disabled" Responsive />
+}

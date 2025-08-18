@@ -1,0 +1,3 @@
+﻿.img-rounded {
+    border-radius: calc(var(--layer-corner-radius) * 1px)
+}

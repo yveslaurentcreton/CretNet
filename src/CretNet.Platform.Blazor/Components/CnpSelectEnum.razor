@@ -1,0 +1,15 @@
+﻿@inherits CnpComponent
+@typeparam TEnum
+
+<div>
+    <FluentSelect
+        TOption="TEnum?"
+        Items="Options"
+        Label="@Label"
+        OptionValue="x => x.ToString()"
+        OptionText="OptionString"
+        SelectedOption="Option"
+        SelectedOptionChanged="OptionChanged"
+        ReadOnly="ReadOnly"
+        Disabled="Disabled || ReadOnly"/>
+</div>

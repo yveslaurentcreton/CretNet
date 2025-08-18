@@ -1,0 +1,22 @@
+﻿@using CretNet.Platform.Blazor.Models
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="15">
+    @foreach (var categoryGroup in FiltersByCategory)
+    {
+        <div>
+            <h5>@categoryGroup.Key</h5>
+            <CnpFilterCategory
+                Id="@($"filters-{categoryGroup.Key.ToLowerInvariant()}")"
+                Values="categoryGroup" />
+        </div>
+    }
+</FluentStack>
+
+@code {
+
+    [Parameter, EditorRequired] public required IEnumerable<IEntityFilter> Filters { get; set; }
+
+    private IEnumerable<IGrouping<string, IEntityFilter>> FiltersByCategory =>
+        Filters.GroupBy(f => f.Category).OrderBy(g => g.Key);
+
+}

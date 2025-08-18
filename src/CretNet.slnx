@@ -5,4 +5,15 @@
   <Project Path="CretNet.Blazor/CretNet.Blazor.csproj" />
   <Project Path="CretNet.FluentValidation.DependencyInjection/CretNet.FluentValidation.DependencyInjection.csproj" />
   <Project Path="CretNet/CretNet.csproj" />
+  <Project Path="CretNet.Platform.Blazor.Server/CretNet.Platform.Blazor.Server.csproj" />
+  <Project Path="CretNet.Platform.Blazor/CretNet.Platform.Blazor.csproj" />
+  <Project Path="CretNet.Platform.Data.Abstractions\CretNet.Platform.Data.Abstractions.csproj" Type="Classic C#" />
+  <Project Path="CretNet.Platform.Data\CretNet.Platform.Data.csproj" Type="Classic C#" />
+  <Project Path="CretNet.Platform.Fluxor.Generators/CretNet.Platform.Fluxor.Generators.csproj" />
+  <Project Path="CretNet.Platform.Fluxor/CretNet.Platform.Fluxor.csproj" />
+  <Project Path="CretNet.Platform.Playground/CretNet.Platform.Playground.csproj" />
+  <Project Path="CretNet.Platform.Storage.Sharepoint/CretNet.Platform.Storage.Sharepoint.csproj" />
+  <Project Path="CretNet.Platform.Storage/CretNet.Platform.Storage.csproj" />
+  <Project Path="CretNet.Platform.WebApi.Utilities/CretNet.Platform.WebApi.Utilities.csproj" />
+  <Project Path="CretNet.Platform/CretNet.Platform.csproj" />
 </Solution>

@@ -1,0 +1,18 @@
+﻿@using Microsoft.FluentUI.AspNetCore.Components.Extensions
+@inherits FluentInputBase<DateTime?>
+<FluentInputLabel ForId="@Id" Label="@Label" AriaLabel="@AriaLabel" ChildContent="@LabelTemplate" Required="@Required" />
+<fluent-text-field class="@($"{ClassValue} fluent-timepicker")"
+                   style="@StyleValue"
+                   id="@Id"
+                   autofocus="@Autofocus"
+                   appearance="@Appearance.ToAttributeValue()"
+                   type="time"
+                   current-value="@Value?.ToString("HH:mm:ss")"
+                   @onchange="@ChangeHandlerAsync"
+                   @oninput="@InputHandlerAsync"
+                   readonly="@ReadOnly"
+                   disabled="@Disabled"
+                   required="@Required"
+                   name="@Name"
+                   placeholder="@Placeholder"
+                   @attributes="@AdditionalAttributes" />

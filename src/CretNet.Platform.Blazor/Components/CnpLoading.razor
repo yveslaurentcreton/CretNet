@@ -1,0 +1,10 @@
+﻿@inherits CnpComponent
+
+@if (IsLoading)
+{
+    <FluentProgress />
+}
+else
+{
+    @ChildContent
+}

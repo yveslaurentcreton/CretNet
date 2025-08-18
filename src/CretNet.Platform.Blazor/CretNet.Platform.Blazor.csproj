@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <ItemGroup>
+        <SupportedPlatform Include="browser" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="DotNetJet.Blazor" />
+        <PackageReference Include="DynamicData" />
+        <PackageReference Include="Fluxor.Blazor.Web" />
+        <PackageReference Include="ISO3166" />
+        <PackageReference Include="IsoNames.NETStandard" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+        <PackageReference Include="ReactiveUI.Blazor" />
+        <PackageReference Include="Scrutor" />
+        <PackageReference Include="Blazored.FluentValidation" />
+        <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" />
+        <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" />
+        <PackageReference Include="SmartFormat" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Resources\CnpLabels.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>CnpLabels.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\CnpLabels.nl.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>CnpLabels.nl.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\CnpLabels.en.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>CnpLabels.en.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Resources\CnpLabels.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>CnpLabels.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\CnpLabels.nl.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>CnpLabels.nl.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\CnpLabels.en.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>CnpLabels.en.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CretNet.Platform.Fluxor\CretNet.Platform.Fluxor.csproj" />
+      <ProjectReference Include="..\CretNet.Platform\CretNet.Platform.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\" />
+    </ItemGroup>
+
+</Project>

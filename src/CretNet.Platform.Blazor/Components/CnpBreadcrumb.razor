@@ -1,0 +1,14 @@
+﻿@inherits CnpComponent
+
+<FluentBreadcrumb>
+    @if (BreadcrumbItems.Count > 1)
+    {
+        @foreach (var item in BreadcrumbItems)
+        {
+            <FluentBreadcrumbItem Href="@item.NavigationUrl">
+                @item.Text
+                <FluentIcon Value="@(new Icons.Regular.Size20.SlashForward())" Color="@Color.Neutral" Slot="separator" />
+            </FluentBreadcrumbItem>
+        }
+    }
+</FluentBreadcrumb>

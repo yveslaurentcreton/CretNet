@@ -1,0 +1,9 @@
+﻿@using CretNet.Platform.Blazor.Services
+@inherits CnpComponent
+
+<PageTitle>@Title</PageTitle>
+
+@if (!Hide)
+{
+    <SectionContent SectionId="@CnpSections.CnpPageTitleId">@Title</SectionContent>
+}

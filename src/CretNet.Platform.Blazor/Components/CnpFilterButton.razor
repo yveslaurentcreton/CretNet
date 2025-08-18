@@ -1,0 +1,18 @@
+﻿@inherits CnpComponent
+@typeparam TEntity
+
+<FluentButton id="resourceFilterButton" slot="end"
+              Appearance="@(_filtersSet ? Appearance.Accent : Appearance.Stealth)"
+              IconEnd="@(new Icons.Regular.Size20.Filter())"
+              @onclick="() => _isFilterPopupVisible = !_isFilterPopupVisible" />
+              
+<FluentPopover AnchorId="resourceFilterButton"
+           @bind-Open="_isFilterPopupVisible"
+           AutoFocus="true"
+           FixedPlacement="true"
+           Class="resources-filter-popup">
+<Body>
+    <CnpFilters Filters="Filters" />
+
+</Body>
+</FluentPopover>

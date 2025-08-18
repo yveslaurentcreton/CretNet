@@ -1,0 +1,15 @@
+﻿@using CretNet.Platform.Blazor.Interfaces
+@inherits CnpComponent
+
+@* Body *@
+<FluentDialogBody>
+    <CascadingValue TValue="IHandleSelection" Value="this">
+        <DynamicComponent Type="DialogParameters.DialogContentType" />
+    </CascadingValue>
+</FluentDialogBody>
+
+@* Footer *@
+<FluentDialogFooter>
+    <CnpButton ButtonRole="ButtonRole.Tertiary" Label="@CnpLabels.Select" OnClick="SelectAsync" Disabled="SelectedItems?.Any() != true" />
+    <CnpButton Label="@CnpLabels.Cancel" OnClick="CancelAsync" />
+</FluentDialogFooter>

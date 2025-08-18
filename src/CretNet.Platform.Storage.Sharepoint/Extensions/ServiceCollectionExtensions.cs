@@ -1,4 +1,4 @@
-﻿using DotNetJet.FluentValidation.DependencyInjection.Extensions;
+﻿using CretNet.FluentValidation.DependencyInjection.Extensions;
 using FluentValidation;
 using CretNet.Platform.Storage.Services;
 using CretNet.Platform.Storage.Sharepoint.Models;

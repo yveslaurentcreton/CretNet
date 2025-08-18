@@ -1,4 +1,4 @@
-﻿using DotNetJet.Blazor.Utilities;
+﻿using CretNet.Blazor.Utilities;
 using CretNet.Platform.Blazor.Models;
 using CretNet.Platform.Blazor.Services;
 using Microsoft.AspNetCore.Components;

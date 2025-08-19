@@ -22,6 +22,14 @@
 * Add platform ([6c97e3a](https://github.com/yveslaurentcreton/CretNet/commit/6c97e3afad759b4c81e26274e93e443244af1b46))
 * Introduce a dedicated documentation site ([acf4fec](https://github.com/yveslaurentcreton/CretNet/commit/acf4fecfbfada6f79a10521570126bf94315201f))
 
+# [0.3.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.2.1...v0.3.0) (2025-08-19)
+
+
+### Features
+
+* Add platform ([6c97e3a](https://github.com/yveslaurentcreton/CretNet/commit/6c97e3afad759b4c81e26274e93e443244af1b46))
+* Introduce a dedicated documentation site ([acf4fec](https://github.com/yveslaurentcreton/CretNet/commit/acf4fecfbfada6f79a10521570126bf94315201f))
+
 ## [0.2.1](https://github.com/yveslaurentcreton/CretNet/compare/v0.2.0...v0.2.1) (2025-07-11)
 
 

@@ -1,0 +1,9 @@
+﻿@media (max-width: 600px) {
+    ::deep .cnp-responsive-button::part(start) {
+        margin-inline-end: 0;
+    }
+
+    ::deep .cnp-responsive-button::part(content) {
+        display: none;
+    }
+}

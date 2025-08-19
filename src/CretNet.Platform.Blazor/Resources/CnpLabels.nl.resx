@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Search" xml:space="preserve">
+        <value>Zoek</value>
+    </data>
+    <data name="RowsPerPage" xml:space="preserve">
+        <value>Rijen per pagina</value>
+    </data>
+    <data name="Add" xml:space="preserve">
+        <value>{0:Bezig met toevoegen|Toevoegen}</value>
+    </data>
+    <data name="Remove" xml:space="preserve">
+        <value>{0:Bezig met verwijderen|Verwijderen}</value>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>{0:Bezig met bewerken|Bewerken}</value>
+    </data>
+    <data name="Select" xml:space="preserve">
+        <value>Selecteer</value>
+    </data>
+    <data name="Save" xml:space="preserve">
+        <value>{0:Bezig met opslaan|Opslaan}</value>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Annuleren</value>
+    </data>
+    <data name="AddEntity" xml:space="preserve">
+        <value>{Entity} toevoegen</value>
+    </data>
+    <data name="EditEntity" xml:space="preserve">
+        <value>{Entity} bewerken</value>
+    </data>
+    <data name="GettingEntity" xml:space="preserve">
+        <value>{Entity} ophalen</value>
+    </data>
+    <data name="MSGEntityAdded" xml:space="preserve">
+        <value>{Entity} is toegevoegd.</value>
+    </data>
+    <data name="MSGEntityAddFailed" xml:space="preserve">
+        <value>{Entity} toevoegen is mislukt: \r\n\r\n{Error}</value>
+    </data>
+    <data name="MSGEntityEdited" xml:space="preserve">
+        <value>{Entity} is bewerkt.</value>
+    </data>
+    <data name="MSGEntityEditFailed" xml:space="preserve">
+        <value>{Entity} bewerken is mislukt: {Error}</value>
+    </data>
+    <data name="MSGEntityFetchFailed" xml:space="preserve">
+        <value>{Entity} ophalen is mislukt: {Error}</value>
+    </data>
+    <data name="MSGEntityRemoved" xml:space="preserve">
+        <value>{Entity} is verwijderd.</value>
+    </data>
+    <data name="MSGEntityRemoveFailed" xml:space="preserve">
+        <value>{Entity} verwijderen is mislukt: {Error}</value>
+    </data>
+    <data name="MSGEntitySpecificAdded" xml:space="preserve">
+        <value>{Entity} '{Identifier}' is toegevoegd.</value>
+    </data>
+    <data name="MSGEntitySpecificEdited" xml:space="preserve">
+        <value>{Entity} '{Identifier}' is bewerkt.</value>
+    </data>
+    <data name="MSGEntitySpecificRemoveConfirmation" xml:space="preserve">
+        <value>Ben je zeker dat je {Entity.ToLower} '{Identifier}' wilt verwijderen?</value>
+    </data>
+    <data name="MSGEntitySpecificRemoved" xml:space="preserve">
+        <value>{Entity} '{Identifier}' is verwijderd.</value>
+    </data>
+    <data name="RemoveEntity" xml:space="preserve">
+        <value>{Entity} verwijderen</value>
+    </data>
+    <data name="Yes" xml:space="preserve">
+        <value>Ja</value>
+    </data>
+    <data name="No" xml:space="preserve">
+        <value>Nee</value>
+    </data>
+    <data name="Light" xml:space="preserve">
+        <value>Licht</value>
+    </data>
+    <data name="Dark" xml:space="preserve">
+        <value>Donker</value>
+    </data>
+    <data name="System" xml:space="preserve">
+        <value>Systeem</value>
+    </data>
+    <data name="Theme" xml:space="preserve">
+        <value>Thema</value>
+    </data>
+    <data name="Color" xml:space="preserve">
+        <value>Kleur</value>
+    </data>
+    <data name="Value" xml:space="preserve">
+        <value>Waarde</value>
+    </data>
+    <data name="Language" xml:space="preserve">
+        <value>Taal</value>
+    </data>
+    <data name="Name" xml:space="preserve">
+        <value>Naam</value>
+    </data>
+    <data name="Type" xml:space="preserve">
+        <value>Type</value>
+    </data>
+    <data name="Number" xml:space="preserve">
+        <value>Nummer</value>
+    </data>
+    <data name="Details" xml:space="preserve">
+        <value>Details</value>
+    </data>
+    <data name="MSGRequired" xml:space="preserve">
+        <value>Het veld '{PropertyName}' is verplicht.</value>
+    </data>
+    <data name="MSGTypeInvalidFormat" xml:space="preserve">
+        <value>Het veld '{PropertyName}' heeft een verkeerd formaat.</value>
+    </data>
+    <data name="Information" xml:space="preserve">
+        <value>Informatie</value>
+    </data>
+    <data name="General" xml:space="preserve">
+        <value>Algemeen</value>
+    </data>
+    <data name="Profile" xml:space="preserve">
+        <value>Profiel</value>
+    </data>
+    <data name="Firstname" xml:space="preserve">
+        <value>Voornaam</value>
+    </data>
+    <data name="Lastname" xml:space="preserve">
+        <value>Achternaam</value>
+    </data>
+    <data name="Bus" xml:space="preserve">
+        <value>Bus</value>
+    </data>
+    <data name="PostalCode" xml:space="preserve">
+        <value>Postcode</value>
+    </data>
+    <data name="City" xml:space="preserve">
+        <value>Gemeente</value>
+    </data>
+    <data name="Street" xml:space="preserve">
+        <value>Straat</value>
+    </data>
+    <data name="Address" xml:space="preserve">
+        <value>Adres</value>
+    </data>
+    <data name="Country" xml:space="preserve">
+        <value>Land</value>
+    </data>
+    <data name="Username" xml:space="preserve">
+        <value>Gebruikersnaam</value>
+    </data>
+    <data name="Parameters" xml:space="preserve">
+        <value>Parameters</value>
+    </data>
+    <data name="MSGEntitiesRemoveConfirmation" xml:space="preserve">
+        <value>Ben je zeker dat je {Count} {Entities.ToLower} wilt verwijderen?</value>
+    </data>
+    <data name="Deadline" xml:space="preserve">
+        <value>Deadline</value>
+    </data>
+    <data name="Sequence" xml:space="preserve">
+        <value>Volgorde</value>
+    </data>
+    <data name="Coordinates" xml:space="preserve">
+        <value>Coördinaten</value>
+    </data>
+    <data name="Longitude" xml:space="preserve">
+        <value>Lengtegraad</value>
+    </data>
+    <data name="Latitude" xml:space="preserve">
+        <value>Breedtegraad</value>
+    </data>
+    <data name="None" xml:space="preserve">
+        <value>Geen</value>
+    </data>
+    <data name="Percentage" xml:space="preserve">
+        <value>Percentage</value>
+    </data>
+    <data name="Notes" xml:space="preserve">
+        <value>Notities</value>
+    </data>
+    <data name="Ok" xml:space="preserve">
+        <value>Ok</value>
+    </data>
+    <data name="Overview" xml:space="preserve">
+        <value>Overzicht</value>
+    </data>
+    <data name="Date" xml:space="preserve">
+        <value>Datum</value>
+    </data>
+    <data name="MSGMustBeGreaterThan" xml:space="preserve">
+        <value>'{0}' moet groter zijn dan '{1}'</value>
+    </data>
+    <data name="StartTime" xml:space="preserve">
+        <value>Starttijd</value>
+    </data>
+    <data name="Description" xml:space="preserve">
+        <value>Omschrijving</value>
+    </data>
+    <data name="Start" xml:space="preserve">
+        <value>Start</value>
+    </data>
+    <data name="Stop" xml:space="preserve">
+        <value>Stop</value>
+    </data>
+</root>

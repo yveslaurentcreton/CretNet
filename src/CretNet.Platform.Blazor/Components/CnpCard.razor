@@ -1,0 +1,14 @@
+﻿@inherits CnpCardBase
+
+<FluentCard AreaRestricted="false">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+        <div class="cnp-card-header">
+            @CardHeaderContent
+            <FluentSpacer/>
+            @CardHeaderActions
+        </div>
+        <div style="width: 100%">
+            @CardContent
+        </div>
+    </FluentStack>
+</FluentCard>

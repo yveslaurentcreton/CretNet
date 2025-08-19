@@ -1,0 +1,75 @@
+﻿@attribute [CascadingTypeParameter(nameof(TGridItem))]
+@inherits CnpComponent
+@typeparam TGridItem
+@typeparam TId
+
+<div class="cnp-entitydatagrid">
+    <div class="custom-toolbar">
+        <FluentStack Class="cnp-actions-container">
+            @if (ShouldShowAdd)
+            {
+                <CnpAddButton Disabled="!ShouldEnableAdd" OnClick="Add" IsPrimary="IsPrimary"/>
+            }
+            @if (ShouldShowEdit)
+            {
+                <CnpEditButton Disabled="!ShouldEnableEdit" OnClick="() => Edit(SelectedItems.Single())" IsPrimary="IsPrimary"/>
+            }
+            @if (ShouldShowRemove)
+            {
+                <CnpRemoveButton Disabled="!ShouldEnableRemove" OnClick="() => Remove(SelectedItems)" IsPrimary="IsPrimary"/>
+            }
+            
+            @if (PrimaryActions is not null)
+            {
+                @PrimaryActions(SelectedItems)
+            }
+            
+            <FluentButton IconStart="@(new Icons.Regular.Size16.ArrowClockwise())" OnClick="DataSource.Reload" />
+            
+            @if (SecondaryActions is not null)
+            {
+                @SecondaryActions(SelectedItems)
+            }
+        </FluentStack>
+
+        @if (ShouldShowSearch)
+        {
+            <div class="search-container">
+                <CnpStack Orientation="CnpOrientation.Horizontal" VerticalAlignment="CnpVerticalAlignment.Center">
+                    @if (CustomFilters is not null)
+                    {
+                        @CustomFilters(SelectedItems)
+                    }
+                    <FluentSearch Style="width: 100%; min-width: 200px;" @bind-Value="DataSource.Filter" Immediate/>
+                    @if (DataSource.EntityFilters.Any())
+                    {
+                        <CnpFilterButton TEntity="TGridItem" Filters="DataSource.EntityFilters"/>
+                    }
+                </CnpStack>
+            </div>
+        }
+    </div>
+
+    <FluentDataGrid TGridItem="TGridItem" Loading="Loading" Items="DataSource.Entities?.AsQueryable()" RowClass="@(_ => "listpagerow")" ResizableColumns ShowHover Pagination="_pagination" RowSize="DataGridRowSize.Medium">
+        @if (ShouldShowSelection)
+        {
+            <SelectColumn @ref="_selectColumn" TGridItem="TGridItem" Class="col-datagrid-select"
+                          SelectMode="MultiSelect ? DataGridSelectMode.Multiple : DataGridSelectMode.Single"
+                          Property="x => DataSource.IsSelected(x)"
+                          OnSelect="@(x => UpdateSelection(x.Item, x.Selected))"
+                          SelectAll="DataSource.IsAllSelected()"
+                          SelectAllChanged="all => UpdateAll(all == true)" />
+        }
+
+        @Columns
+
+        @if (ShouldShowNavigation)
+        {
+            <TemplateColumn Width="50px" Align="@Align.End">
+                <FluentButton IconEnd="@(new Icons.Regular.Size16.MoreHorizontal())" OnClick="(_) => Navigate(context)"/>
+            </TemplateColumn>
+        }
+    </FluentDataGrid>
+    
+    <FluentPaginator State="_pagination" />
+</div>

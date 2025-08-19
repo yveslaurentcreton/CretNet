@@ -1,0 +1,6 @@
+﻿@inherits CnpComponent
+
+<CnpStack Orientation="CnpOrientation.Horizontal" VerticalAlignment="CnpVerticalAlignment.Center">
+    <FluentDatePicker Style="width: 130px;" Label="Stop" @bind-Value:get="@DisplayValue" @bind-Value:set="SetValue"/>
+    <CnpDateTimePicker @bind-Value:get="@DisplayValue" @bind-Value:set="SetValue"/>
+</CnpStack>

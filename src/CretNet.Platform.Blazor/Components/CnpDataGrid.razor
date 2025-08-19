@@ -1,0 +1,57 @@
+﻿@attribute [CascadingTypeParameter(nameof(TGridItem))]
+@inherits CnpDataGridBase<TGridItem>
+@typeparam TGridItem
+
+<div class="cnp-datagrid">
+    <div class="custom-toolbar">
+        <FluentStack Class="cnp-actions-container">
+            @if (ShouldShowAdd)
+            {
+                <CnpAddButton Disabled="!ShouldEnableAdd" OnClick="Add" IsPrimary="IsPrimary"/>
+            }
+            @if (ShouldShowEdit)
+            {
+                <CnpEditButton Disabled="!ShouldEnableEdit" OnClick="Edit" IsPrimary="IsPrimary"/>
+            }
+            @if (ShouldShowRemove)
+            {
+                <CnpRemoveButton Disabled="!ShouldEnableRemove" OnClick="Remove" IsPrimary="IsPrimary"/>
+            }
+            
+            @if (Actions is not null)
+            {
+                @Actions(SelectedItems)
+            }
+        </FluentStack>
+
+        @if (ShouldShowSearch)
+        {
+            <div class="search-container">
+                <FluentSearch Style="width: 100%;" @bind-Value="Search" @bind-Value:after="InternalOnSearch"/>
+            </div>
+        }
+    </div>
+
+    <FluentDataGrid TGridItem="TGridItem" Loading="Loading" Items="FilteredItems" RowClass="@(_ => "listpagerow")" ResizableColumns ShowHover Pagination="_pagination" RowSize="DataGridRowSize.Medium">
+        @if (ShouldShowSelection)
+        {
+            <SelectColumn TGridItem="TGridItem" Class="col-datagrid-select"
+                          SelectMode="MultiSelect ? DataGridSelectMode.Multiple : DataGridSelectMode.Single"
+                          Property="x => IsSelected(x)"
+                          OnSelect="@(x => UpdateSelection(x.Item, x.Selected))"
+                          SelectAll="IsAllSelected()"
+                          SelectAllChanged="all => UpdateAll(all == true)" />
+        }
+
+        @Columns
+
+        @if (ShouldShowNavigation)
+        {
+            <TemplateColumn Width="50px" Align="@Align.End">
+                <FluentButton IconEnd="@(new Icons.Regular.Size16.MoreHorizontal())" OnClick="(_) => Navigate(context)"/>
+            </TemplateColumn>
+        }
+    </FluentDataGrid>
+    
+    <FluentPaginator State="_pagination" />
+</div>

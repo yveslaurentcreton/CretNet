@@ -1,0 +1,8 @@
+@if (LocalTime.HasValue)
+{
+    @LocalTime.Value.ToString(Format ?? "G")
+}
+else
+{
+    @Value?.ToString(Format ?? "G")
+}

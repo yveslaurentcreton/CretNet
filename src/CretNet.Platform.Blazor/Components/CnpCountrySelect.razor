@@ -1,0 +1,15 @@
+﻿@using CretNet.Platform.Blazor.Services.Countries
+@inherits CnpComponent
+
+<FluentCombobox 
+    TOption="Country"
+    Style="min-width: unset"
+    Height="200px"
+    Autocomplete="ComboboxAutocomplete.Inline" 
+    Items="Countries"
+    Label="@CnpLabels.Country"
+    OptionText="x => x.Name"
+    OptionValue="x => x.TwoLetterIsoCode" 
+    @bind-SelectedOption:get="SelectedCountry"
+    @bind-SelectedOption:set="SetSelectedOption"
+    Required />

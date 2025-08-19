@@ -1,0 +1,40 @@
+﻿@inherits CnpComponent
+@typeparam TEntity
+@typeparam TId
+
+<div style="flex-grow: 1;">
+    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom" HorizontalGap="5" Width="100%">
+        <div style="flex-grow: 1;">
+            <FluentCombobox 
+                @key="SelectedEntity"
+                TOption="EntitySelector<TId>"
+                Height="200px"
+                Autocomplete="ComboboxAutocomplete.Both" 
+                Items="_entities"
+                Label="@(UseCustomLabel ? Label : EntityDefinition.Label)"
+                OptionText="x => x.Name"
+                OptionValue="x => x.Id.ToString()" 
+                @bind-SelectedOption:get="SelectedEntity"
+                @bind-SelectedOption:set="SetSelectedEntity"
+                ReadOnly="ReadOnly"
+                Disabled="Disabled || ReadOnly"
+                Required="Required" />
+        </div>
+        
+        @if (ShouldShowAdd)
+        {
+            <FluentButton IconStart="@(new Icons.Regular.Size16.Add())" OnClick="InternalAdd" Disabled="Disabled" />
+        }
+        
+        @if (ShouldShowAdvancedSearch)
+        {
+            <FluentButton IconStart="@(new Icons.Regular.Size16.Search())" OnClick="InternalAdvancedSearch" Disabled="Disabled" />
+        }
+    </FluentStack>
+    
+    @if (For is not null)
+    {
+        <FluentValidationMessage For="@For" />
+    }
+</div>
+

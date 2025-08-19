@@ -1,33 +1,61 @@
 # CretNet
 
-CretNet is a collection of powerful, open-source packages designed to enhance and streamline your .NET development experience. Our project consists of various tools and libraries aimed at different aspects of .NET application development, including `CretNet`, `CretNet.Blazor`, and `CretNet.FluentValidation.DependencyInjection`. Our goal is to provide developers with comprehensive tools that help accelerate the development of .NET applications.
+Modern .NET building blocks and a ready-to-use Blazor application platform.
 
-## Packages
+This repository now has two pillars:
 
-- **CretNet:** A core library providing a wide range of utilities and extensions that enhance the basic .NET framework functionalities.
-- **CretNet.Blazor:** Tailored for Blazor applications, this package offers components and tools specifically designed to improve the development of Blazor web apps.
-- **CretNet.FluentValidation.DependencyInjection:** Integrates FluentValidation with .NET's dependency injection, simplifying the process of adding and configuring validation in your projects.
+1. Core libraries you can use anywhere in .NET
+2. CretNet Platform for quickly building cohesive Blazor web apps with pre-made controls, services, and Fluxor-based patterns
+
+Target framework: .NET 9 only.
+
+Documentation site: <https://dotnet.creton.dev>
+
+## 1. Core libraries
+
+| Name | NuGet | Description |
+| --- | --- | --- |
+| **CretNet** | [![NuGet](https://img.shields.io/nuget/v/CretNet.svg?logo=nuget)](https://www.nuget.org/packages/CretNet) | Small, practical helpers and extensions (collections, enums, LINQ). |
+| **CretNet.Blazor** | [![NuGet](https://img.shields.io/nuget/v/CretNet.Blazor.svg?logo=nuget)](https://www.nuget.org/packages/CretNet.Blazor) | Blazor-focused helpers/utilities. |
+| **CretNet.FluentValidation.DependencyInjection** | [![NuGet](https://img.shields.io/nuget/v/CretNet.FluentValidation.DependencyInjection.svg?logo=nuget)](https://www.nuget.org/packages/CretNet.FluentValidation.DependencyInjection) | FluentValidation registration helpers for Microsoft.Extensions.DependencyInjection. |
+
+## 2. CretNet Platform (Blazor app accelerator)
+
+The Platform is a set of cohesive projects that work together so you can bootstrap production-grade Blazor apps quickly. It leans on Fluxor for state management and Microsoft Fluent UI components for a consistent UX.
+
+Highlights:
+
+| Name | NuGet | Description |
+| --- | --- | --- |
+| **CretNet.Platform** | [![NuGet](https://img.shields.io/nuget/v/CretNet.Platform.svg?logo=nuget)](https://www.nuget.org/packages/CretNet.Platform) | Base abstractions like `IEntity<TId>`, DI helpers (e.g., `AddDecoratedSingleton`). |
+| **CretNet.Platform.Data** | [![NuGet](https://img.shields.io/nuget/v/CretNet.Platform.Data.svg?logo=nuget)](https://www.nuget.org/packages/CretNet.Platform.Data) | Repository pattern (`Repository<TEntity,TId>`) built on EF Core and Ardalis.Specification. |
+| **CretNet.Platform.Data.Abstractions** | [![NuGet](https://img.shields.io/nuget/v/CretNet.Platform.Data.Abstractions.svg?logo=nuget)](https://www.nuget.org/packages/CretNet.Platform.Data.Abstractions) | Default/search specs (`IEntityDefaultSpecification<T>`, `IEntitySearchSpecification<T>`). |
+| **CretNet.Platform.Fluxor** | [![NuGet](https://img.shields.io/nuget/v/CretNet.Platform.Fluxor.svg?logo=nuget)](https://www.nuget.org/packages/CretNet.Platform.Fluxor) | Helpers for Fluxor: `ICnpAction`, `ICnpEntityAction<T>`, `DispatcherExtensions.DispatchAsync(...)`. |
+| **CretNet.Platform.Fluxor.Generators** | [![NuGet](https://img.shields.io/nuget/v/CretNet.Platform.Fluxor.Generators.svg?logo=nuget)](https://www.nuget.org/packages/CretNet.Platform.Fluxor.Generators) | Source generators for actions/entities (reduce boilerplate). |
+| **CretNet.Platform.Blazor** | [![NuGet](https://img.shields.io/nuget/v/CretNet.Platform.Blazor.svg?logo=nuget)](https://www.nuget.org/packages/CretNet.Platform.Blazor) | Fluent UI components: grids/selects/dialogs; inputs; layout; filters; dynamic renderers; notifications. |
+| **CretNet.Platform.Blazor.Server** | [![NuGet](https://img.shields.io/nuget/v/CretNet.Platform.Blazor.Server.svg?logo=nuget)](https://www.nuget.org/packages/CretNet.Platform.Blazor.Server) | Server-hosting specifics for the Blazor Platform. |
+| **CretNet.Platform.WebApi.Utilities** | [![NuGet](https://img.shields.io/nuget/v/CretNet.Platform.WebApi.Utilities.svg?logo=nuget)](https://www.nuget.org/packages/CretNet.Platform.WebApi.Utilities) | Minimal API helpers (e.g., `MapPing()` health endpoint). |
+| **CretNet.Platform.Storage** | [![NuGet](https://img.shields.io/nuget/v/CretNet.Platform.Storage.svg?logo=nuget)](https://www.nuget.org/packages/CretNet.Platform.Storage) | Storage abstraction (`IStorageService`). |
+| **CretNet.Platform.Storage.Sharepoint** | [![NuGet](https://img.shields.io/nuget/v/CretNet.Platform.Storage.Sharepoint.svg?logo=nuget)](https://www.nuget.org/packages/CretNet.Platform.Storage.Sharepoint) | SharePoint implementation/services & DI. |
+
+## Showcase application
+
+Applications that showcases the CretNet Platform:
+
+- [CretCollect](https://github.com/yveslaurentcreton/CretCollect)
 
 ## Contributing
 
-We welcome contributions to the CretNet project! If you'd like to contribute, especially to one of our specific packages, please follow these steps:
+Contributions are welcome. We follow GitHub Flow with semantic releases:
 
-1. Fork the repository.
-2. Create a new branch for your changes.
-3. Make the desired changes in your branch.
-4. Commit and push your changes to your fork.
-5. Create a pull request to the main repository.
+- Branch types: `feature/*` and `bugfix/*`
+- Submit a Pull Request to `main` when ready
+- Use clear, conventional commit messages (semantic commits)
 
-Please ensure your changes adhere to the existing coding style and that your commits have clear, descriptive messages.
+Report issues and feature requests here: <https://github.com/yveslaurentcreton/CretNet/issues>
 
-### Reporting Issues
-
-Encounter an issue or have a suggestion? Please [open an issue](https://github.com/yveslaurentcreton/CretNet/issues) in the GitHub repository, specifying the package it relates to. Provide a clear description of the issue and any relevant details to help us understand and address the problem.
-
-### Feature Requests
-
-We're always looking for new ideas that can benefit the CretNet community! If you have a feature request, especially one that enhances one of our specific packages, please [open an issue](https://github.com/yveslaurentcreton/CretNet/issues) describing the feature and its potential benefits.
+Localization: English and Dutch are available out of the box; contributions for additional languages are welcome.
 
 ## License
 
-This project is licensed under the [MIT License](https://github.com/yveslaurentcreton/CretNet/blob/main/LICENSE).
+Licensed under the [MIT License](LICENSE).

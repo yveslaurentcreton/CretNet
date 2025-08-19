@@ -1,0 +1,14 @@
+@inherits CnpComponent
+@typeparam TDate where TDate : struct
+
+<div style="@(Label is null ? "display: inherit;" : string.Empty)">
+    <FluentDatePicker
+        @key="_controlKey"
+        @bind-Value:get="@DisplayValue"
+        @bind-Value:set="SetValue"
+        Style="width: 100%"
+        Label="@Label"
+        Required="@Required"
+        ReadOnly="@ReadOnly"
+        Disabled="@Disabled"/>
+</div>

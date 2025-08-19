@@ -1,0 +1,13 @@
+﻿@inherits CnpComponent
+
+<div style="@(Label is null ? "display: inherit;" : string.Empty)">
+    <FluentTextField
+        @key="_controlKey"
+        @bind-Value:get="@DisplayValue"
+        @bind-Value:set="SetValue"
+        InputMode="InputMode.Decimal"
+        Label="@Label"
+        Required="@Required"
+        ReadOnly="@ReadOnly"
+        Disabled="Disabled" />
+</div>

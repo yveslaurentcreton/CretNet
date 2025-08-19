@@ -1,0 +1,32 @@
+﻿@inherits CnpSelectEntityBase<TEntity, TId>
+@typeparam TEntity
+@typeparam TId
+
+<FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom" HorizontalGap="5" Width="100%">
+    
+    <div style="flex-grow: 1;">
+        <FluentCombobox 
+            TOption="EntitySelector<TId>"
+            Height="200px"
+            Autocomplete="ComboboxAutocomplete.Both" 
+            Items="_entities"
+            Label="@Label"
+            OptionText="x => x.Name"
+            OptionValue="x => x.Id.ToString()" 
+            @bind-SelectedOption:get="SelectedEntity"
+            @bind-SelectedOption:set="SetSelectedEntity"
+            ReadOnly="ReadOnly"
+            Disabled="Disabled || ReadOnly"
+            Required="Required" />
+    </div>
+    
+    @if (ShouldShowAdd)
+    {
+        <FluentButton IconStart="@(new Icons.Regular.Size16.Add())" OnClick="InternalAdd" />
+    }
+    
+    @if (ShouldShowAdvancedSearch)
+    {
+        <FluentButton IconStart="@(new Icons.Regular.Size16.Search())" OnClick="InternalAdvancedSearch" />
+    }
+</FluentStack>

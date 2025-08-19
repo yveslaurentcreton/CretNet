@@ -1,0 +1,34 @@
+﻿@inherits CnpComponent
+
+<EditForm Model="DialogParameters.GetViewModel()" OnValidSubmit="@SaveAsync" novalidate>
+
+    @* Header *@
+    <FluentDialogHeader ShowDismiss="true">
+        <FluentStack VerticalAlignment="VerticalAlignment.Center">
+            @if (Icon is not null)
+            {
+                <FluentIcon Value="@Icon" />
+            }
+            <FluentLabel Typo="Typography.PaneHeader">
+                @FluentDialogParameters.Title
+            </FluentLabel>
+        </FluentStack>
+    </FluentDialogHeader>
+
+    @* Body *@
+    <FluentDialogBody>
+        <Blazored.FluentValidation.FluentValidationValidator />
+        <CascadingValue Value="DialogParameters">
+            <DynamicComponent Type="DialogParameters.DialogContentRendererType" />
+        </CascadingValue>
+    </FluentDialogBody>
+
+    @* Footer *@
+    <FluentDialogFooter>
+        <button type="submit" disabled style="display: none" aria-hidden="true"></button>
+        
+        <CnpButton ButtonType="CnpButtonType.Submit" ButtonRole="ButtonRole.Primary" Label="@DialogParameters.OkLabel" Loading="_isSaving" />
+        <CnpButton Label="@CnpLabels.Cancel" OnClick="CancelAsync" />
+    </FluentDialogFooter>
+
+</EditForm>

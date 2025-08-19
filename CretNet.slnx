@@ -1,8 +1,0 @@
-<Solution>
-  <Folder Name="/Tests/">
-    <Project Path="CretNet.Tests/CretNet.Tests.csproj" />
-  </Folder>
-  <Project Path="CretNet.Blazor/CretNet.Blazor.csproj" />
-  <Project Path="CretNet.FluentValidation.DependencyInjection/CretNet.FluentValidation.DependencyInjection.csproj" />
-  <Project Path="CretNet/CretNet.csproj" />
-</Solution>

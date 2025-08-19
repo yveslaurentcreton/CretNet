@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\CretNet.Platform.Data.Abstractions\CretNet.Platform.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\CretNet.Platform\CretNet.Platform.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Scrutor" />
+  </ItemGroup>
+</Project>

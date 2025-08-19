@@ -1,0 +1,37 @@
+﻿@using SmartFormat
+@inherits CnpButtonBase
+
+<div style="display: contents;">
+    @if (IsIconOnly)
+    {
+        <FluentButton
+            Type="FluentButtonType"
+            Class="@InternalClass"
+            Disabled="Disabled"
+            Loading="Loading"
+            Appearance="FluentAppearance"
+            IconStart="FluentIconStart"
+            Color="@FluentColorInternal"
+            BackgroundColor="@FluentBackgroundColor"
+            OnClick="OnClickInternal"
+            Style="@Style" />
+    }
+    else
+    {
+        <FluentButton
+            Type="FluentButtonType"
+            Class="@InternalClass"
+            Disabled="Disabled"
+            Loading="Loading"
+            Appearance="FluentAppearance"
+            IconStart="FluentIconStart"
+            IconEnd="FluentIconEnd"
+            Color="@FluentColorInternal"
+            BackgroundColor="@FluentBackgroundColor"
+            OnClick="OnClickInternal"
+            Style="@Style">
+
+                @(UseLabel ? @Smart.Format(Label ?? string.Empty, Loading) : LoadingChildContent ?? ChildContent)
+        </FluentButton>
+    }
+</div>

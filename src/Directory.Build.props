@@ -1,0 +1,25 @@
+<Project>
+	<PropertyGroup>
+		<Authors>Yves-Laurent Creton</Authors>
+		<Company></Company>
+		<Product>CretNet</Product>
+		<Copyright>© $([System.DateTime]::Now.Year) Yves-Laurent Creton</Copyright>
+		<Description>CretNet is a collection of powerful, open-source packages designed to enhance and streamline your .NET development experience.</Description>
+		<TargetFramework Condition="'$(TargetFramework)' == ''">net9.0</TargetFramework>
+		<LangVersion>preview</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+		<!-- Package Metadata -->
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageProjectUrl>https://github.com/yveslaurentcreton/CretNet</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/yveslaurentcreton/CretNet</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="$(MSBuildThisFileDirectory)..\LICENSE" Pack="true" PackagePath="" />
+		<None Include="$(MSBuildThisFileDirectory)..\README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+</Project>

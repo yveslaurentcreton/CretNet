@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+      <ProjectReference Include="..\CretNet.FluentValidation.DependencyInjection\CretNet.FluentValidation.DependencyInjection.csproj" />
+      <ProjectReference Include="..\CretNet.Platform.Storage\CretNet.Platform.Storage.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="PnP.Framework" />
+    </ItemGroup>
+
+</Project>

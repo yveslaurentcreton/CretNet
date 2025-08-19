@@ -1,0 +1,8 @@
+﻿@typeparam TViewModel
+
+@if (Parameters is not null)
+{
+    <CascadingValue Value="Parameters.ViewModel">
+        <DynamicComponent Type="Parameters.ContentType" />
+    </CascadingValue>
+}

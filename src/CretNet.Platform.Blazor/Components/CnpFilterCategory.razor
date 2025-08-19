@@ -1,0 +1,26 @@
+﻿@using CretNet.Platform.Blazor.Models
+
+<FluentStack Orientation="Orientation.Vertical" Id="@Id">
+    <FluentCheckbox Label="(All)"
+                    ThreeState="true"
+                    ShowIndeterminate="false"
+                    ThreeStateOrderUncheckToIntermediate="true"
+                    @bind-CheckState:get="@GetCheckState(Values)"
+                    @bind-CheckState:set="@OnAllValuesCheckedChangedInternalAsync"
+    />
+
+    @foreach (var entityFilter in Values.OrderBy(filter => filter.Sequence))
+    {
+        <FluentCheckbox Label="@entityFilter.Key"
+                        @bind-Value:get="@entityFilter.Enabled"
+                        @bind-Value:set="@(c => OnValueVisibilityChangedInternalAsync(entityFilter, c))" />
+    }
+</FluentStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public required IEnumerable<IEntityFilter> Values { get; set; }
+
+    [Parameter]
+    public string? Id { get; set; }
+}

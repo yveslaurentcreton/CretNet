@@ -27,8 +27,6 @@
 <ItemGroup>
   <Compile Remove="Resources\**\*.cs" />
   <EmbeddedResource Include="Resources\**\*.cs" />
-    
-  <None Include="docs\readme.md" Pack="true" PackagePath="\"/>
 </ItemGroup>
 
 <ItemGroup>

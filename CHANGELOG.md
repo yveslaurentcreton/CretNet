@@ -5,6 +5,13 @@
 
 * Remove empty readme.md to fix NuGet package generation ([a2aa565](https://github.com/yveslaurentcreton/CretNet/commit/a2aa5650d02f4454c203de273191d488687ca8d4))
 
+## [0.3.1](https://github.com/yveslaurentcreton/CretNet/compare/v0.3.0...v0.3.1) (2025-08-19)
+
+
+### Bug Fixes
+
+* Remove empty readme.md to fix NuGet package generation ([a2aa565](https://github.com/yveslaurentcreton/CretNet/commit/a2aa5650d02f4454c203de273191d488687ca8d4))
+
 # [0.3.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.2.1...v0.3.0) (2025-08-19)
 
 

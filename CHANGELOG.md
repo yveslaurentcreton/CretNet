@@ -1,3 +1,10 @@
+# [0.4.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.3.1...v0.4.0) (2025-08-25)
+
+
+### Features
+
+* EntityDataGrid: Add property so communicate when openen from EntitySelect ([4b14322](https://github.com/yveslaurentcreton/CretNet/commit/4b143225fc012c36a36fb68e07a8ae3d9434d88b))
+
 ## [0.3.1](https://github.com/yveslaurentcreton/CretNet/compare/v0.3.0...v0.3.1) (2025-08-19)
 
 

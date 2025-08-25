@@ -13,6 +13,7 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     [CascadingParameter] public IHandleSelection? HandleSelection { get; set; }
     [Parameter] public EventCallback<IEnumerable<TGridItem>> SelectedItemsChanged { get; set; }
     [Parameter] public bool MultiSelect { get; set; }
+    [Parameter] public bool ShowSelect { get; set; }
     [Parameter] public bool ShowAdd { get; set; }
     [Parameter] public bool EnableAdd { get; set; } = true;
     [Parameter] public bool ShowEdit { get; set; }
@@ -46,7 +47,7 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     protected bool ShouldShowRemove => DataSource.CanRemove && ShowRemove;
     protected bool ShouldEnableRemove => SelectedItems.Any() && EnableRemove(SelectedItems);
     protected bool ShouldShowSearch => true;
-    protected bool ShouldShowSelection => ShouldShowEdit || ShouldShowRemove || HandleSelection is not null;
+    protected bool ShouldShowSelection => ShowSelect || ShouldShowEdit || ShouldShowRemove || HandleSelection is not null;
     protected bool ShouldShowNavigation => DataSource.CanNavigate && ShowNavigate;
 
     protected override async Task OnInitializedAsync()
@@ -54,8 +55,8 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         await base.OnInitializedAsync();
         
         DataSource.MultiSelect = MultiSelection;
-        DataSource.DependencyArgs = DependencyArgs;
         DataSource.CustomFilterFunc = HandleSelection?.GetCustomFilterFunc<TGridItem>() ?? CustomFilterFunc;
+        DataSource.DependencyArgs = HandleSelection?.GetDependencyArgsFunc<TGridItem>() ?? DependencyArgs;
         DataSource.SelectedEntitiesChanged = selectedEntities => SelectedItemsChanged.InvokeAsync(selectedEntities);
         DataSource.SelectedEntitiesCleared = () => _selectColumn?.ClearSelection();
         DataSource.OnStateHasChanged += StateHasChanged;

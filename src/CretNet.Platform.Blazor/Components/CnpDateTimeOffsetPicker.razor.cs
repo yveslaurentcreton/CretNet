@@ -1,5 +1,4 @@
-﻿using System.Reactive.Disposables;
-using CretNet.Platform.Blazor.Services;
+﻿using CretNet.Platform.Blazor.Services;
 using Microsoft.AspNetCore.Components;
 
 namespace CretNet.Platform.Blazor.Components;

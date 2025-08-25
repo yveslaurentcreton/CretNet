@@ -222,4 +222,19 @@
     <data name="Stop" xml:space="preserve">
         <value>Stop</value>
     </data>
+    <data name="MSGEntitySpecificUnlinkConfirmation" xml:space="preserve">
+        <value>Ben je zeker dat je {Entity.ToLower} '{Identifier}' wilt loskoppelen?</value>
+    </data>
+    <data name="MSGEntitySpecificUnlinked" xml:space="preserve">
+        <value>{Entity} '{Identifier}' is losgekoppeld.</value>
+    </data>
+    <data name="MSGEntityUnlinkFailed" xml:space="preserve">
+        <value>{Entity} loskoppelen is mislukt: {Error}</value>
+    </data>
+    <data name="Unlink" xml:space="preserve">
+        <value>{0:Bezig met loskoppelen|Loskoppelen}</value>
+    </data>
+    <data name="UnlinkEntity" xml:space="preserve">
+        <value>{Entity} loskoppelen</value>
+    </data>
 </root>

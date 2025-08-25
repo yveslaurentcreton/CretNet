@@ -9,6 +9,7 @@ public class CnpSearchDialogParameters<TEntity> : ICnpSearchDialogParameters, IH
     public bool MultiSelection { get; set; }
     public Func<IQueryable<TEntity>, IQueryable<TEntity>>? Filter { get; set; }
     public Func<TEntity, bool>? CustomFilterFunc { get; set; }
+    public Func<object>? DependencyArgsFunc { get; set; }
 }
 
 public interface ICnpSearchDialogParameters
@@ -22,4 +23,5 @@ public interface IHandleSelectionParameters<TEntity>
 {
     Func<IQueryable<TEntity>, IQueryable<TEntity>>? Filter { get; }
     Func<TEntity, bool>? CustomFilterFunc { get; }
+    Func<object>? DependencyArgsFunc { get; }
 }

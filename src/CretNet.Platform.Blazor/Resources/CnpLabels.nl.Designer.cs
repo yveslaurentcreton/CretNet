@@ -393,6 +393,33 @@ namespace CretNet.Platform.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ben je zeker dat je {Entity.ToLower} &apos;{Identifier}&apos; wilt loskoppelen?.
+        /// </summary>
+        public static string MSGEntitySpecificUnlinkConfirmation {
+            get {
+                return ResourceManager.GetString("MSGEntitySpecificUnlinkConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {Entity} &apos;{Identifier}&apos; is losgekoppeld..
+        /// </summary>
+        public static string MSGEntitySpecificUnlinked {
+            get {
+                return ResourceManager.GetString("MSGEntitySpecificUnlinked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {Entity} loskoppelen is mislukt: {Error}.
+        /// </summary>
+        public static string MSGEntityUnlinkFailed {
+            get {
+                return ResourceManager.GetString("MSGEntityUnlinkFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; moet groter zijn dan &apos;{1}&apos;.
         /// </summary>
         public static string MSGMustBeGreaterThan {
@@ -641,6 +668,24 @@ namespace CretNet.Platform.Blazor.Resources {
         public static string Type {
             get {
                 return ResourceManager.GetString("Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0:Bezig met loskoppelen|Loskoppelen}.
+        /// </summary>
+        public static string Unlink {
+            get {
+                return ResourceManager.GetString("Unlink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {Entity} loskoppelen.
+        /// </summary>
+        public static string UnlinkEntity {
+            get {
+                return ResourceManager.GetString("UnlinkEntity", resourceCulture);
             }
         }
         

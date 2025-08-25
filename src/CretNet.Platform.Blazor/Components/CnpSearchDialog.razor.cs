@@ -39,6 +39,12 @@ public partial class CnpSearchDialog : IDialogContentComponent, IHandleSelection
         return (DialogParameters as IHandleSelectionParameters<TEntity>)?.CustomFilterFunc;
     }
     
+    public Func<object>? GetDependencyArgsFunc<TEntity>()
+        where TEntity : IIdentity
+    {
+        return (DialogParameters as IHandleSelectionParameters<TEntity>)?.DependencyArgsFunc;
+    }
+    
     private async Task SelectAsync()
     {
         await Dialog.CloseAsync(SelectedItems);

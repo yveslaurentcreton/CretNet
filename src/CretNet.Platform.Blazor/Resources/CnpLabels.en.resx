@@ -219,4 +219,19 @@
     <data name="Stop" xml:space="preserve">
         <value>Stop</value>
     </data>
+    <data name="MSGEntitySpecificUnlinkConfirmation" xml:space="preserve">
+        <value>Are you sure that you want to unlink {Entity.ToLower} '{Identifier}'?</value>
+    </data>
+    <data name="MSGEntitySpecificUnlinked" xml:space="preserve">
+        <value>{Entity} '{Identifier}' has been unlinked.</value>
+    </data>
+    <data name="MSGEntityUnlinkFailed" xml:space="preserve">
+        <value>Unlinking {Entity.ToLower} failed: {Error}</value>
+    </data>
+    <data name="Unlink" xml:space="preserve">
+        <value>{0:Unlinking|Unlink}</value>
+    </data>
+    <data name="UnlinkEntity" xml:space="preserve">
+        <value>Unlink {Entity.ToLower}</value>
+    </data>
 </root>

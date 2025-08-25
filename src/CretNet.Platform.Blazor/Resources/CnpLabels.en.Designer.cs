@@ -393,6 +393,33 @@ namespace CretNet.Platform.Blazor.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure that you want to unlink {Entity.ToLower} &apos;{Identifier}&apos;?.
+        /// </summary>
+        public static string MSGEntitySpecificUnlinkConfirmation {
+            get {
+                return ResourceManager.GetString("MSGEntitySpecificUnlinkConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {Entity} &apos;{Identifier}&apos; has been unlinked..
+        /// </summary>
+        public static string MSGEntitySpecificUnlinked {
+            get {
+                return ResourceManager.GetString("MSGEntitySpecificUnlinked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unlinking {Entity.ToLower} failed: {Error}.
+        /// </summary>
+        public static string MSGEntityUnlinkFailed {
+            get {
+                return ResourceManager.GetString("MSGEntityUnlinkFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; must be greater than &apos;{1}&apos;.
         /// </summary>
         public static string MSGMustBeGreaterThan {
@@ -632,6 +659,24 @@ namespace CretNet.Platform.Blazor.Resources {
         public static string Type {
             get {
                 return ResourceManager.GetString("Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0:Unlinking|Unlink}.
+        /// </summary>
+        public static string Unlink {
+            get {
+                return ResourceManager.GetString("Unlink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unlink {Entity.ToLower}.
+        /// </summary>
+        public static string UnlinkEntity {
+            get {
+                return ResourceManager.GetString("UnlinkEntity", resourceCulture);
             }
         }
         

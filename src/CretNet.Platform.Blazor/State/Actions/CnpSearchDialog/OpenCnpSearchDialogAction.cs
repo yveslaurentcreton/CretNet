@@ -15,6 +15,7 @@ public record OpenCnpSearchDialogAction<TEntity> : IOpenCnpSearchDialogAction, I
     public DialogSize Size { get; init; }
     public Func<IQueryable<TEntity>, IQueryable<TEntity>>? Filter { get; init; }
     public Func<TEntity, bool>? CustomFilterFunc { get; init; }
+    public Func<object>? DependencyArgsFunc { get; init; }
     public bool MultiSelection { get; init; }
     public TaskCompletionSource<IEnumerable<TEntity>?> DialogTaskCompletionSource { get; } = new();
     
@@ -25,6 +26,7 @@ public record OpenCnpSearchDialogAction<TEntity> : IOpenCnpSearchDialogAction, I
             DialogContentType = DialogContentType,
             Filter = Filter,
             CustomFilterFunc = CustomFilterFunc,
+            DependencyArgsFunc = DependencyArgsFunc,
             MultiSelection = MultiSelection
         };
     }

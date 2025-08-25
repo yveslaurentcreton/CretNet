@@ -22,6 +22,7 @@ public class OpenCnpSearchDialogActionBuilder<TEntity>
     private DialogSize _size = DialogSize.Large;
     private Func<IQueryable<TEntity>, IQueryable<TEntity>>? _filter;
     private Func<TEntity, bool>? _customFilterFunc;
+    private Func<object>? _dependencyArgsFunc;
     private bool _multiSelection;
     private Type? _dialogContentType;
     private Action<IEnumerable<TEntity>>? _onSelect;
@@ -55,6 +56,12 @@ public class OpenCnpSearchDialogActionBuilder<TEntity>
     public OpenCnpSearchDialogActionBuilder<TEntity> WithCustomFilterFunc(Func<TEntity, bool>? customFilterFunc)
     {
         _customFilterFunc = customFilterFunc;
+        return this;
+    }
+    
+    public OpenCnpSearchDialogActionBuilder<TEntity> WithDependencyArgsFunc(Func<object>? dependencyArgsFunc)
+    {
+        _dependencyArgsFunc = dependencyArgsFunc;
         return this;
     }
     
@@ -110,6 +117,7 @@ public class OpenCnpSearchDialogActionBuilder<TEntity>
             Size = _size,
             Filter = _filter,
             CustomFilterFunc = _customFilterFunc,
+            DependencyArgsFunc = _dependencyArgsFunc,
             MultiSelection = _multiSelection,
             DialogContentType = _dialogContentType,
             OnSelect = _onSelect,

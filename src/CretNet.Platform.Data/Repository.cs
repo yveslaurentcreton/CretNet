@@ -93,6 +93,19 @@ public class Repository<TEntity, TId> : IRepository<TEntity, TId>
         return entity;
     }
     
+    public async Task<TEntity?> DeleteAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken = default)
+    {
+        var entity = await _context.Set<TEntity>()
+            .AsQueryable()
+            .WithSpecification(spec)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (entity == null)
+            return null;
+
+        _context.Set<TEntity>().Remove(entity);
+        return entity;
+    }
+    
     public async Task<IEnumerable<TEntity>> Search(string searchTerm, CancellationToken cancellationToken = default)
     {
         var query = _context.Set<TEntity>().AsQueryable();

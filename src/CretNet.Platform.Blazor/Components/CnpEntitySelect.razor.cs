@@ -92,6 +92,7 @@ public partial class CnpEntitySelect<TEntity, TId>
         var selectedEntities = await Dispatcher.AsCnp().CreateSearchDialogFor<TEntity>()
             .WithTitle($"Search {label.ToLower()}")
             .WithCustomFilterFunc(CustomFilterFunc)
+            .WithDependencyArgsFunc(DependencyArgs)
             .WithDialogContent(dataGridType)
             .AndOpen();
         

@@ -1,11 +1,10 @@
 ﻿@inherits CnpComponent
 
-<div style="@(Label is null ? "display: inherit;" : string.Empty)">
-    <FluentTextField 
-        @key="_controlKey"
-        @bind-Value:get="@DisplayValue"
-        @bind-Value:set="SetValue"
-        Label="@Label"
-        Required="@Required"
-        ReadOnly="@ReadOnly" />
-</div>
+<CnpNumberField 
+    TNumber="decimal"
+    Value="Value"
+    ValueChanged="ValueChanged"
+    Label="Label"
+    Required="Required"
+    ReadOnly="ReadOnly"
+    LeadingSign="€ "/>

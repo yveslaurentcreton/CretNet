@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Globalization;
+using System.Numerics;
 using Microsoft.AspNetCore.Components;
 
 namespace CretNet.Platform.Blazor.Components;
@@ -16,18 +17,17 @@ public partial class CnpNumberField<TNumber>
     [Parameter] public bool Required { get; set; }
     [Parameter] public bool ReadOnly { get; set; }
     [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string LeadingSign { get; set; } = string.Empty;
+    [Parameter] public string TrailingSign { get; set; } = string.Empty;
     
-    protected string DisplayValue => $"{Value:N2}";
+    protected string DisplayValue => NullableValue is null ? "" : $"{LeadingSign}{Value:C2}{TrailingSign}";
 
     protected async Task SetValue(string? displayValue)
     {
         TNumber? result = null;
-        var filteredValue = new string(displayValue?.Where(c => char.IsDigit(c) || c == ',' || c == '.').ToArray());
-        if (decimal.TryParse(filteredValue, System.Globalization.NumberStyles.Currency,
-                System.Globalization.CultureInfo.CurrentCulture, out var parsedValue))
-        {
+        
+        if (decimal.TryParse(displayValue, NumberStyles.Any, CultureInfo.CurrentCulture, out var parsedValue))
             result = TNumber.CreateChecked(parsedValue);
-        }
 
         if (ValueChanged.HasDelegate)
             await ValueChanged.InvokeAsync(result ?? TNumber.Zero);

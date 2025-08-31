@@ -1,12 +1,13 @@
 ﻿@inherits CnpComponent
 @typeparam TNumber
 
-<div style="@(Label is null ? "display: inherit;" : string.Empty)">
-    <FluentTextField 
-        @key="_controlKey"
-        @bind-Value:get="@DisplayValue"
-        @bind-Value:set="SetValue"
-        Label="@Label"
-        Required="@Required"
-        ReadOnly="@ReadOnly" />
-</div>
+<CnpNumberField 
+    TNumber="TNumber"
+    NullableValue="NullableValue"
+    Value="Value"
+    NullableValueChanged="NullableValueChanged"
+    ValueChanged="ValueChanged"
+    Label="Label"
+    Required="Required"
+    ReadOnly="ReadOnly"
+    TrailingSign=" %"/>

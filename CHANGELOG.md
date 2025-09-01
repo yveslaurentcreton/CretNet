@@ -1,3 +1,10 @@
+## [0.4.1](https://github.com/yveslaurentcreton/CretNet/compare/v0.4.0...v0.4.1) (2025-09-01)
+
+
+### Bug Fixes
+
+* Improve parsing for currency and percentage fields ([f7dae28](https://github.com/yveslaurentcreton/CretNet/commit/f7dae28f5da33e46b43dbb496fb3748e9c691c9b))
+
 # [0.4.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.3.1...v0.4.0) (2025-08-25)
 
 

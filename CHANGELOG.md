@@ -1,3 +1,10 @@
+## [0.4.3](https://github.com/yveslaurentcreton/CretNet/compare/v0.4.2...v0.4.3) (2025-09-01)
+
+
+### Bug Fixes
+
+* Fix currency field value rendering issue. ([e3dc97e](https://github.com/yveslaurentcreton/CretNet/commit/e3dc97e22ca30ffb719ede0e58b3a23cedbea60b))
+
 ## [0.4.2](https://github.com/yveslaurentcreton/CretNet/compare/v0.4.1...v0.4.2) (2025-09-01)
 
 

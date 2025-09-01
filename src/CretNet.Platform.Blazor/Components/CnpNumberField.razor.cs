@@ -20,7 +20,7 @@ public partial class CnpNumberField<TNumber>
     [Parameter] public string LeadingSign { get; set; } = string.Empty;
     [Parameter] public string TrailingSign { get; set; } = string.Empty;
     
-    protected string DisplayValue => NullableValue is null ? "" : $"{LeadingSign}{Value:C2}{TrailingSign}";
+    protected string DisplayValue => NullableValue is null ? "" : $"{LeadingSign}{Value:N2}{TrailingSign}";
 
     protected async Task SetValue(string? displayValue)
     {

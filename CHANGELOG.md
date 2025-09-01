@@ -1,3 +1,10 @@
+## [0.4.2](https://github.com/yveslaurentcreton/CretNet/compare/v0.4.1...v0.4.2) (2025-09-01)
+
+
+### Bug Fixes
+
+* Fixed label issue for currency field ([45a0a87](https://github.com/yveslaurentcreton/CretNet/commit/45a0a877d6abf0d2db3c9b2c7f257719174dfaa9))
+
 ## [0.4.1](https://github.com/yveslaurentcreton/CretNet/compare/v0.4.0...v0.4.1) (2025-09-01)
 
 

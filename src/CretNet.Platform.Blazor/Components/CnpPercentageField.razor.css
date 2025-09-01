@@ -1,7 +1,0 @@
-::deep fluent-text-field {
-    width: 100%;
-}
-
-::deep fluent-text-field::part(control) {
-    text-align: right;
-}

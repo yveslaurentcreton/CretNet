@@ -28,6 +28,7 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     [Parameter] public bool IsPrimary { get; set; } = true;
     [Parameter] public Func<TGridItem, bool>? CustomFilterFunc { get; set; }
     [Parameter] public Func<object>? DependencyArgs { get; set; }
+    [Parameter] public EntityFilterType EntityFilterType { get; set; } = EntityFilterType.Default;
     
     [Inject] public ICnpDataSource<TGridItem, TId> DataSource { get; set; } = default!;
     
@@ -57,6 +58,7 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         DataSource.MultiSelect = MultiSelection;
         DataSource.CustomFilterFunc = HandleSelection?.GetCustomFilterFunc<TGridItem>() ?? CustomFilterFunc;
         DataSource.DependencyArgs = HandleSelection?.GetDependencyArgsFunc<TGridItem>() ?? DependencyArgs;
+        DataSource.EntityFilterType = EntityFilterType;
         DataSource.SelectedEntitiesChanged = selectedEntities => SelectedItemsChanged.InvokeAsync(selectedEntities);
         DataSource.SelectedEntitiesCleared = () => _selectColumn?.ClearSelection();
         DataSource.OnStateHasChanged += StateHasChanged;

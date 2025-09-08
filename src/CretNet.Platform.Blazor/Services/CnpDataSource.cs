@@ -43,6 +43,7 @@ namespace CretNet.Platform.Blazor.Services
         bool IsSelected(TEntity entity);
         bool? IsAllSelected();
         ObservableCollection<EntityFilter<TEntity>> EntityFilters { get; }
+        EntityFilterType EntityFilterType { get; set; }
     }
 
     public class CnpDataSource<TEntity, TId> : ICnpDataSource<TEntity, TId>
@@ -77,6 +78,7 @@ namespace CretNet.Platform.Blazor.Services
         public Func<object>? DependencyArgs { get; set; }
         
         public ObservableCollection<EntityFilter<TEntity>> EntityFilters { get; } = new();
+        public EntityFilterType EntityFilterType { get; set; } = EntityFilterType.Default;
         public bool MultiSelect { get; set; }
         public bool CanNavigate => _entityDefinition?.HasNavigationAction == true;
         public bool CanAdd => _entityDefinition?.HasOpenAddDialogAction == true;
@@ -98,8 +100,16 @@ namespace CretNet.Platform.Blazor.Services
         public async Task Init()
         {
             EntityFilters.Clear();
-            foreach (var filter in _entityDefinition?.GetEntityFilters()?.OfType<EntityFilter<TEntity>>() ?? Enumerable.Empty<EntityFilter<TEntity>>())
+            var enable = EntityFilterType == EntityFilterType.None;
+
+            foreach (var filter in _entityDefinition?.GetEntityFilters()?.OfType<EntityFilter<TEntity>>() ??
+                                   Enumerable.Empty<EntityFilter<TEntity>>())
+            {
                 EntityFilters.Add(filter);
+                
+                if (enable)
+                    filter.Enabled = true;
+            }
 
             // Dispose previous filter subscriptions if any
             _filtersSubscription?.Dispose();
@@ -370,4 +380,10 @@ namespace CretNet.Platform.Blazor.Services
             }
         }
     }
+}
+
+public enum EntityFilterType
+{
+    None,
+    Default
 }

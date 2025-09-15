@@ -38,7 +38,12 @@ public partial class CnpSearchDialog : IDialogContentComponent, IHandleSelection
     {
         return (DialogParameters as IHandleSelectionParameters<TEntity>)?.CustomFilterFunc;
     }
-    
+
+    public int GetItemsPerPage()
+    {
+        return 10;
+    }
+
     public Func<object>? GetDependencyArgsFunc<TEntity>()
         where TEntity : IIdentity
     {

@@ -8,5 +8,6 @@ public interface IHandleSelection
     void SelectedItemsChanged(IEnumerable<object> entities);
     Func<IQueryable<TEntity>, IQueryable<TEntity>>? GetSelectionFilter<TEntity>() where TEntity : IIdentity;
     public Func<TEntity, bool>? GetCustomFilterFunc<TEntity>() where TEntity : IIdentity;
+    public int GetItemsPerPage();
     Func<object>? GetDependencyArgsFunc<TEntity>() where TEntity : IIdentity;
 }

@@ -1,4 +1,7 @@
-﻿using CretNet.Platform.Blazor.Interfaces;
+﻿using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using CretNet.Platform.Blazor.Interfaces;
 using CretNet.Platform.Blazor.Services;
 using CretNet.Platform.Data;
 using Microsoft.AspNetCore.Components;
@@ -28,11 +31,17 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     [Parameter] public bool IsPrimary { get; set; } = true;
     [Parameter] public Func<TGridItem, bool>? CustomFilterFunc { get; set; }
     [Parameter] public Func<object>? DependencyArgs { get; set; }
-    
+    private readonly BehaviorSubject<int> _itemsPerPageSubject = new(15);
+    [Parameter] public int ItemsPerPage
+    {
+        get => _itemsPerPageSubject.Value;
+        set => _itemsPerPageSubject.OnNext(value);
+    }
     [Inject] public ICnpDataSource<TGridItem, TId> DataSource { get; set; } = default!;
     
     private SelectColumn<TGridItem>? _selectColumn;
-    private PaginationState _pagination = new() { ItemsPerPage = 10 };
+    private readonly CompositeDisposable _disposables = new();
+    private PaginationState _pagination = new();
 
     public string? Search { get; set; }
 
@@ -52,6 +61,17 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
 
     protected override async Task OnInitializedAsync()
     {
+        _itemsPerPageSubject
+            .DistinctUntilChanged()
+            .Subscribe(itemsPerPage =>
+            {
+                InvokeAsync(() =>
+                {
+                    _pagination.SetItemsPerPageAsync(HandleSelection?.GetItemsPerPage() ?? itemsPerPage);
+                });
+            })
+            .DisposeWith(_disposables);
+        
         await base.OnInitializedAsync();
         
         DataSource.MultiSelect = MultiSelection;
@@ -124,5 +144,12 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         DataSource.Navigate(entity);
 
         return Task.CompletedTask;
+    }
+
+    protected override void OnCleanup()
+    {
+        base.OnCleanup();
+        
+        _disposables.Dispose();
     }
 }

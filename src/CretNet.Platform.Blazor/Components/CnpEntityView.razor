@@ -1,22 +1,27 @@
 ﻿@inherits CnpComponent
-@using CretNet.Platform.Blazor.Services
 @typeparam TEntity
 @typeparam TId
 
 <div id="@_id" style="width: 100%">
     <CnpStack Orientation="CnpOrientation.Horizontal" VerticalAlignment="CnpVerticalAlignment.Center">
-        @if (ShouldShowNavigation)
+        @if (@Icon is not null)
         {
-            <FluentButton Appearance="Appearance.Stealth" Style="height: auto;" OnClick="Navigate">
-                <FluentIcon Value="Icon" />
-            </FluentButton>
-        }
-        else
-        {
-            <FluentIcon Style="margin-left: 8px; margin-right: 8px;" Value="Icon" />
+            @if (ShouldShowNavigation)
+            {
+                <FluentButton Appearance="Appearance.Stealth" Style="height: auto;" OnClick="Navigate">
+                    <FluentIcon Value="Icon"/>
+                </FluentButton>
+            }
+            else
+            {
+                <FluentIcon Style="margin-left: 8px; margin-right: 8px;" Value="Icon"/>
+            }
         }
 
-        @ChildContent(Entity)
+        @if (Entity is not null)
+        {
+            @ChildContent(Entity)
+        }
     </CnpStack>
 </div>
 
@@ -25,6 +30,7 @@
     <CnpSectionContent CategoryId="CnpSections.CnpEntityViewHelper">
         <FluentMenu Anchor="@_id.ToString()" Trigger="MouseButton.Right" Anchored="false" >
             <FluentMenuItem Label="View details" OnClick="Navigate" />
+            @* <FluentMenuItem Label="View details in new window" OnClick="Navigate" /> TODO: Implement new framework to support a ContextBag *@
         </FluentMenu>
     </CnpSectionContent>
 }

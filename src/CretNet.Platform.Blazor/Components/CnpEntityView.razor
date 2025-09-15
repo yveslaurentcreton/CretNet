@@ -18,7 +18,10 @@
             }
         }
 
-        @ChildContent(Entity)
+        @if (Entity is not null)
+        {
+            @ChildContent(Entity)
+        }
     </CnpStack>
 </div>
 

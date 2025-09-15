@@ -1,3 +1,12 @@
+# [0.5.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.4.3...v0.5.0) (2025-09-15)
+
+
+### Features
+
+* Add option to define the items per page on a CnpEntityDataGrid ([93aa694](https://github.com/yveslaurentcreton/CretNet/commit/93aa69406eda048f972f79971df395455fef182e))
+* Introduced EntityFilterType to make it possible which filters are used on an CnpDataSource component. The default entity filters or none of the filters. ([18530ab](https://github.com/yveslaurentcreton/CretNet/commit/18530abe41dbf180b8a232c2ff319fd4fcd4e664))
+* Promote the CnpEntityView as the only way to display the entity information. ([3f45617](https://github.com/yveslaurentcreton/CretNet/commit/3f4561701f3cb6a023393f12c4180d25fe740fa7))
+
 ## [0.4.3](https://github.com/yveslaurentcreton/CretNet/compare/v0.4.2...v0.4.3) (2025-09-01)
 
 

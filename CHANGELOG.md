@@ -1,3 +1,10 @@
+# [0.6.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.5.0...v0.6.0) (2026-02-10)
+
+
+### Features
+
+* upgrade to .NET 10 ([5026963](https://github.com/yveslaurentcreton/CretNet/commit/5026963a9ddc96e421e734236208c9832c4630d4))
+
 # [0.5.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.4.3...v0.5.0) (2025-09-15)
 
 

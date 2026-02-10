@@ -21,8 +21,8 @@
     <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageVersion Include="CommunityToolkit.Diagnostics" Version="8.4.0" />
     <PackageVersion Include="DynamicData" Version="9.4.1" />
-    <PackageVersion Include="Fluxor" Version="6.9.0" />
-    <PackageVersion Include="Fluxor.Blazor.Web" Version="6.9.0" />
+    <PackageVersion Include="Fluxor" Version="5.9.1" />
+    <PackageVersion Include="Fluxor.Blazor.Web" Version="5.9.1" />
     <PackageVersion Include="GitVersion.MsBuild" Version="6.3.0" />
     <PackageVersion Include="ISO3166" Version="1.0.4" />
     <PackageVersion Include="IsoNames.NETStandard" Version="1.2.1" />

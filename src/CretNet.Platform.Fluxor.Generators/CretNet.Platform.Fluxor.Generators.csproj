@@ -28,9 +28,9 @@
   <EmbeddedResource Include="Resources\**\*.cs" />
 </ItemGroup>
 
-<ItemGroup>
-  <ProjectReference Include="..\CretNet.Platform.Fluxor\CretNet.Platform.Fluxor.csproj" />
-</ItemGroup>
+<!-- ProjectReference to CretNet.Platform.Fluxor removed: Generator only uses type names as strings,
+     not actual type references. Fluxor 6.9.0 requires net8.0+ which is incompatible with
+     the netstandard2.0 requirement for Roslyn source generators. -->
 
 
 </Project>

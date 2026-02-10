@@ -3,7 +3,7 @@ using CretNet.Platform.Blazor.State.Actions;
 
 namespace CretNet.Platform.Blazor.Components;
 
-public class CnpComponent : FluxorComponent
+public class CnpComponent : FluxorComponent, IDisposable
 {
     protected override void OnInitialized()
     {
@@ -20,14 +20,10 @@ public class CnpComponent : FluxorComponent
         });
     }
 
-    protected override void Dispose(bool disposing)
+    void IDisposable.Dispose()
     {
-        base.Dispose(disposing);
-        
-        if (disposing)
-        {
-            OnCleanup();
-        }
+        OnCleanup();
+        GC.SuppressFinalize(this);
     }
 
     protected virtual void OnCleanup()

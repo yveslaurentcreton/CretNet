@@ -1,4 +1,5 @@
-﻿using Fluxor;
+﻿using System.Globalization;
+using Fluxor;
 
 namespace CretNet.Platform.Blazor.State;
 
@@ -8,5 +9,5 @@ public class CnpSiteFeature : Feature<CnpSiteState>
 
     protected override CnpSiteState GetInitialState() =>
         new CnpSiteState(
-            CurrentCulture: null);
+            CurrentCulture: CultureInfo.CurrentCulture);
 }

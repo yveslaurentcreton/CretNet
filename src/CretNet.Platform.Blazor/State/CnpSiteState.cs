@@ -3,6 +3,6 @@
 namespace CretNet.Platform.Blazor.State;
 
 public record CnpSiteState(
-    CultureInfo? CurrentCulture)
+    CultureInfo CurrentCulture)
 {
 }

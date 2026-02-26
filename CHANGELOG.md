@@ -1,3 +1,10 @@
+## [0.6.1](https://github.com/yveslaurentcreton/CretNet/compare/v0.6.0...v0.6.1) (2026-02-26)
+
+
+### Bug Fixes
+
+* make CnpSiteState.CurrentCulture non-nullable ([a04c319](https://github.com/yveslaurentcreton/CretNet/commit/a04c319c9879b7adb0a1a07ebdd5194abb777e1b))
+
 # [0.6.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.5.0...v0.6.0) (2026-02-10)
 
 

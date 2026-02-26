@@ -30,7 +30,7 @@ public class CountryService : ICountryService
 
         return countries;
     }
-    
+
     public Country GetCountry(string twoLetterIsoCode)
     {
         var cultureInfo = _cnpSiteState.Value.CurrentCulture;

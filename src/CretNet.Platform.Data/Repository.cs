@@ -22,17 +22,7 @@ public class Repository<TEntity, TId> : IRepository<TEntity, TId>
     public async Task<IEnumerable<TEntity>> GetAll(ISpecification<TEntity>? spec = null, bool asTracking = false,
         CancellationToken cancellationToken = default)
     {
-        var query = _context.Set<TEntity>().AsQueryable();
-        
-        if (asTracking)
-            query = query.AsTracking();
-
-        var baseSpec = _serviceProvider.GetService<IEntityDefaultSpecification<TEntity>>();
-        if (baseSpec is not null)
-            query = query.WithSpecification(baseSpec);
-
-        if (spec is not null)
-            query = query.WithSpecification(spec);
+        var query = BuildQuery(spec, asTracking);
 
         var entities = await query
             .ToListAsync(cancellationToken);
@@ -106,23 +96,88 @@ public class Repository<TEntity, TId> : IRepository<TEntity, TId>
         return entity;
     }
     
+    public async Task<IPagedResult<TEntity>> GetPagedAsync(int pageIndex, int pageSize,
+        ISpecification<TEntity>? spec = null, bool asTracking = false,
+        CancellationToken cancellationToken = default)
+    {
+        var query = BuildQuery(spec, asTracking);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<TEntity>(items, totalCount, pageIndex, pageSize);
+    }
+
     public async Task<IEnumerable<TEntity>> Search(string searchTerm, CancellationToken cancellationToken = default)
     {
         var query = _context.Set<TEntity>().AsQueryable();
-        
+
         var searchSpec = _serviceProvider.GetService<IEntitySearchSpecification<TEntity>>();
         if (searchSpec is null)
             return [];
         searchSpec.Configure(searchTerm);
         query = query.WithSpecification(searchSpec);
-            
+
         var baseSpec = _serviceProvider.GetService<IEntityDefaultSpecification<TEntity>>();
         if (baseSpec is not null)
             query = query.WithSpecification(baseSpec);
-                
+
         var entities = await query
             .ToListAsync(cancellationToken);
 
         return entities;
+    }
+
+    public async Task<IPagedResult<TEntity>> SearchPagedAsync(string searchTerm, int pageIndex, int pageSize,
+        ISpecification<TEntity>? spec = null, bool asTracking = false,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.Set<TEntity>().AsQueryable();
+
+        if (asTracking)
+            query = query.AsTracking();
+
+        var searchSpec = _serviceProvider.GetService<IEntitySearchSpecification<TEntity>>();
+        if (searchSpec is null)
+            return PagedResult<TEntity>.Empty(pageIndex, pageSize);
+        searchSpec.Configure(searchTerm);
+        query = query.WithSpecification(searchSpec);
+
+        var baseSpec = _serviceProvider.GetService<IEntityDefaultSpecification<TEntity>>();
+        if (baseSpec is not null)
+            query = query.WithSpecification(baseSpec);
+
+        if (spec is not null)
+            query = query.WithSpecification(spec);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<TEntity>(items, totalCount, pageIndex, pageSize);
+    }
+
+    private IQueryable<TEntity> BuildQuery(ISpecification<TEntity>? spec = null, bool asTracking = false)
+    {
+        var query = _context.Set<TEntity>().AsQueryable();
+
+        if (asTracking)
+            query = query.AsTracking();
+
+        var baseSpec = _serviceProvider.GetService<IEntityDefaultSpecification<TEntity>>();
+        if (baseSpec is not null)
+            query = query.WithSpecification(baseSpec);
+
+        if (spec is not null)
+            query = query.WithSpecification(spec);
+
+        return query;
     }
 }

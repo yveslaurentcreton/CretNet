@@ -19,6 +19,8 @@ public interface IEntityDefinitionBuilder<TEntity, TId>
     IEntityDefinitionBuilder<TEntity, TId> WithDataGrid<TCnpDataGrid>();
     IEntityDefinitionBuilder<TEntity, TId> WithFetchAllAction<TAction>(Func<TAction> factory) where TAction : ICnpEntityAction<IEnumerable<TEntity>>;
     IEntityDefinitionBuilder<TEntity, TId> WithFetchAllAction<TParams, TAction>(Func<TParams, TAction> factory) where TAction : ICnpEntityAction<IEnumerable<TEntity>>;
+    IEntityDefinitionBuilder<TEntity, TId> WithFetchPagedAction<TAction>(Func<int, int, string?, TAction> factory) where TAction : ICnpEntityAction<CnpPagedResult<TEntity>>;
+    IEntityDefinitionBuilder<TEntity, TId> WithFetchPagedAction<TParams, TAction>(Func<TParams, int, int, string?, TAction> factory) where TAction : ICnpEntityAction<CnpPagedResult<TEntity>>;
     IEntityDefinitionBuilder<TEntity, TId> WithFetchAction<TAction>(Func<TId, TAction> factory) where TAction : ICnpEntityAction<TEntity?>;
     IEntityDefinitionBuilder<TEntity, TId> WithNavigationAction<TAction>(Func<TEntity, TAction> factory) where TAction : ICnpEntityAction<TEntity?>;
     IEntityDefinitionBuilder<TEntity, TId> WithNavigationAction<TAction>(Func<TId, TAction> factory) where TAction : ICnpEntityAction<TEntity?>;
@@ -53,6 +55,7 @@ public interface IEntityDefinition<TEntity, TId> : IEntityDefinition
     Func<TEntity, IComparable> SortByFunc { get; }
     public SortDirection SortOrder { get; }
     bool HasFetchAllAction { get; }
+    bool HasFetchPagedAction { get; }
     bool HasFetchAction { get; }
     bool HasNavigationAction { get; }
     bool HasOpenAddDialogAction { get; }
@@ -67,6 +70,8 @@ public interface IEntityDefinition<TEntity, TId> : IEntityDefinition
     string? GetDisplayName(TEntity entity);
     ICnpEntityAction<IEnumerable<TEntity>> CreateFetchAllAction();
     ICnpEntityAction<IEnumerable<TEntity>> CreateFetchAllAction<TParams>(TParams parameters);
+    ICnpEntityAction<CnpPagedResult<TEntity>> CreateFetchPagedAction(int pageIndex, int pageSize, string? search);
+    ICnpEntityAction<CnpPagedResult<TEntity>> CreateFetchPagedAction<TParams>(TParams parameters, int pageIndex, int pageSize, string? search);
     ICnpEntityAction<TEntity?> CreateFetchAction(TId id);
     ICnpEntityAction<TEntity?> CreateNavigationAction(TEntity entity);
     ICnpEntityAction<TEntity?> CreateIdNavigationAction(TId id);
@@ -97,6 +102,8 @@ public abstract class EntityDefinition<TEntity, TId> : IEntityDefinition<TEntity
 
     private Func<ICnpEntityAction<IEnumerable<TEntity>>>? _fetchAllActionFactory;
     private Func<object, ICnpEntityAction<IEnumerable<TEntity>>>? _fetchAllWithParamsActionFactory;
+    private Func<int, int, string?, ICnpEntityAction<CnpPagedResult<TEntity>>>? _fetchPagedActionFactory;
+    private Func<object, int, int, string?, ICnpEntityAction<CnpPagedResult<TEntity>>>? _fetchPagedWithParamsActionFactory;
     private Func<TId, ICnpEntityAction<TEntity?>>? _fetchActionFactory;
     private Func<object, ICnpEntityAction<TEntity?>>? _navigationActionFactory;
     private bool? _navigationActionIsById;
@@ -170,6 +177,18 @@ public abstract class EntityDefinition<TEntity, TId> : IEntityDefinition<TEntity
     public IEntityDefinitionBuilder<TEntity, TId> WithFetchAllAction<TParams, TAction>(Func<TParams, TAction> factory) where TAction : ICnpEntityAction<IEnumerable<TEntity>>
     {
         _fetchAllWithParamsActionFactory = (parameters) => factory((TParams)parameters);
+        return this;
+    }
+
+    public IEntityDefinitionBuilder<TEntity, TId> WithFetchPagedAction<TAction>(Func<int, int, string?, TAction> factory) where TAction : ICnpEntityAction<CnpPagedResult<TEntity>>
+    {
+        _fetchPagedActionFactory = (pageIndex, pageSize, search) => factory(pageIndex, pageSize, search);
+        return this;
+    }
+
+    public IEntityDefinitionBuilder<TEntity, TId> WithFetchPagedAction<TParams, TAction>(Func<TParams, int, int, string?, TAction> factory) where TAction : ICnpEntityAction<CnpPagedResult<TEntity>>
+    {
+        _fetchPagedWithParamsActionFactory = (parameters, pageIndex, pageSize, search) => factory((TParams)parameters, pageIndex, pageSize, search);
         return this;
     }
 
@@ -402,6 +421,26 @@ public abstract class EntityDefinition<TEntity, TId> : IEntityDefinition<TEntity
             throw new InvalidOperationException("FetchAllAction has not been defined.");
 
         return _fetchAllWithParamsActionFactory(parameters);
+    }
+
+    public bool HasFetchPagedAction => _fetchPagedActionFactory != null || _fetchPagedWithParamsActionFactory != null;
+    public ICnpEntityAction<CnpPagedResult<TEntity>> CreateFetchPagedAction(int pageIndex, int pageSize, string? search)
+    {
+        if (_fetchPagedActionFactory == null)
+            throw new InvalidOperationException("FetchPagedAction has not been defined.");
+
+        return _fetchPagedActionFactory(pageIndex, pageSize, search);
+    }
+
+    public ICnpEntityAction<CnpPagedResult<TEntity>> CreateFetchPagedAction<TParams>(TParams parameters, int pageIndex, int pageSize, string? search)
+    {
+        if (parameters is null)
+            return CreateFetchPagedAction(pageIndex, pageSize, search);
+
+        if (_fetchPagedWithParamsActionFactory == null)
+            throw new InvalidOperationException("FetchPagedAction has not been defined.");
+
+        return _fetchPagedWithParamsActionFactory(parameters, pageIndex, pageSize, search);
     }
 
     public bool HasFetchAction => _fetchActionFactory != null;

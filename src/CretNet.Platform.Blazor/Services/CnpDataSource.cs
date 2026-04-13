@@ -20,6 +20,8 @@ namespace CretNet.Platform.Blazor.Services
         ReadOnlyObservableCollection<TEntity>? Entities { get; }
         ReadOnlyObservableCollection<TEntity>? SelectedEntities { get; }
         bool IsLoading { get; }
+        bool IsServerPaged { get; }
+        int TotalCount { get; }
         Action? OnStateHasChanged { get; set; }
         Task Init();
         Task<TEntity?> Add();
@@ -38,6 +40,7 @@ namespace CretNet.Platform.Blazor.Services
         Action? SelectedEntitiesCleared { get; set; }
         void Refresh();
         Task Reload();
+        Task LoadPageAsync(int pageIndex, int pageSize, string? search = null);
         void SelectItem(TEntity entity);
         void DeselectItem(TEntity? entity);
         bool IsSelected(TEntity entity);
@@ -51,6 +54,8 @@ namespace CretNet.Platform.Blazor.Services
         where TId : notnull
     {
         public bool IsLoading { get; private set; } = true;
+        public bool IsServerPaged => _entityDefinition?.HasFetchPagedAction == true;
+        public int TotalCount { get; private set; }
 
         private readonly IActionSubscriber _actionSubscriber;
         private readonly IDispatcher _dispatcher;
@@ -261,6 +266,34 @@ namespace CretNet.Platform.Blazor.Services
         public async Task Reload()
         {
             await LoadData();
+        }
+
+        public async Task LoadPageAsync(int pageIndex, int pageSize, string? search = null)
+        {
+            if (_entityDefinition?.HasFetchPagedAction != true)
+                return;
+
+            IsLoading = true;
+            StateHasChanged();
+
+            var fetchAction = DependencyArgs?.Invoke() is { } args
+                ? _entityDefinition.CreateFetchPagedAction(args, pageIndex, pageSize, search)
+                : _entityDefinition.CreateFetchPagedAction(pageIndex, pageSize, search);
+
+            var pagedResult = await _dispatcher.DispatchAsync(fetchAction);
+
+            TotalCount = pagedResult.TotalCount;
+
+            _entityCache.Edit(innerCache =>
+            {
+                innerCache.Clear();
+                innerCache.AddOrUpdate(pagedResult.Items);
+            });
+
+            ClearSelectedEntities();
+
+            IsLoading = false;
+            StateHasChanged();
         }
         
         public void SelectItem(TEntity entity)

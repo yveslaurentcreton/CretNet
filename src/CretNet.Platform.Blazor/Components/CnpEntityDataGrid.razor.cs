@@ -42,6 +42,7 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     private SelectColumn<TGridItem>? _selectColumn;
     private readonly CompositeDisposable _disposables = new();
     private PaginationState _pagination = new();
+    private CancellationTokenSource? _searchDebounce;
 
     public string? Search { get; set; }
 
@@ -82,6 +83,44 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         DataSource.OnStateHasChanged += StateHasChanged;
 
         await DataSource.Init();
+
+        if (DataSource.IsServerPaged)
+        {
+            _pagination.TotalItemCountChanged += OnTotalItemCountChanged;
+            await _pagination.SetTotalItemCountAsync(DataSource.TotalCount);
+        }
+    }
+
+    private void OnTotalItemCountChanged(object? sender, int? totalCount)
+    {
+        // When paginator changes page, reload from server
+        if (DataSource.IsServerPaged)
+        {
+            var pageIndex = _pagination.CurrentPageIndex + 1; // PaginationState is 0-based
+            var pageSize = _pagination.ItemsPerPage;
+            _ = InvokeAsync(async () => await DataSource.LoadPageAsync(pageIndex, pageSize, DataSource.Filter));
+        }
+    }
+
+    private async Task OnSearchChanged()
+    {
+        if (!DataSource.IsServerPaged)
+            return;
+
+        _searchDebounce?.Cancel();
+        _searchDebounce = new CancellationTokenSource();
+
+        try
+        {
+            await Task.Delay(300, _searchDebounce.Token);
+            await _pagination.SetCurrentPageIndexAsync(0);
+            await DataSource.LoadPageAsync(1, _pagination.ItemsPerPage, DataSource.Filter);
+            await _pagination.SetTotalItemCountAsync(DataSource.TotalCount);
+        }
+        catch (TaskCanceledException)
+        {
+            // Debounce cancelled — newer search is pending
+        }
     }
 
     protected async Task UpdateAll(bool selection)
@@ -149,7 +188,9 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     protected override void OnCleanup()
     {
         base.OnCleanup();
-        
+
+        _pagination.TotalItemCountChanged -= OnTotalItemCountChanged;
+        _searchDebounce?.Dispose();
         _disposables.Dispose();
     }
 }

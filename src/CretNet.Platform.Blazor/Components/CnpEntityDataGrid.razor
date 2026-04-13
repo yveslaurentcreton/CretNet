@@ -40,7 +40,7 @@
                     {
                         @CustomFilters(SelectedItems)
                     }
-                    <FluentSearch Style="width: 100%; min-width: 200px;" @bind-Value="DataSource.Filter" Immediate/>
+                    <FluentSearch Style="width: 100%; min-width: 200px;" @bind-Value="DataSource.Filter" @bind-Value:after="OnSearchChanged" Immediate/>
                     @if (DataSource.EntityFilters.Any())
                     {
                         <CnpFilterButton TEntity="TGridItem" Filters="DataSource.EntityFilters"/>

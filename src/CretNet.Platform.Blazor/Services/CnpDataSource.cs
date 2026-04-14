@@ -187,8 +187,12 @@ namespace CretNet.Platform.Blazor.Services
                         var customFilterResult = CustomFilterFunc?.Invoke(entity) != false;
                         if (!customFilterResult) return false;
 
-                        var textFilterResult = string.IsNullOrWhiteSpace(text) || defaultFilterFunc(text, entity);
-                        if (!textFilterResult) return false;
+                        // Skip client-side text filtering when server-side paging handles search
+                        if (!IsServerPaged)
+                        {
+                            var textFilterResult = string.IsNullOrWhiteSpace(text) || defaultFilterFunc(text, entity);
+                            if (!textFilterResult) return false;
+                        }
 
                         // Category-based filter logic
                         foreach (var category in grouped)

@@ -43,6 +43,8 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     private readonly CompositeDisposable _disposables = new();
     private PaginationState _pagination = new();
     private CancellationTokenSource? _searchDebounce;
+    private bool _isServerLoading;
+    private int _lastLoadedPageIndex;
 
     public string? Search { get; set; }
 
@@ -93,13 +95,20 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
 
     private void OnTotalItemCountChanged(object? sender, int? totalCount)
     {
-        // When paginator changes page, reload from server
-        if (DataSource.IsServerPaged)
+        if (!DataSource.IsServerPaged || _isServerLoading)
+            return;
+
+        var pageIndex = _pagination.CurrentPageIndex + 1; // PaginationState is 0-based
+        if (pageIndex == _lastLoadedPageIndex)
+            return;
+
+        _lastLoadedPageIndex = pageIndex;
+        _ = InvokeAsync(async () =>
         {
-            var pageIndex = _pagination.CurrentPageIndex + 1; // PaginationState is 0-based
-            var pageSize = _pagination.ItemsPerPage;
-            _ = InvokeAsync(async () => await DataSource.LoadPageAsync(pageIndex, pageSize, DataSource.Filter));
-        }
+            _isServerLoading = true;
+            await DataSource.LoadPageAsync(pageIndex, _pagination.ItemsPerPage, DataSource.Filter);
+            _isServerLoading = false;
+        });
     }
 
     private async Task OnSearchChanged()
@@ -113,9 +122,12 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         try
         {
             await Task.Delay(300, _searchDebounce.Token);
+            _isServerLoading = true;
+            _lastLoadedPageIndex = 1;
             await _pagination.SetCurrentPageIndexAsync(0);
             await DataSource.LoadPageAsync(1, _pagination.ItemsPerPage, DataSource.Filter);
             await _pagination.SetTotalItemCountAsync(DataSource.TotalCount);
+            _isServerLoading = false;
         }
         catch (TaskCanceledException)
         {

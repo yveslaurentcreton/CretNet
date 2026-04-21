@@ -48,6 +48,13 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     private bool _isServerLoading;
     private int _lastLoadedPageIndex;
 
+    // When server-paging is active we feed FluentDataGrid with the current page's items via Items,
+    // but FluentDataGrid would otherwise overwrite Pagination.TotalItemCount with Items.Count()
+    // (= page size). Providing a non-null RefreshItems callback disables that overwrite so our
+    // explicit SetTotalItemCountAsync(DataSource.TotalCount) takes effect. The callback is a no-op —
+    // the actual server load is driven by OnPageIndexChanged / OnSearchChanged.
+    private Func<GridItemsProviderRequest<TGridItem>, Task>? _serverRefreshItems;
+
     public string? Search { get; set; }
 
     protected IEnumerable<TGridItem> Items => DataSource.Entities ?? Enumerable.Empty<TGridItem>();
@@ -90,6 +97,10 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
 
         if (DataSource.IsServerPaged)
         {
+            // Disable FluentDataGrid's "TotalItemCount = Items.Count()" overwrite — our
+            // DataSource.TotalCount is authoritative in server-paged mode.
+            _serverRefreshItems = _ => Task.CompletedTask;
+
             // Initial page load — sets TotalCount and populates the first page
             await LoadServerPageAsync(1);
         }

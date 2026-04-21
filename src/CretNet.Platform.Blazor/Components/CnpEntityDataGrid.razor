@@ -50,7 +50,7 @@
         }
     </div>
 
-    <FluentDataGrid TGridItem="TGridItem" Loading="Loading" Items="DataSource.Entities?.AsQueryable()" RowClass="@(_ => "listpagerow")" ResizableColumns ShowHover Pagination="_pagination" RowSize="DataGridRowSize.Medium">
+    <FluentDataGrid TGridItem="TGridItem" Loading="Loading" Items="DataSource.Entities?.AsQueryable()" RowClass="@(_ => "listpagerow")" ResizableColumns ShowHover Pagination="_pagination" RefreshItems="_serverRefreshItems" RowSize="DataGridRowSize.Medium">
         @if (ShouldShowSelection)
         {
             <SelectColumn @ref="_selectColumn" TGridItem="TGridItem" Class="col-datagrid-select"

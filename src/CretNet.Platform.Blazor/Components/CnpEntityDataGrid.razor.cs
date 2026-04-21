@@ -129,9 +129,11 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         _isServerLoading = true;
         try
         {
-            _lastLoadedPageIndex = pageIndex;
             await DataSource.LoadPageAsync(pageIndex, _pagination.ItemsPerPage, DataSource.Filter);
             await _pagination.SetTotalItemCountAsync(DataSource.TotalCount);
+            // Record the successfully loaded page only after the fetch completes, so a failed load
+            // doesn't mark the page as "already loaded" and silently block subsequent retries.
+            _lastLoadedPageIndex = pageIndex;
         }
         catch (Exception ex)
         {

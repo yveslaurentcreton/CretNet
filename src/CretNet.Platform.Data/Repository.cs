@@ -30,12 +30,19 @@ public class Repository<TEntity, TId> : IRepository<TEntity, TId>
         CancellationToken cancellationToken = default)
     {
         // Reject obviously invalid paging values before hitting the database
-        if (paging?.PageIndex is int pageIndex && pageIndex < 1)
-            throw new ArgumentOutOfRangeException(
-                nameof(paging), pageIndex, "PagingOptions.PageIndex must be 1 or greater.");
-        if (paging?.PageSize is int pageSize && pageSize < 1)
-            throw new ArgumentOutOfRangeException(
-                nameof(paging), pageSize, "PagingOptions.PageSize must be 1 or greater.");
+        if (paging is not null)
+        {
+            if (paging.PageIndex is null != paging.PageSize is null)
+                throw new ArgumentException(
+                    "PagingOptions must provide both PageIndex and PageSize, or neither.",
+                    nameof(paging));
+            if (paging.PageIndex is int pageIndex && pageIndex < 1)
+                throw new ArgumentOutOfRangeException(
+                    nameof(paging), pageIndex, "PagingOptions.PageIndex must be 1 or greater.");
+            if (paging.PageSize is int pageSize && pageSize < 1)
+                throw new ArgumentOutOfRangeException(
+                    nameof(paging), pageSize, "PagingOptions.PageSize must be 1 or greater.");
+        }
 
         var query = BuildQuery(spec, asTracking);
 

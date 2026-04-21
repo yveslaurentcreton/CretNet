@@ -19,10 +19,10 @@ public class Repository<TEntity, TId> : IRepository<TEntity, TId>
         _context = context;
     }
 
-    public Task<IPagedResult<TEntity>> GetAllAsync(ISpecification<TEntity> spec, bool asTracking = false,
+    public Task<IPagedResult<TEntity>> GetAllAsync(ISpecification<TEntity> specification, bool asTracking = false,
         CancellationToken cancellationToken = default)
     {
-        return GetAllAsync(paging: null, spec: spec, asTracking: asTracking, cancellationToken: cancellationToken);
+        return GetAllAsync(paging: null, spec: specification, asTracking: asTracking, cancellationToken: cancellationToken);
     }
 
     public async Task<IPagedResult<TEntity>> GetAllAsync(PagingOptions? paging = null,

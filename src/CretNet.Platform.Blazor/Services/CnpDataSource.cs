@@ -224,6 +224,14 @@ namespace CretNet.Platform.Blazor.Services
                 .Subscribe(_ => SelectedEntitiesChanged?.Invoke(_selectedEntities))
                 .DisposeWith(_garbage);
 
+            // In server-paged mode the grid drives initial + subsequent loads via LoadPageAsync
+            if (IsServerPaged)
+            {
+                IsLoading = false;
+                StateHasChanged();
+                return;
+            }
+
             await LoadData();
         }
 

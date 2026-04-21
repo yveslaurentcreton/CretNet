@@ -88,27 +88,35 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
 
         if (DataSource.IsServerPaged)
         {
-            _pagination.TotalItemCountChanged += OnTotalItemCountChanged;
-            await _pagination.SetTotalItemCountAsync(DataSource.TotalCount);
+            // Initial page load — sets TotalCount and populates the first page
+            await LoadServerPageAsync(1);
         }
     }
 
-    private void OnTotalItemCountChanged(object? sender, int? totalCount)
+    private async Task OnPageIndexChanged(int newZeroBasedPageIndex)
     {
-        if (!DataSource.IsServerPaged || _isServerLoading)
+        if (!DataSource.IsServerPaged)
             return;
 
-        var pageIndex = _pagination.CurrentPageIndex + 1; // PaginationState is 0-based
-        if (pageIndex == _lastLoadedPageIndex)
+        await LoadServerPageAsync(newZeroBasedPageIndex + 1);
+    }
+
+    private async Task LoadServerPageAsync(int pageIndex)
+    {
+        if (_isServerLoading || pageIndex == _lastLoadedPageIndex)
             return;
 
-        _lastLoadedPageIndex = pageIndex;
-        _ = InvokeAsync(async () =>
+        _isServerLoading = true;
+        try
         {
-            _isServerLoading = true;
+            _lastLoadedPageIndex = pageIndex;
             await DataSource.LoadPageAsync(pageIndex, _pagination.ItemsPerPage, DataSource.Filter);
+            await _pagination.SetTotalItemCountAsync(DataSource.TotalCount);
+        }
+        finally
+        {
             _isServerLoading = false;
-        });
+        }
     }
 
     private async Task OnSearchChanged()
@@ -201,7 +209,6 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     {
         base.OnCleanup();
 
-        _pagination.TotalItemCountChanged -= OnTotalItemCountChanged;
         _searchDebounce?.Dispose();
         _disposables.Dispose();
     }

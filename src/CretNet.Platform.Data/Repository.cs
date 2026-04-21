@@ -29,6 +29,14 @@ public class Repository<TEntity, TId> : IRepository<TEntity, TId>
         ISpecification<TEntity>? spec = null, bool asTracking = false,
         CancellationToken cancellationToken = default)
     {
+        // Reject obviously invalid paging values before hitting the database
+        if (paging?.PageIndex is int pageIndex && pageIndex < 1)
+            throw new ArgumentOutOfRangeException(
+                nameof(paging), pageIndex, "PagingOptions.PageIndex must be 1 or greater.");
+        if (paging?.PageSize is int pageSize && pageSize < 1)
+            throw new ArgumentOutOfRangeException(
+                nameof(paging), pageSize, "PagingOptions.PageSize must be 1 or greater.");
+
         var query = BuildQuery(spec, asTracking);
 
         if (!string.IsNullOrWhiteSpace(paging?.Search))
@@ -41,16 +49,27 @@ public class Repository<TEntity, TId> : IRepository<TEntity, TId>
             }
         }
 
-        var totalCount = await query.CountAsync(cancellationToken);
+        var isPaged = paging is { PageIndex: not null, PageSize: not null };
 
-        if (paging is { PageIndex: not null, PageSize: not null })
+        int totalCount;
+        List<TEntity> items;
+
+        if (isPaged)
         {
-            query = query
-                .Skip((paging.PageIndex.Value - 1) * paging.PageSize.Value)
-                .Take(paging.PageSize.Value);
-        }
+            // Paged reads need a separate count query so the paginator sees the full size
+            totalCount = await query.CountAsync(cancellationToken);
 
-        var items = await query.ToListAsync(cancellationToken);
+            items = await query
+                .Skip((paging!.PageIndex!.Value - 1) * paging.PageSize!.Value)
+                .Take(paging.PageSize!.Value)
+                .ToListAsync(cancellationToken);
+        }
+        else
+        {
+            // Unpaged reads can derive the total count from the fetched list — skip the extra CountAsync
+            items = await query.ToListAsync(cancellationToken);
+            totalCount = items.Count;
+        }
 
         return new PagedResult<TEntity>(items, totalCount,
             paging?.PageIndex ?? 1,

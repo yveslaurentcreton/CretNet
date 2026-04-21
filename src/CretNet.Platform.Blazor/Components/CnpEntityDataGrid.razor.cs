@@ -5,6 +5,7 @@ using CretNet.Platform.Blazor.Interfaces;
 using CretNet.Platform.Blazor.Services;
 using CretNet.Platform.Data;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace CretNet.Platform.Blazor.Components;
@@ -38,6 +39,7 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         set => _itemsPerPageSubject.OnNext(value);
     }
     [Inject] public ICnpDataSource<TGridItem, TId> DataSource { get; set; } = default!;
+    [Inject] public ILogger<CnpEntityDataGrid<TGridItem, TId>> Logger { get; set; } = default!;
     
     private SelectColumn<TGridItem>? _selectColumn;
     private readonly CompositeDisposable _disposables = new();
@@ -101,9 +103,11 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         await LoadServerPageAsync(newZeroBasedPageIndex + 1);
     }
 
-    private async Task LoadServerPageAsync(int pageIndex)
+    private async Task LoadServerPageAsync(int pageIndex, bool force = false)
     {
-        if (_isServerLoading || pageIndex == _lastLoadedPageIndex)
+        if (_isServerLoading)
+            return;
+        if (!force && pageIndex == _lastLoadedPageIndex)
             return;
 
         _isServerLoading = true;
@@ -112,6 +116,10 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
             _lastLoadedPageIndex = pageIndex;
             await DataSource.LoadPageAsync(pageIndex, _pagination.ItemsPerPage, DataSource.Filter);
             await _pagination.SetTotalItemCountAsync(DataSource.TotalCount);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load server-paged data for page {PageIndex}", pageIndex);
         }
         finally
         {
@@ -124,22 +132,29 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         if (!DataSource.IsServerPaged)
             return;
 
-        _searchDebounce?.Cancel();
+        // Cancel and dispose the previous debounce token before replacing it
+        var previousDebounce = _searchDebounce;
         _searchDebounce = new CancellationTokenSource();
+        previousDebounce?.Cancel();
+        previousDebounce?.Dispose();
+
+        var currentToken = _searchDebounce.Token;
 
         try
         {
-            await Task.Delay(300, _searchDebounce.Token);
-            _isServerLoading = true;
-            _lastLoadedPageIndex = 1;
+            await Task.Delay(300, currentToken);
+
+            // Reset paginator to page 1 and force a reload with the new filter
             await _pagination.SetCurrentPageIndexAsync(0);
-            await DataSource.LoadPageAsync(1, _pagination.ItemsPerPage, DataSource.Filter);
-            await _pagination.SetTotalItemCountAsync(DataSource.TotalCount);
-            _isServerLoading = false;
+            await LoadServerPageAsync(1, force: true);
         }
-        catch (TaskCanceledException)
+        catch (OperationCanceledException)
         {
-            // Debounce cancelled — newer search is pending
+            // Debounce cancelled — a newer search is pending
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Server-paged search failed for filter '{Filter}'", DataSource.Filter);
         }
     }
 

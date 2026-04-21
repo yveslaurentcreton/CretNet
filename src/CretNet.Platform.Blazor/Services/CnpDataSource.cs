@@ -9,6 +9,7 @@ using CretNet.Platform.Blazor.Models;
 using CretNet.Platform.Data;
 using CretNet.Platform.Fluxor;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ReactiveUI;
 
 namespace CretNet.Platform.Blazor.Services
@@ -20,6 +21,15 @@ namespace CretNet.Platform.Blazor.Services
         ReadOnlyObservableCollection<TEntity>? Entities { get; }
         ReadOnlyObservableCollection<TEntity>? SelectedEntities { get; }
         bool IsLoading { get; }
+
+        /// <summary>
+        /// True when the associated <c>IEntityDefinition</c> provides a paged fetch action.
+        /// In this mode the server is the single source of truth for paging, searching and
+        /// filtering: client-side <c>CustomFilterFunc</c>, <c>EntityFilters</c> and text
+        /// filtering are bypassed because they would be inconsistent with the
+        /// server-returned <see cref="TotalCount"/>. Entity definitions configured for
+        /// server paging must perform all filtering on the server side.
+        /// </summary>
         bool IsServerPaged { get; }
         int TotalCount { get; }
         Action? OnStateHasChanged { get; set; }
@@ -60,6 +70,7 @@ namespace CretNet.Platform.Blazor.Services
         private readonly IActionSubscriber _actionSubscriber;
         private readonly IDispatcher _dispatcher;
         private readonly IEntityDefinition<TEntity, TId>? _entityDefinition;
+        private readonly ILogger<CnpDataSource<TEntity, TId>>? _logger;
 
         private readonly CompositeDisposable _garbage = new();
 
@@ -100,6 +111,7 @@ namespace CretNet.Platform.Blazor.Services
             _actionSubscriber = actionSubscriber;
             _dispatcher = dispatcher;
             _entityDefinition = serviceProvider.GetService<IEntityDefinition<TEntity, TId>>();
+            _logger = serviceProvider.GetService<ILogger<CnpDataSource<TEntity, TId>>>();
         }
 
         public async Task Init()
@@ -184,15 +196,17 @@ namespace CretNet.Platform.Blazor.Services
 
                     return new Func<TEntity, bool>(entity =>
                     {
+                        // In server-paged mode the server is the single source of truth for
+                        // filtering/paging; client-side filters would be inconsistent with the
+                        // server-returned TotalCount, so we bypass them entirely.
+                        if (IsServerPaged)
+                            return true;
+
                         var customFilterResult = CustomFilterFunc?.Invoke(entity) != false;
                         if (!customFilterResult) return false;
 
-                        // Skip client-side text filtering when server-side paging handles search
-                        if (!IsServerPaged)
-                        {
-                            var textFilterResult = string.IsNullOrWhiteSpace(text) || defaultFilterFunc(text, entity);
-                            if (!textFilterResult) return false;
-                        }
+                        var textFilterResult = string.IsNullOrWhiteSpace(text) || defaultFilterFunc(text, entity);
+                        if (!textFilterResult) return false;
 
                         // Category-based filter logic
                         foreach (var category in grouped)
@@ -227,6 +241,16 @@ namespace CretNet.Platform.Blazor.Services
             // In server-paged mode the grid drives initial + subsequent loads via LoadPageAsync
             if (IsServerPaged)
             {
+                if (CustomFilterFunc is not null || EntityFilters.Count > 0)
+                {
+                    _logger?.LogWarning(
+                        "CnpDataSource<{Entity}> is configured for server paging but has client-side filters " +
+                        "(CustomFilterFunc or EntityFilters). These are bypassed in server-paged mode because they " +
+                        "would produce rows inconsistent with the server-returned TotalCount. " +
+                        "Move filtering to the server side.",
+                        typeof(TEntity).Name);
+                }
+
                 IsLoading = false;
                 StateHasChanged();
                 return;

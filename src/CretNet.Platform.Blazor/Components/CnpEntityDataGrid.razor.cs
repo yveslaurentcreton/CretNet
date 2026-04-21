@@ -32,7 +32,7 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     [Parameter] public bool IsPrimary { get; set; } = true;
     [Parameter] public Func<TGridItem, bool>? CustomFilterFunc { get; set; }
     [Parameter] public Func<object>? DependencyArgs { get; set; }
-    private readonly BehaviorSubject<int> _itemsPerPageSubject = new(15);
+    private readonly BehaviorSubject<int> _itemsPerPageSubject = new(DefaultItemsPerPage);
     [Parameter] public int ItemsPerPage
     {
         get => _itemsPerPageSubject.Value;
@@ -40,10 +40,15 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     }
     [Inject] public ICnpDataSource<TGridItem, TId> DataSource { get; set; } = default!;
     [Inject] public ILogger<CnpEntityDataGrid<TGridItem, TId>> Logger { get; set; } = default!;
-    
+
+    private const int DefaultItemsPerPage = 15;
+
     private SelectColumn<TGridItem>? _selectColumn;
     private readonly CompositeDisposable _disposables = new();
-    private PaginationState _pagination = new();
+    // Initialize PaginationState with the same default page size as the items-per-page subject, so
+    // the first LoadServerPageAsync doesn't race against the async SetItemsPerPageAsync setup and
+    // end up fetching with the PaginationState default (10) instead of our intended page size.
+    private PaginationState _pagination = new() { ItemsPerPage = DefaultItemsPerPage };
     private CancellationTokenSource? _searchDebounce;
     private bool _isServerLoading;
     private int _lastLoadedPageIndex;

@@ -8,9 +8,11 @@ using Fluxor;
 using CretNet.Platform.Blazor.Models;
 using CretNet.Platform.Data;
 using CretNet.Platform.Fluxor;
+using CretNet.Platform.Querying;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
+using SortDirection = DynamicData.Binding.SortDirection;
 
 namespace CretNet.Platform.Blazor.Services
 {
@@ -31,6 +33,25 @@ namespace CretNet.Platform.Blazor.Services
         /// server paging must perform all filtering on the server side.
         /// </summary>
         bool IsServerPaged { get; }
+
+        /// <summary>
+        /// True when the entity definition is bound to a typed
+        /// <c>IPagedQuery&lt;TEntity&gt;</c> via <c>BackedBy&lt;TQuery&gt;</c>.
+        /// In this mode the page must call <see cref="AttachQueryState{TQuery}"/>
+        /// once during initialisation; the data source then refetches on every
+        /// query change. <see cref="EntityFilters"/> and <see cref="CustomFilterFunc"/>
+        /// are mutually exclusive with this mode.
+        /// </summary>
+        bool IsBackedByQuery { get; }
+
+        /// <summary>
+        /// Attach the per-screen query state. The data source subscribes to
+        /// <see cref="QueryState{TQuery}.Changes"/> and refetches on every
+        /// emission. Throws if the entity definition is not configured with
+        /// <c>BackedBy&lt;TQuery&gt;</c>.
+        /// </summary>
+        void AttachQueryState<TQuery>(QueryState<TQuery> queryState) where TQuery : class;
+
         int TotalCount { get; }
         Action? OnStateHasChanged { get; set; }
         Task Init();
@@ -65,6 +86,7 @@ namespace CretNet.Platform.Blazor.Services
     {
         public bool IsLoading { get; private set; } = true;
         public bool IsServerPaged => _entityDefinition?.HasFetchPagedAction == true;
+        public bool IsBackedByQuery => _entityDefinition?.HasBackedByQuery == true;
         public int TotalCount { get; private set; }
 
         private readonly IActionSubscriber _actionSubscriber;
@@ -196,10 +218,10 @@ namespace CretNet.Platform.Blazor.Services
 
                     return new Func<TEntity, bool>(entity =>
                     {
-                        // In server-paged mode the server is the single source of truth for
-                        // filtering/paging; client-side filters would be inconsistent with the
-                        // server-returned TotalCount, so we bypass them entirely.
-                        if (IsServerPaged)
+                        // In server-paged or BackedBy mode the server is the single source of
+                        // truth for filtering/paging; client-side filters would be inconsistent
+                        // with the server-returned TotalCount, so we bypass them entirely.
+                        if (IsServerPaged || IsBackedByQuery)
                             return true;
 
                         var customFilterResult = CustomFilterFunc?.Invoke(entity) != false;
@@ -237,6 +259,27 @@ namespace CretNet.Platform.Blazor.Services
                 .Bind(out _selectedEntities)
                 .Subscribe(_ => SelectedEntitiesChanged?.Invoke(_selectedEntities))
                 .DisposeWith(_garbage);
+
+            // In BackedBy mode the page drives loads via AttachQueryState; nothing
+            // happens here until that is called. EntityFilters and CustomFilterFunc
+            // are mutually exclusive with BackedBy and we error loudly so misuse is
+            // caught at first paint instead of silently producing wrong results.
+            if (IsBackedByQuery)
+            {
+                if (CustomFilterFunc is not null || EntityFilters.Count > 0)
+                {
+                    _logger?.LogError(
+                        "CnpDataSource<{Entity}> is configured with BackedBy<TQuery> but also has client-side " +
+                        "filters (CustomFilterFunc or EntityFilters). These are mutually exclusive. Move all " +
+                        "filtering onto the {QueryType} record and remove the client-side filters.",
+                        typeof(TEntity).Name,
+                        _entityDefinition?.BackedByQueryType?.Name ?? "<query>");
+                }
+
+                IsLoading = false;
+                StateHasChanged();
+                return;
+            }
 
             // In server-paged mode the grid drives initial + subsequent loads via LoadPageAsync
             if (IsServerPaged)
@@ -302,6 +345,61 @@ namespace CretNet.Platform.Blazor.Services
         public async Task Reload()
         {
             await LoadData();
+        }
+
+        public void AttachQueryState<TQuery>(QueryState<TQuery> queryState) where TQuery : class
+        {
+            ArgumentNullException.ThrowIfNull(queryState);
+
+            if (!IsBackedByQuery)
+                throw new InvalidOperationException(
+                    $"CnpDataSource<{typeof(TEntity).Name}> is not configured with BackedBy<TQuery>; " +
+                    $"AttachQueryState is invalid here. Use BackedBy<{typeof(TQuery).Name}>(...) on the " +
+                    "entity definition first.");
+
+            // Last-write-wins: a new query supersedes any in-flight fetch.
+            queryState.Changes
+                .Select(query => Observable.FromAsync(() => LoadFromQuery(query)))
+                .Switch()
+                .Subscribe()
+                .DisposeWith(_garbage);
+        }
+
+        private async Task LoadFromQuery(object query)
+        {
+            if (_entityDefinition is null)
+                return;
+
+            IsLoading = true;
+            StateHasChanged();
+
+            try
+            {
+                var fetchAction = _entityDefinition.CreateBackedByAction(query);
+                var pagedResult = await _dispatcher.DispatchAsync(fetchAction);
+
+                TotalCount = pagedResult.TotalCount;
+
+                _entityCache.Edit(innerCache =>
+                {
+                    innerCache.Clear();
+                    innerCache.AddOrUpdate(pagedResult.Items);
+                });
+
+                ClearSelectedEntities();
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex,
+                    "BackedBy fetch failed for CnpDataSource<{Entity}> (query: {QueryType}).",
+                    typeof(TEntity).Name,
+                    query?.GetType().Name ?? "<null>");
+            }
+            finally
+            {
+                IsLoading = false;
+                StateHasChanged();
+            }
         }
 
         public async Task LoadPageAsync(int pageIndex, int pageSize, string? search = null)

@@ -4,6 +4,7 @@ using Fluxor;
 using CretNet.Platform.Blazor.Models;
 using CretNet.Platform.Data;
 using CretNet.Platform.Fluxor;
+using CretNet.Platform.Querying;
 using Microsoft.FluentUI.AspNetCore.Components;
 using SortDirection = DynamicData.Binding.SortDirection;
 
@@ -21,6 +22,18 @@ public interface IEntityDefinitionBuilder<TEntity, TId>
     IEntityDefinitionBuilder<TEntity, TId> WithFetchAllAction<TParams, TAction>(Func<TParams, TAction> factory) where TAction : ICnpEntityAction<IEnumerable<TEntity>>;
     IEntityDefinitionBuilder<TEntity, TId> WithFetchPagedAction<TAction>(Func<int, int, string?, TAction> factory) where TAction : ICnpEntityAction<CnpPagedResult<TEntity>>;
     IEntityDefinitionBuilder<TEntity, TId> WithFetchPagedAction<TParams, TAction>(Func<TParams, int, int, string?, TAction> factory) where TAction : ICnpEntityAction<CnpPagedResult<TEntity>>;
+    /// <summary>
+    /// Bind this entity to a typed <see cref="IPagedQuery{TRow}"/>: the
+    /// data source will refetch by calling <paramref name="factory"/>
+    /// with the current query value whenever the page's query state
+    /// changes. Filters, search, sort and paging all live on
+    /// <typeparamref name="TQuery"/>; client-side <c>EntityFilters</c>
+    /// and <c>CustomFilterFunc</c> are mutually exclusive with this
+    /// mode and will be rejected at runtime.
+    /// </summary>
+    IEntityDefinitionBuilder<TEntity, TId> BackedBy<TQuery, TAction>(Func<TQuery, TAction> factory)
+        where TQuery : class, IPagedQuery<TEntity>
+        where TAction : ICnpEntityAction<PagedResult<TEntity>>;
     IEntityDefinitionBuilder<TEntity, TId> WithFetchAction<TAction>(Func<TId, TAction> factory) where TAction : ICnpEntityAction<TEntity?>;
     IEntityDefinitionBuilder<TEntity, TId> WithNavigationAction<TAction>(Func<TEntity, TAction> factory) where TAction : ICnpEntityAction<TEntity?>;
     IEntityDefinitionBuilder<TEntity, TId> WithNavigationAction<TAction>(Func<TId, TAction> factory) where TAction : ICnpEntityAction<TEntity?>;
@@ -56,6 +69,8 @@ public interface IEntityDefinition<TEntity, TId> : IEntityDefinition
     public SortDirection SortOrder { get; }
     bool HasFetchAllAction { get; }
     bool HasFetchPagedAction { get; }
+    bool HasBackedByQuery { get; }
+    Type? BackedByQueryType { get; }
     bool HasFetchAction { get; }
     bool HasNavigationAction { get; }
     bool HasOpenAddDialogAction { get; }
@@ -72,6 +87,7 @@ public interface IEntityDefinition<TEntity, TId> : IEntityDefinition
     ICnpEntityAction<IEnumerable<TEntity>> CreateFetchAllAction<TParams>(TParams parameters);
     ICnpEntityAction<CnpPagedResult<TEntity>> CreateFetchPagedAction(int pageIndex, int pageSize, string? search);
     ICnpEntityAction<CnpPagedResult<TEntity>> CreateFetchPagedAction<TParams>(TParams parameters, int pageIndex, int pageSize, string? search);
+    ICnpEntityAction<PagedResult<TEntity>> CreateBackedByAction(object query);
     ICnpEntityAction<TEntity?> CreateFetchAction(TId id);
     ICnpEntityAction<TEntity?> CreateNavigationAction(TEntity entity);
     ICnpEntityAction<TEntity?> CreateIdNavigationAction(TId id);
@@ -104,6 +120,8 @@ public abstract class EntityDefinition<TEntity, TId> : IEntityDefinition<TEntity
     private Func<object, ICnpEntityAction<IEnumerable<TEntity>>>? _fetchAllWithParamsActionFactory;
     private Func<int, int, string?, ICnpEntityAction<CnpPagedResult<TEntity>>>? _fetchPagedActionFactory;
     private Func<object, int, int, string?, ICnpEntityAction<CnpPagedResult<TEntity>>>? _fetchPagedWithParamsActionFactory;
+    private Func<object, ICnpEntityAction<PagedResult<TEntity>>>? _backedByActionFactory;
+    private Type? _backedByQueryType;
     private Func<TId, ICnpEntityAction<TEntity?>>? _fetchActionFactory;
     private Func<object, ICnpEntityAction<TEntity?>>? _navigationActionFactory;
     private bool? _navigationActionIsById;
@@ -189,6 +207,22 @@ public abstract class EntityDefinition<TEntity, TId> : IEntityDefinition<TEntity
     public IEntityDefinitionBuilder<TEntity, TId> WithFetchPagedAction<TParams, TAction>(Func<TParams, int, int, string?, TAction> factory) where TAction : ICnpEntityAction<CnpPagedResult<TEntity>>
     {
         _fetchPagedWithParamsActionFactory = (parameters, pageIndex, pageSize, search) => factory((TParams)parameters, pageIndex, pageSize, search);
+        return this;
+    }
+
+    public IEntityDefinitionBuilder<TEntity, TId> BackedBy<TQuery, TAction>(Func<TQuery, TAction> factory)
+        where TQuery : class, IPagedQuery<TEntity>
+        where TAction : ICnpEntityAction<PagedResult<TEntity>>
+    {
+        _backedByQueryType = typeof(TQuery);
+        _backedByActionFactory = query =>
+        {
+            if (query is not TQuery typedQuery)
+                throw new ArgumentException(
+                    $"Expected query of type {typeof(TQuery).Name}, got {query?.GetType().Name ?? "null"}.",
+                    nameof(query));
+            return factory(typedQuery);
+        };
         return this;
     }
 
@@ -441,6 +475,16 @@ public abstract class EntityDefinition<TEntity, TId> : IEntityDefinition<TEntity
             throw new InvalidOperationException("FetchPagedAction has not been defined.");
 
         return _fetchPagedWithParamsActionFactory(parameters, pageIndex, pageSize, search);
+    }
+
+    public bool HasBackedByQuery => _backedByActionFactory != null;
+    public Type? BackedByQueryType => _backedByQueryType;
+    public ICnpEntityAction<PagedResult<TEntity>> CreateBackedByAction(object query)
+    {
+        if (_backedByActionFactory == null)
+            throw new InvalidOperationException("BackedBy has not been defined.");
+
+        return _backedByActionFactory(query);
     }
 
     public bool HasFetchAction => _fetchActionFactory != null;

@@ -32,6 +32,13 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     [Parameter] public bool IsPrimary { get; set; } = true;
     [Parameter] public Func<TGridItem, bool>? CustomFilterFunc { get; set; }
     [Parameter] public Func<object>? DependencyArgs { get; set; }
+    /// <summary>
+    /// Optional hook fired after <see cref="ICnpDataSource{TGridItem, TId}.Init"/>
+    /// completes. Use this to attach a per-screen <c>QueryState&lt;TQuery&gt;</c>
+    /// on a <c>BackedBy&lt;TQuery&gt;</c> data source — the page knows the query
+    /// type, the grid does not.
+    /// </summary>
+    [Parameter] public Func<ICnpDataSource<TGridItem, TId>, Task>? AfterInit { get; set; }
     private readonly BehaviorSubject<int> _itemsPerPageSubject = new(DefaultItemsPerPage);
     [Parameter] public int ItemsPerPage
     {
@@ -99,6 +106,9 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         DataSource.OnStateHasChanged += StateHasChanged;
 
         await DataSource.Init();
+
+        if (AfterInit is not null)
+            await AfterInit(DataSource);
 
         if (DataSource.IsServerPaged)
         {

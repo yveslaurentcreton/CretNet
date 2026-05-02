@@ -53,7 +53,18 @@ namespace CretNet.Platform.Blazor.Services
         /// emission. Throws if the entity definition is not configured with
         /// <c>BackedBy&lt;TQuery&gt;</c>.
         /// </summary>
-        void AttachQueryState<TQuery>(QueryState<TQuery> queryState) where TQuery : class;
+        /// <param name="queryState">The mutable wrapper around the typed query.</param>
+        /// <param name="pagingMutator">
+        /// Optional callback the data source uses to fold paginator and search-box
+        /// changes back into the query — typically
+        /// <c>(q, page, size, search) =&gt; q with { PageIndex = page, PageSize = size, Search = search }</c>.
+        /// Without it, page-clicks and the search box are no-ops in BackedBy
+        /// mode (filters still work, since they go through your own mutations).
+        /// </param>
+        void AttachQueryState<TQuery>(
+            QueryState<TQuery> queryState,
+            Func<TQuery, int, int, string?, TQuery>? pagingMutator = null
+        ) where TQuery : class;
 
         int TotalCount { get; }
         Action? OnStateHasChanged { get; set; }
@@ -353,7 +364,15 @@ namespace CretNet.Platform.Blazor.Services
             await LoadData();
         }
 
-        public void AttachQueryState<TQuery>(QueryState<TQuery> queryState) where TQuery : class
+        // Set when AttachQueryState is called with a paging mutator. Lets
+        // LoadPageAsync (driven by paginator clicks and the search box in
+        // CnpEntityDataGrid) fold those changes back into the typed query.
+        private Action<int, int, string?>? _pagingApplier;
+
+        public void AttachQueryState<TQuery>(
+            QueryState<TQuery> queryState,
+            Func<TQuery, int, int, string?, TQuery>? pagingMutator = null
+        ) where TQuery : class
         {
             ArgumentNullException.ThrowIfNull(queryState);
 
@@ -369,6 +388,12 @@ namespace CretNet.Platform.Blazor.Services
                 .Switch()
                 .Subscribe()
                 .DisposeWith(_garbage);
+
+            if (pagingMutator is not null)
+            {
+                _pagingApplier = (pageIndex, pageSize, search) =>
+                    queryState.Mutate(current => pagingMutator(current, pageIndex, pageSize, search));
+            }
         }
 
         private async Task LoadFromQuery(object query)
@@ -410,6 +435,16 @@ namespace CretNet.Platform.Blazor.Services
 
         public async Task LoadPageAsync(int pageIndex, int pageSize, string? search = null)
         {
+            // BackedBy mode: fold paging + search into the typed query and let
+            // the existing QueryState.Changes -> Switch -> LoadFromQuery pipeline
+            // do the actual fetch. No-op if AttachQueryState wasn't given a
+            // pagingMutator (paging/search just won't trigger fetches in that case).
+            if (IsBackedByQuery)
+            {
+                _pagingApplier?.Invoke(pageIndex, pageSize, search);
+                return;
+            }
+
             if (_entityDefinition?.HasFetchPagedAction != true)
                 return;
 

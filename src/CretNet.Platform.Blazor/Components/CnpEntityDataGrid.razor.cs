@@ -103,27 +103,49 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         DataSource.DependencyArgs = HandleSelection?.GetDependencyArgsFunc<TGridItem>() ?? DependencyArgs;
         DataSource.SelectedEntitiesChanged = selectedEntities => SelectedItemsChanged.InvokeAsync(selectedEntities);
         DataSource.SelectedEntitiesCleared = () => _selectColumn?.ClearSelection();
-        DataSource.OnStateHasChanged += StateHasChanged;
+
+        // In server-paged or BackedBy mode the DataSource.TotalCount is the
+        // authoritative paginator total (FluentDataGrid would otherwise overwrite
+        // it with the current page's item count). Sync TotalItemCount on every
+        // state change so paginator stays in step with the latest fetch.
+        DataSource.OnStateHasChanged += () =>
+        {
+            if ((DataSource.IsServerPaged || DataSource.IsBackedByQuery)
+                && _pagination.TotalItemCount != DataSource.TotalCount)
+            {
+                _ = _pagination.SetTotalItemCountAsync(DataSource.TotalCount);
+            }
+            StateHasChanged();
+        };
 
         await DataSource.Init();
 
         if (AfterInit is not null)
             await AfterInit(DataSource);
 
-        if (DataSource.IsServerPaged)
+        if (DataSource.IsServerPaged || DataSource.IsBackedByQuery)
         {
             // Disable FluentDataGrid's "TotalItemCount = Items.Count()" overwrite — our
-            // DataSource.TotalCount is authoritative in server-paged mode.
+            // DataSource.TotalCount is authoritative in server-paged / BackedBy mode.
             _serverRefreshItems = _ => Task.CompletedTask;
+        }
 
+        if (DataSource.IsServerPaged)
+        {
             // Initial page load — sets TotalCount and populates the first page
             await LoadServerPageAsync(1);
         }
+        // BackedBy: AttachQueryState (called from AfterInit) already kicked off the
+        // initial fetch via the QueryState BehaviorSubject — no LoadServerPageAsync
+        // needed here.
     }
 
     private async Task OnPageIndexChanged(int newZeroBasedPageIndex)
     {
-        if (!DataSource.IsServerPaged)
+        // Same path for server-paged (legacy) and BackedBy: LoadServerPageAsync
+        // calls DataSource.LoadPageAsync, which the data source dispatches to
+        // either its legacy fetch action or the BackedBy paging mutator.
+        if (!DataSource.IsServerPaged && !DataSource.IsBackedByQuery)
             return;
 
         await LoadServerPageAsync(newZeroBasedPageIndex + 1);
@@ -157,7 +179,7 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
 
     private async Task OnSearchChanged()
     {
-        if (!DataSource.IsServerPaged)
+        if (!DataSource.IsServerPaged && !DataSource.IsBackedByQuery)
             return;
 
         // Cancel and dispose the previous debounce token before replacing it

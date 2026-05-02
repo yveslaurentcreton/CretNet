@@ -39,8 +39,11 @@ namespace CretNet.Platform.Blazor.Services
         /// <c>IPagedQuery&lt;TEntity&gt;</c> via <c>BackedBy&lt;TQuery&gt;</c>.
         /// In this mode the page must call <see cref="AttachQueryState{TQuery}"/>
         /// once during initialisation; the data source then refetches on every
-        /// query change. <see cref="EntityFilters"/> and <see cref="CustomFilterFunc"/>
-        /// are mutually exclusive with this mode.
+        /// query change. <see cref="EntityFilters"/> are kept for the visual
+        /// filter-button popover (the page is responsible for syncing their
+        /// Enabled state into the query). <see cref="CustomFilterFunc"/> remains
+        /// mutually exclusive with this mode — it has no visual representation
+        /// and would silently do nothing.
         /// </summary>
         bool IsBackedByQuery { get; }
 
@@ -261,17 +264,20 @@ namespace CretNet.Platform.Blazor.Services
                 .DisposeWith(_garbage);
 
             // In BackedBy mode the page drives loads via AttachQueryState; nothing
-            // happens here until that is called. EntityFilters and CustomFilterFunc
-            // are mutually exclusive with BackedBy and we error loudly so misuse is
-            // caught at first paint instead of silently producing wrong results.
+            // happens here until that is called. EntityFilters are still allowed —
+            // CretNet renders them in the filter-button popover for visual parity
+            // with the legacy data sources, but the page is responsible for syncing
+            // EntityFilter.Enabled changes back into the QueryState. CustomFilterFunc
+            // on the other hand has no visual representation and would silently do
+            // nothing, so we error on it.
             if (IsBackedByQuery)
             {
-                if (CustomFilterFunc is not null || EntityFilters.Count > 0)
+                if (CustomFilterFunc is not null)
                 {
                     _logger?.LogError(
-                        "CnpDataSource<{Entity}> is configured with BackedBy<TQuery> but also has client-side " +
-                        "filters (CustomFilterFunc or EntityFilters). These are mutually exclusive. Move all " +
-                        "filtering onto the {QueryType} record and remove the client-side filters.",
+                        "CnpDataSource<{Entity}> is configured with BackedBy<TQuery> ({QueryType}) but also " +
+                        "has a CustomFilterFunc. CustomFilterFunc is mutually exclusive with BackedBy — move " +
+                        "the predicate onto the query record (so it travels to the server) and clear it here.",
                         typeof(TEntity).Name,
                         _entityDefinition?.BackedByQueryType?.Name ?? "<query>");
                 }

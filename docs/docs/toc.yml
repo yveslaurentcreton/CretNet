@@ -2,3 +2,13 @@
   href: introduction.md
 - name: Getting Started
   href: getting-started.md
+- name: Query-first data architecture
+  items:
+    - name: Overview
+      href: query-first-overview.md
+    - name: Quickstart
+      href: query-first-quickstart.md
+    - name: Bindings
+      href: query-first-bindings.md
+    - name: Migration from legacy WithFetchPagedAction
+      href: query-first-migration.md

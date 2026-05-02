@@ -48,6 +48,13 @@ namespace CretNet.Platform.Blazor.Services
         bool IsBackedByQuery { get; }
 
         /// <summary>
+        /// The exception from the last failed fetch in BackedBy mode, or
+        /// <c>null</c> on success. UI can render an error state when this is
+        /// set; the next successful fetch clears it back to <c>null</c>.
+        /// </summary>
+        Exception? LastError { get; }
+
+        /// <summary>
         /// Attach the per-screen query state. The data source subscribes to
         /// <see cref="QueryState{TQuery}.Changes"/> and refetches on every
         /// emission. Throws if the entity definition is not configured with
@@ -117,11 +124,13 @@ namespace CretNet.Platform.Blazor.Services
         public bool IsServerPaged => _entityDefinition?.HasFetchPagedAction == true;
         public bool IsBackedByQuery => _entityDefinition?.HasBackedByQuery == true;
         public int TotalCount { get; private set; }
+        public Exception? LastError { get; private set; }
 
         private readonly IActionSubscriber _actionSubscriber;
         private readonly IDispatcher _dispatcher;
         private readonly IEntityDefinition<TEntity, TId>? _entityDefinition;
         private readonly ILogger<CnpDataSource<TEntity, TId>>? _logger;
+        private readonly ICnpToastService? _toastService;
 
         private readonly CompositeDisposable _garbage = new();
 
@@ -163,6 +172,7 @@ namespace CretNet.Platform.Blazor.Services
             _dispatcher = dispatcher;
             _entityDefinition = serviceProvider.GetService<IEntityDefinition<TEntity, TId>>();
             _logger = serviceProvider.GetService<ILogger<CnpDataSource<TEntity, TId>>>();
+            _toastService = serviceProvider.GetService<ICnpToastService>();
         }
 
         public async Task Init()
@@ -295,17 +305,16 @@ namespace CretNet.Platform.Blazor.Services
             // with the legacy data sources, but the page is responsible for syncing
             // EntityFilter.Enabled changes back into the QueryState. CustomFilterFunc
             // on the other hand has no visual representation and would silently do
-            // nothing, so we error on it.
+            // nothing, so we throw — fail-fast on misconfiguration is better than
+            // a quiet log line nobody reads.
             if (IsBackedByQuery)
             {
                 if (CustomFilterFunc is not null)
                 {
-                    _logger?.LogError(
-                        "CnpDataSource<{Entity}> is configured with BackedBy<TQuery> ({QueryType}) but also " +
-                        "has a CustomFilterFunc. CustomFilterFunc is mutually exclusive with BackedBy — move " +
-                        "the predicate onto the query record (so it travels to the server) and clear it here.",
-                        typeof(TEntity).Name,
-                        _entityDefinition?.BackedByQueryType?.Name ?? "<query>");
+                    throw new InvalidOperationException(
+                        $"CnpDataSource<{typeof(TEntity).Name}> is configured with BackedBy<{_entityDefinition?.BackedByQueryType?.Name ?? "<query>"}> " +
+                        "but also has a CustomFilterFunc. CustomFilterFunc is mutually exclusive with BackedBy — " +
+                        "move the predicate onto the query record (so it travels to the server) and clear it here.");
                 }
 
                 IsLoading = false;
@@ -376,6 +385,15 @@ namespace CretNet.Platform.Blazor.Services
 
         public async Task Reload()
         {
+            // BackedBy: re-fetch the current QueryState. Filter / search /
+            // sort / paging stay where they are — this is a "refresh in place".
+            if (IsBackedByQuery)
+            {
+                if (_reloader is not null)
+                    await _reloader(CancellationToken.None);
+                return;
+            }
+
             await LoadData();
         }
 
@@ -385,6 +403,11 @@ namespace CretNet.Platform.Blazor.Services
         // each one separately.
         private Action<int, int, string?>? _pagingApplier;
         private Action<SortSpec?>? _sortApplier;
+
+        // Captured during AttachQueryState so Reload() can re-fetch the
+        // current QueryState value without the data source needing to know
+        // the concrete TQuery.
+        private Func<CancellationToken, Task>? _reloader;
 
         public void AttachQueryState<TQuery>(
             QueryState<TQuery> queryState,
@@ -400,9 +423,13 @@ namespace CretNet.Platform.Blazor.Services
                     $"AttachQueryState is invalid here. Use BackedBy<{typeof(TQuery).Name}>(...) on the " +
                     "entity definition first.");
 
-            // Last-write-wins: a new query supersedes any in-flight fetch.
+            // Last-write-wins: a new query supersedes any in-flight fetch. The
+            // CancellationToken from Observable.FromAsync is wired by Rx so
+            // Switch's disposal of the previous inner observable cancels the
+            // previous LoadFromQuery's CT — the awaiter stops, the result is
+            // discarded, and IsLoading correctly resets.
             queryState.Changes
-                .Select(query => Observable.FromAsync(() => LoadFromQuery(query)))
+                .Select(query => Observable.FromAsync(ct => LoadFromQuery(query, ct)))
                 .Switch()
                 .Subscribe()
                 .DisposeWith(_garbage);
@@ -418,6 +445,8 @@ namespace CretNet.Platform.Blazor.Services
                 _sortApplier = sort =>
                     queryState.Mutate(current => sortMutator(current, sort));
             }
+
+            _reloader = ct => LoadFromQuery(queryState.Current, ct);
         }
 
         public void UpdateSort(SortSpec? sort)
@@ -425,7 +454,7 @@ namespace CretNet.Platform.Blazor.Services
             _sortApplier?.Invoke(sort);
         }
 
-        private async Task LoadFromQuery(object query)
+        private async Task LoadFromQuery(object query, CancellationToken cancellationToken = default)
         {
             if (_entityDefinition is null)
                 return;
@@ -435,10 +464,15 @@ namespace CretNet.Platform.Blazor.Services
 
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var fetchAction = _entityDefinition.CreateBackedByAction(query);
                 var pagedResult = await _dispatcher.DispatchAsync(fetchAction);
 
+                cancellationToken.ThrowIfCancellationRequested();
+
                 TotalCount = pagedResult.TotalCount;
+                LastError = null;
 
                 _entityCache.Edit(innerCache =>
                 {
@@ -448,12 +482,28 @@ namespace CretNet.Platform.Blazor.Services
 
                 ClearSelectedEntities();
             }
+            catch (OperationCanceledException)
+            {
+                // Superseded by a newer query (Switch disposed our observable) or
+                // the page navigated away. Don't toast, don't update state — the
+                // next fetch will repaint correctly.
+            }
             catch (Exception ex)
             {
+                LastError = ex;
+
+                // Preserve the existing _entityCache on error so the user keeps
+                // context. The toast + LastError signal the failure; UI can show
+                // an inline banner via the ErrorContent slot or the user can
+                // click Reload to retry.
                 _logger?.LogError(ex,
                     "BackedBy fetch failed for CnpDataSource<{Entity}> (query: {QueryType}).",
                     typeof(TEntity).Name,
                     query?.GetType().Name ?? "<null>");
+
+                _toastService?.Error(
+                    title: $"Failed to load {typeof(TEntity).Name}",
+                    message: ex.Message);
             }
             finally
             {

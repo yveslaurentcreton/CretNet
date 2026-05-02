@@ -50,6 +50,23 @@
         }
     </div>
 
+    @* Inline error banner — rendered above the grid so the toolbar stays
+       reachable (user can search / filter / Reload to recover). *@
+    @if (DataSource.LastError is not null)
+    {
+        @if (ErrorContent is not null)
+        {
+            @ErrorContent(DataSource.LastError)
+        }
+        else
+        {
+            <div class="cnp-error-banner" style="padding: 12px; margin-bottom: 8px; border: 1px solid var(--error); border-radius: 4px; background: rgba(255, 0, 0, 0.05); display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                <span><strong>Failed to load:</strong> @DataSource.LastError.Message</span>
+                <FluentButton Appearance="Appearance.Lightweight" OnClick="async () => await DataSource.Reload()">Retry</FluentButton>
+            </div>
+        }
+    }
+
     <FluentDataGrid TGridItem="TGridItem" Loading="Loading" Items="DataSource.Entities?.AsQueryable()" RowClass="@(_ => "listpagerow")" ResizableColumns ShowHover Pagination="_pagination" RefreshItems="_serverRefreshItems" RowSize="DataGridRowSize.Medium">
         @if (ShouldShowSelection)
         {
@@ -70,6 +87,25 @@
             </TemplateColumn>
         }
     </FluentDataGrid>
-    
+
+    @* Empty state — shown when the fetch succeeded but returned zero rows.
+       Distinct from the loading state (FluentDataGrid renders its own
+       spinner via Loading) and from the error state above. *@
+    @if (!Loading
+         && DataSource.LastError is null
+         && (DataSource.Entities is null || DataSource.Entities.Count == 0))
+    {
+        @if (EmptyContent is not null)
+        {
+            @EmptyContent
+        }
+        else
+        {
+            <div class="cnp-empty-state" style="padding: 32px; text-align: center; color: var(--neutral-foreground-hint);">
+                No results match your filters.
+            </div>
+        }
+    }
+
     <FluentPaginator State="_pagination" CurrentPageIndexChanged="OnPageIndexChanged" />
 </div>

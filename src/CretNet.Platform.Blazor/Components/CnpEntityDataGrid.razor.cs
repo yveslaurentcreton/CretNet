@@ -32,6 +32,19 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     [Parameter] public RenderFragment<IEnumerable<TGridItem>>? SecondaryActions { get; set; }
     [Parameter] public RenderFragment<IEnumerable<TGridItem>>? CustomFilters { get; set; }
     [Parameter, EditorRequired] public RenderFragment Columns { get; set; } = default!;
+
+    /// <summary>
+    /// Optional content rendered when the fetch succeeded but returned no
+    /// rows. Defaults to a simple "No results match your filters." message.
+    /// </summary>
+    [Parameter] public RenderFragment? EmptyContent { get; set; }
+
+    /// <summary>
+    /// Optional content rendered when <c>DataSource.LastError</c> is set.
+    /// Receives the exception. Defaults to a FluentMessageBar with the
+    /// exception message and a Retry button calling <c>DataSource.Reload</c>.
+    /// </summary>
+    [Parameter] public RenderFragment<Exception>? ErrorContent { get; set; }
     [Parameter] public bool IsPrimary { get; set; } = true;
     [Parameter] public Func<TGridItem, bool>? CustomFilterFunc { get; set; }
     [Parameter] public Func<object>? DependencyArgs { get; set; }

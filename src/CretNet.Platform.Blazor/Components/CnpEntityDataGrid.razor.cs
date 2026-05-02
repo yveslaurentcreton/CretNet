@@ -4,9 +4,12 @@ using System.Reactive.Subjects;
 using CretNet.Platform.Blazor.Interfaces;
 using CretNet.Platform.Blazor.Services;
 using CretNet.Platform.Data;
+using CretNet.Platform.Querying;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.FluentUI.AspNetCore.Components;
+using QuerySortDirection = CretNet.Platform.Querying.SortDirection;
+using FluentSortDirection = Microsoft.FluentUI.AspNetCore.Components.SortDirection;
 
 namespace CretNet.Platform.Blazor.Components;
 
@@ -63,9 +66,15 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     // When server-paging is active we feed FluentDataGrid with the current page's items via Items,
     // but FluentDataGrid would otherwise overwrite Pagination.TotalItemCount with Items.Count()
     // (= page size). Providing a non-null RefreshItems callback disables that overwrite so our
-    // explicit SetTotalItemCountAsync(DataSource.TotalCount) takes effect. The callback is a no-op —
-    // the actual server load is driven by OnPageIndexChanged / OnSearchChanged.
+    // explicit SetTotalItemCountAsync(DataSource.TotalCount) takes effect. The callback also
+    // detects column-sort changes (FluentDataGrid signals sort via this callback) and folds them
+    // into the QueryState in BackedBy mode.
     private Func<GridItemsProviderRequest<TGridItem>, Task>? _serverRefreshItems;
+
+    // Last sort spec we observed on a RefreshItems request. Used to detect *changes* — the
+    // callback is also fired on initial load and unrelated triggers, and we only want to push
+    // an UpdateSort on actual user-driven sort changes.
+    private (string? Column, bool Ascending)? _lastObservedSort;
 
     public string? Search { get; set; }
 
@@ -127,7 +136,9 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         {
             // Disable FluentDataGrid's "TotalItemCount = Items.Count()" overwrite — our
             // DataSource.TotalCount is authoritative in server-paged / BackedBy mode.
-            _serverRefreshItems = _ => Task.CompletedTask;
+            // For BackedBy, also detect column-sort changes coming through this callback
+            // and fold them into the QueryState.
+            _serverRefreshItems = HandleRefreshItems;
         }
 
         if (DataSource.IsServerPaged)
@@ -138,6 +149,44 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         // BackedBy: AttachQueryState (called from AfterInit) already kicked off the
         // initial fetch via the QueryState BehaviorSubject — no LoadServerPageAsync
         // needed here.
+    }
+
+    private Task HandleRefreshItems(GridItemsProviderRequest<TGridItem> request)
+    {
+        // Always a no-op for items: our DataSource owns the rows. We're only here
+        // for the side-effect of detecting sort changes (and to disable FluentDataGrid's
+        // TotalItemCount overwrite).
+        if (!DataSource.IsBackedByQuery)
+            return Task.CompletedTask;
+
+        // Derive the sort field from PropertyColumn.Property (the expression) rather
+        // than ColumnBase.Title — Title is localised and would break when the user
+        // switches language; the underlying property name is the stable identifier.
+        // GetSortByProperties() returns one entry per active sort rule, ordered by
+        // priority. We honour the first; multi-column sort can come later if a
+        // screen actually needs it.
+        var sortBy = request.GetSortByProperties().FirstOrDefault();
+        var currentField = sortBy.PropertyName;
+        var currentAscending = sortBy.Direction != FluentSortDirection.Descending;
+        var current = (currentField, currentAscending);
+
+        if (_lastObservedSort is { } last && last == current)
+            return Task.CompletedTask;
+
+        _lastObservedSort = current;
+
+        if (string.IsNullOrEmpty(currentField))
+        {
+            DataSource.UpdateSort(null);
+        }
+        else
+        {
+            DataSource.UpdateSort(new SortSpec(
+                currentField,
+                currentAscending ? QuerySortDirection.Ascending : QuerySortDirection.Descending));
+        }
+
+        return Task.CompletedTask;
     }
 
     private async Task OnPageIndexChanged(int newZeroBasedPageIndex)

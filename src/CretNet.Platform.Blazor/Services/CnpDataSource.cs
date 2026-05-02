@@ -61,10 +61,25 @@ namespace CretNet.Platform.Blazor.Services
         /// Without it, page-clicks and the search box are no-ops in BackedBy
         /// mode (filters still work, since they go through your own mutations).
         /// </param>
+        /// <param name="sortMutator">
+        /// Optional callback for column-header sort clicks — typically
+        /// <c>(q, sort) =&gt; q with { Sort = sort, PageIndex = 1 }</c>.
+        /// Without it, sort clicks are no-ops in BackedBy mode and FluentDataGrid's
+        /// per-page in-memory sort takes over (which is misleading for the user).
+        /// </param>
         void AttachQueryState<TQuery>(
             QueryState<TQuery> queryState,
-            Func<TQuery, int, int, string?, TQuery>? pagingMutator = null
+            Func<TQuery, int, int, string?, TQuery>? pagingMutator = null,
+            Func<TQuery, SortSpec?, TQuery>? sortMutator = null
         ) where TQuery : class;
+
+        /// <summary>
+        /// Apply a new sort spec to the attached query state. Called by
+        /// <c>CnpEntityDataGrid</c> when the user clicks a sortable column
+        /// header. No-op if no <c>sortMutator</c> was supplied to
+        /// <see cref="AttachQueryState{TQuery}"/>.
+        /// </summary>
+        void UpdateSort(SortSpec? sort);
 
         int TotalCount { get; }
         Action? OnStateHasChanged { get; set; }
@@ -364,14 +379,17 @@ namespace CretNet.Platform.Blazor.Services
             await LoadData();
         }
 
-        // Set when AttachQueryState is called with a paging mutator. Lets
-        // LoadPageAsync (driven by paginator clicks and the search box in
-        // CnpEntityDataGrid) fold those changes back into the typed query.
+        // Set when AttachQueryState is called with a paging / sort mutator.
+        // Let CnpEntityDataGrid's paginator-click, search-box and column-sort
+        // events fold cleanly into the typed query without the page wiring
+        // each one separately.
         private Action<int, int, string?>? _pagingApplier;
+        private Action<SortSpec?>? _sortApplier;
 
         public void AttachQueryState<TQuery>(
             QueryState<TQuery> queryState,
-            Func<TQuery, int, int, string?, TQuery>? pagingMutator = null
+            Func<TQuery, int, int, string?, TQuery>? pagingMutator = null,
+            Func<TQuery, SortSpec?, TQuery>? sortMutator = null
         ) where TQuery : class
         {
             ArgumentNullException.ThrowIfNull(queryState);
@@ -394,6 +412,17 @@ namespace CretNet.Platform.Blazor.Services
                 _pagingApplier = (pageIndex, pageSize, search) =>
                     queryState.Mutate(current => pagingMutator(current, pageIndex, pageSize, search));
             }
+
+            if (sortMutator is not null)
+            {
+                _sortApplier = sort =>
+                    queryState.Mutate(current => sortMutator(current, sort));
+            }
+        }
+
+        public void UpdateSort(SortSpec? sort)
+        {
+            _sortApplier?.Invoke(sort);
         }
 
         private async Task LoadFromQuery(object query)

@@ -1,0 +1,64 @@
+@inherits CnpComponent
+@typeparam TQuery where TQuery : class
+@typeparam TValue
+@using System.Linq.Expressions
+@using CretNet.Platform.Blazor.Models
+@using CretNet.Platform.Blazor.Querying
+
+@if (!string.IsNullOrEmpty(Category))
+{
+    <h5 style="margin: 0 0 8px 0;">@Category</h5>
+}
+<div style="display: flex; flex-direction: column; gap: 4px;">
+    @foreach (var option in Options)
+    {
+        var captured = option;
+        <FluentCheckbox Value="@IsEnabled(captured.Value)"
+                        ValueChanged="@((bool v) => Toggle(captured.Value, v))"
+                        Label="@captured.Label" />
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public required QueryState<TQuery> State { get; set; }
+
+    /// <summary>
+    /// Property accessor for the array field on <typeparamref name="TQuery"/>
+    /// that holds the multi-value selection — typically
+    /// <c>q =&gt; q.IncludeStatuses</c>. Used both to read the current
+    /// state and (via runtime cloning) to push mutations back into the query.
+    /// </summary>
+    [Parameter, EditorRequired] public required Expression<Func<TQuery, TValue[]?>> Field { get; set; }
+
+    [Parameter, EditorRequired] public required IReadOnlyList<CheckboxOption<TValue>> Options { get; set; }
+
+    /// <summary>Optional category label rendered above the group (mirrors the legacy CnpFilters look).</summary>
+    [Parameter] public string? Category { get; set; }
+
+    private string _propertyName = string.Empty;
+    private Func<TQuery, TValue[]?> _getter = default!;
+
+    protected override void OnParametersSet()
+    {
+        _propertyName = RecordCloner.PropertyNameFrom(Field);
+        _getter = Field.Compile();
+    }
+
+    private bool IsEnabled(TValue value)
+    {
+        var current = _getter(State.Current);
+        if (current is null)
+            return false;
+        return current.Contains(value);
+    }
+
+    private void Toggle(TValue value, bool enabled)
+    {
+        var current = _getter(State.Current) ?? Array.Empty<TValue>();
+        var next = enabled
+            ? current.Append(value).Distinct().ToArray()
+            : current.Where(v => !EqualityComparer<TValue>.Default.Equals(v, value)).ToArray();
+
+        State.Mutate(q => RecordCloner.With(q, _propertyName, next));
+    }
+}

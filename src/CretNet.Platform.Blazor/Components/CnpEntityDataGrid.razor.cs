@@ -45,6 +45,18 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
     /// exception message and a Retry button calling <c>DataSource.Reload</c>.
     /// </summary>
     [Parameter] public RenderFragment<Exception>? ErrorContent { get; set; }
+
+    /// <summary>
+    /// Optional content rendered inside a filter-button popover in the toolbar.
+    /// Use for <c>CnpBindCheckboxGroup</c> components on a BackedBy grid —
+    /// they live inside the popover, mutating the QueryState.
+    /// When set, takes precedence over the legacy <c>EntityFilters</c>
+    /// rendering (which uses <c>CnpFilterButton</c>).
+    /// </summary>
+    [Parameter] public RenderFragment? FilterControls { get; set; }
+
+    private bool _filterControlsOpen;
+
     [Parameter] public bool IsPrimary { get; set; } = true;
     [Parameter] public Func<TGridItem, bool>? CustomFilterFunc { get; set; }
     [Parameter] public Func<object>? DependencyArgs { get; set; }

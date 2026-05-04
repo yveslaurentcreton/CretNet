@@ -1,4 +1,5 @@
 @inherits CnpComponent
+@typeparam TEntity
 @typeparam TItem where TItem : CretNet.Platform.Querying.IPickerItem<TId>
 @typeparam TId where TId : struct
 @using System.Linq.Expressions
@@ -9,7 +10,7 @@
                     TOption="TItem"
                     Height="200px"
                     Items="_items"
-                    Label="@Label"
+                    Label="@DisplayedLabel"
                     Placeholder="@Placeholder"
                     OptionText="x => x.DisplayLabel"
                     OptionValue="x => x.Id.ToString()"

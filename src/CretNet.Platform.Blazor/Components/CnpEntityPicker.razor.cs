@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using CretNet.Platform.Blazor.Services;
 using CretNet.Platform.Querying;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -12,20 +13,35 @@ namespace CretNet.Platform.Blazor.Components;
 /// </summary>
 /// <remarks>
 /// <para>
+/// Three generic parameters so this can mirror the legacy
+/// <c>CnpEntitySelect&lt;TEntity, TId&gt;</c> ergonomics:
+/// </para>
+/// <list type="bullet">
+///   <item><c>TEntity</c> — the canonical entity type, used to resolve a
+///   default label / icon from the registered <c>IEntityDefinition&lt;TEntity, TId&gt;</c>.
+///   No data-source / fetch coupling; pure metadata lookup.</item>
+///   <item><c>TItem</c> — the per-screen picker projection (a slim
+///   <see cref="IPickerItem{TId}"/>) the dropdown actually renders.</item>
+///   <item><c>TId</c> — id type shared between both.</item>
+/// </list>
+/// <para>
+/// If a registered <c>IEntityDefinition&lt;TEntity, TId&gt;</c> exists,
+/// its <c>Label</c> is used by default; otherwise the page must pass an
+/// explicit <see cref="Label"/>.
+/// </para>
+/// <para>
 /// We deliberately do NOT set <c>Autocomplete</c> on the FluentCombobox
 /// (any value would re-filter our server-returned items client-side).
-/// The dropdown shows the items as the server returned them.
 /// </para>
 /// <para>
 /// FluentCombobox raises its <c>oninput</c> event before its internal
-/// <c>value</c> attribute updates, which means
-/// <see cref="ChangeEventArgs.Value"/> is one keystroke behind. To
-/// avoid filtering on stale text we re-read the current value from the
-/// DOM via <see cref="IJSRuntime"/> after the debounce window — by then
-/// the web component has committed the latest character.
+/// <c>value</c> updates, so <see cref="ChangeEventArgs.Value"/> is one
+/// keystroke behind. We re-read the actual typed text from the shadow
+/// DOM <c>&lt;input&gt;</c> via <see cref="IJSRuntime"/> after the
+/// debounce window.
 /// </para>
 /// </remarks>
-public partial class CnpEntityPicker<TItem, TId>
+public partial class CnpEntityPicker<TEntity, TItem, TId>
     where TItem : IPickerItem<TId>
     where TId : struct
 {
@@ -41,7 +57,12 @@ public partial class CnpEntityPicker<TItem, TId>
     [Parameter, EditorRequired]
     public required Func<string?, IReadOnlyList<TId>?, CancellationToken, Task<IReadOnlyList<TItem>>> SearchAsync { get; set; }
 
+    /// <summary>
+    /// Override label. When null (default), the picker uses the registered
+    /// <c>IEntityDefinition&lt;TEntity, TId&gt;.Label</c> if available.
+    /// </summary>
     [Parameter] public string? Label { get; set; }
+
     [Parameter] public string? Placeholder { get; set; }
     [Parameter] public Expression<Func<TId?>>? For { get; set; }
     [Parameter] public bool Required { get; set; }
@@ -52,6 +73,17 @@ public partial class CnpEntityPicker<TItem, TId>
     [Parameter] public int DebounceMs { get; set; } = 300;
 
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+
+    /// <summary>
+    /// Optional definition lookup — resolved from DI if registered. Mirrors
+    /// the legacy <c>CnpEntitySelect</c>'s pattern of pulling the label from
+    /// the entity's canonical Definition. Null for ad-hoc TEntity types
+    /// without a registered definition; in that case the page must pass
+    /// an explicit <see cref="Label"/>.
+    /// </summary>
+    [Inject] private IEntityDefinition<TEntity, TId>? EntityDefinition { get; set; }
+
+    private string? DisplayedLabel => Label ?? EntityDefinition?.Label;
 
     // Unique id per picker instance so we can read the actual value from
     // the DOM (FluentCombobox's @oninput delivers a stale ChangeEventArgs.Value).

@@ -1,0 +1,29 @@
+@inherits CnpComponent
+@typeparam TItem where TItem : CretNet.Platform.Querying.IPickerItem<TId>
+@typeparam TId where TId : struct
+@using System.Linq.Expressions
+@using CretNet.Platform.Querying
+
+<div style="flex-grow: 1;">
+    <FluentCombobox @key="_renderKey"
+                    TOption="TItem"
+                    Height="200px"
+                    Autocomplete="ComboboxAutocomplete.Both"
+                    Items="_items"
+                    Label="@Label"
+                    Placeholder="@Placeholder"
+                    OptionText="x => x.DisplayLabel"
+                    OptionValue="x => x.Id.ToString()"
+                    @bind-SelectedOption:get="_selectedItem"
+                    @bind-SelectedOption:set="OnSelectionChanged"
+                    @oninput="OnInputChanged"
+                    Immediate
+                    ReadOnly="ReadOnly"
+                    Disabled="Disabled || ReadOnly"
+                    Required="Required" />
+
+    @if (For is not null)
+    {
+        <FluentValidationMessage For="@For" />
+    }
+</div>

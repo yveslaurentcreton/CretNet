@@ -602,11 +602,13 @@ namespace CretNet.Platform.Blazor.Services
         public async Task<TEntity?> Add()
         {
             var action = _entityDefinition?.CreateOpenAddDialogAction(DependencyArgs?.Invoke());
-        
+
             if (action is null)
                 return default;
-            
+
             var createdEntity = await _dispatcher.DispatchAsync(action);
+
+            await ReloadIfBackedByAsync();
 
             return createdEntity;
         }
@@ -614,11 +616,13 @@ namespace CretNet.Platform.Blazor.Services
         public async Task Edit(TEntity entity)
         {
             var action = _entityDefinition?.CreateOpenEditDialogAction(entity);
-        
+
             if (action is null)
                 return;
-        
+
             await _dispatcher.DispatchAsync(action);
+
+            await ReloadIfBackedByAsync();
         }
 
         public async Task Remove(IEnumerable<TEntity> entities)
@@ -627,11 +631,12 @@ namespace CretNet.Platform.Blazor.Services
             if (_entityDefinition?.HasOpenRemoveMultipleDialogActionFactory == true)
             {
                 var action = _entityDefinition?.CreateOpenRemoveMultipleDialogAction(entities);
-                
+
                 if (action is null)
                     return;
-                
+
                 await _dispatcher.DispatchAsync(action);
+                await ReloadIfBackedByAsync();
                 return;
             }
 
@@ -639,12 +644,28 @@ namespace CretNet.Platform.Blazor.Services
             foreach (var entity in entities)
             {
                 var action = _entityDefinition?.CreateOpenRemoveDialogAction(entity);
-                
+
                 if (action is null)
                     return;
-            
+
                 await _dispatcher.DispatchAsync(action);
             }
+
+            await ReloadIfBackedByAsync();
+        }
+
+        // Legacy data sources keep the entity cache in step with CRUD via
+        // SubscribeCreateSuccess / SubscribeUpdateSuccess / SubscribeDeleteSuccess
+        // events fired by the dispatched action (which works because entity types
+        // line up). BackedBy mode often uses adapter actions that wrap the legacy
+        // dialog action and operate on a different entity type (e.g. ProjectListItem
+        // wrapping a Project create), so those subscribe-success hooks don't fire
+        // for the data source's TEntity. Simplest fix: re-fetch the current page
+        // after any CRUD operation in BackedBy mode. Cheap and reliable.
+        private async Task ReloadIfBackedByAsync()
+        {
+            if (IsBackedByQuery && _reloader is not null)
+                await _reloader(CancellationToken.None);
         }
 
         public void Navigate(TEntity entity)

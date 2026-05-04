@@ -190,10 +190,26 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         // GetSortByProperties() returns one entry per active sort rule, ordered by
         // priority. We honour the first; multi-column sort can come later if a
         // screen actually needs it.
+        //
+        // For PropertyColumn FluentDataGrid surfaces the property name from the
+        // Property expression; for TemplateColumn the explicit SortBy expression is
+        // used. SortByColumn on its own gives us the column instance but no field
+        // name; GetSortByProperties is the supported way to reach the underlying
+        // property name without reflecting on the column.
         var sortBy = request.GetSortByProperties().FirstOrDefault();
         var currentField = sortBy.PropertyName;
         var currentAscending = sortBy.Direction != FluentSortDirection.Descending;
         var current = (currentField, currentAscending);
+
+        // Diagnostic — temporarily logs the column-sort handshake so screens that
+        // misbehave (server vs client sort divergence, missing sort field) can be
+        // diagnosed from the browser console without rebuilding. Remove or demote
+        // to ILogger once the screens stabilise.
+        Console.WriteLine(
+            $"[CnpEntityDataGrid<{typeof(TGridItem).Name}>] RefreshItems sort: " +
+            $"column='{request.SortByColumn?.Title ?? "<none>"}' " +
+            $"propertyName='{currentField ?? "<empty>"}' " +
+            $"ascending={currentAscending}");
 
         if (_lastObservedSort is { } last && last == current)
             return Task.CompletedTask;

@@ -235,7 +235,12 @@ namespace CretNet.Platform.Blazor.Services
             });
             
             var defaultFilterFunc = _entityDefinition?.FilterFunc ?? ((_, _) => true);
-            var sortFunc = _entityDefinition?.SortByFunc ?? ((_) => 0);
+
+            // BackedBy: preserve the server's ordering by sorting on the per-item
+            // arrival index. For legacy modes keep the existing per-entity SortByFunc.
+            Func<TEntity, IComparable> sortFunc = IsBackedByQuery
+                ? (entity => _backedByOrder.TryGetValue(entity.Id, out var index) ? index : int.MaxValue)
+                : (_entityDefinition?.SortByFunc ?? ((_) => 0));
             var sortOrder = _entityDefinition?.SortOrder ?? SortDirection.Ascending;
 
             var entityFiltersChanged = EntityFilters
@@ -409,6 +414,16 @@ namespace CretNet.Platform.Blazor.Services
         // the concrete TQuery.
         private Func<CancellationToken, Task>? _reloader;
 
+        // Insertion order tracking for BackedBy mode. The DynamicData SortBy
+        // pipeline downstream of _entityCache reorders items by sort key, and
+        // when no per-entity SortByFunc is supplied the default key is constant
+        // (everything equal) — DynamicData's internal sort with all-equal keys
+        // is not insertion-stable in practice, so the server's sort ordering
+        // gets lost on the way to FluentDataGrid. We assign each item its
+        // arrival index here and use it as the sort key in BackedBy mode, so
+        // the display order matches what the server returned.
+        private readonly Dictionary<TId, int> _backedByOrder = new();
+
         public void AttachQueryState<TQuery>(
             QueryState<TQuery> queryState,
             Func<TQuery, int, int, string?, TQuery>? pagingMutator = null,
@@ -477,7 +492,14 @@ namespace CretNet.Platform.Blazor.Services
                 _entityCache.Edit(innerCache =>
                 {
                     innerCache.Clear();
-                    innerCache.AddOrUpdate(pagedResult.Items);
+                    _backedByOrder.Clear();
+
+                    var index = 0;
+                    foreach (var item in pagedResult.Items)
+                    {
+                        _backedByOrder[item.Id] = index++;
+                        innerCache.AddOrUpdate(item);
+                    }
                 });
 
                 ClearSelectedEntities();

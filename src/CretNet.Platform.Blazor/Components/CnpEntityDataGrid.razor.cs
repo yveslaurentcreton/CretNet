@@ -201,16 +201,6 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
         var currentAscending = sortBy.Direction != FluentSortDirection.Descending;
         var current = (currentField, currentAscending);
 
-        // Diagnostic — temporarily logs the column-sort handshake so screens that
-        // misbehave (server vs client sort divergence, missing sort field) can be
-        // diagnosed from the browser console without rebuilding. Remove or demote
-        // to ILogger once the screens stabilise.
-        Console.WriteLine(
-            $"[CnpEntityDataGrid<{typeof(TGridItem).Name}>] RefreshItems sort: " +
-            $"column='{request.SortByColumn?.Title ?? "<none>"}' " +
-            $"propertyName='{currentField ?? "<empty>"}' " +
-            $"ascending={currentAscending}");
-
         if (_lastObservedSort is { } last && last == current)
             return Task.CompletedTask;
 

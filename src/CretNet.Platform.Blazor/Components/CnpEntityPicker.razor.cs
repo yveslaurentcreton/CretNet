@@ -72,6 +72,20 @@ public partial class CnpEntityPicker<TEntity, TItem, TId>
     /// <summary>Debounce window in ms before the typed input triggers a fetch. Default 300.</summary>
     [Parameter] public int DebounceMs { get; set; } = 300;
 
+    /// <summary>
+    /// Render an inline + button next to the picker. The button dispatches
+    /// <see cref="OnAddAsync"/> (consumer opens a dialog), and on success
+    /// refreshes the dropdown and selects the newly-created item.
+    /// </summary>
+    [Parameter] public bool ShowAdd { get; set; }
+
+    /// <summary>
+    /// Add-button callback. Return the id of the newly-created entity (or
+    /// <c>null</c> if the user cancelled). The picker re-runs the search
+    /// and selects the returned id.
+    /// </summary>
+    [Parameter] public EventCallback<EventArgs> OnAddAsync { get; set; }
+
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
     /// <summary>
@@ -197,5 +211,14 @@ public partial class CnpEntityPicker<TEntity, TItem, TId>
 
         if (SelectedItemChanged.HasDelegate)
             await SelectedItemChanged.InvokeAsync(item);
+    }
+
+    private async Task OnAddClickedAsync()
+    {
+        if (!OnAddAsync.HasDelegate) return;
+        await OnAddAsync.InvokeAsync(EventArgs.Empty);
+        await RunSearchAsync(searchTerm: null);
+        ResolveSelectionFromItems();
+        StateHasChanged();
     }
 }

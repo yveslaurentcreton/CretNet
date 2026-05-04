@@ -1,0 +1,40 @@
+@using BackedBySample.Models
+@using CretNet.Platform.Blazor.Components
+@using CretNet.Platform.Blazor.Models
+@using CretNet.Platform.Blazor.Services
+
+<CnpLoading IsLoading="_queryState is null">
+    <CnpEntityDataGrid TGridItem="SampleCustomer" TId="Guid"
+        AfterInit="AttachQueryState">
+        <Columns>
+            <PropertyColumn Title="Number" Property="x => x.Number" Sortable="true"/>
+            <PropertyColumn Title="Name" Property="x => x.Name" Sortable="true"/>
+            <PropertyColumn Title="City" Property="x => x.City" Sortable="true"/>
+        </Columns>
+    </CnpEntityDataGrid>
+</CnpLoading>
+
+@code {
+    private QueryState<SampleCustomerQuery>? _queryState;
+
+    protected override void OnInitialized()
+    {
+        _queryState = new QueryState<SampleCustomerQuery>(new SampleCustomerQuery());
+    }
+
+    private Task AttachQueryState(ICnpDataSource<SampleCustomer, Guid> dataSource)
+    {
+        if (_queryState is null) return Task.CompletedTask;
+        dataSource.AttachQueryState(
+            _queryState,
+            pagingMutator: (current, pageIndex, pageSize, search) => current with
+            {
+                PageIndex = pageIndex, PageSize = pageSize, Search = search,
+            },
+            sortMutator: (current, sort) => current with { Sort = sort, PageIndex = 1 },
+            structuralKey: q => q.Search ?? string.Empty);
+        return Task.CompletedTask;
+    }
+
+    public void Dispose() => _queryState?.Dispose();
+}

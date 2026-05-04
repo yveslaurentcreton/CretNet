@@ -25,6 +25,14 @@ namespace CretNet.Platform.Blazor.Services
         bool IsLoading { get; }
 
         /// <summary>
+        /// True after at least one successful or failed fetch attempt has
+        /// completed. False between construction and the first fetch's
+        /// resolution — UIs can use this to render a clean loading view
+        /// instead of a "no data" empty state during the initial load.
+        /// </summary>
+        bool HasLoadedOnce { get; }
+
+        /// <summary>
         /// True when the associated <c>IEntityDefinition</c> provides a paged fetch action.
         /// In this mode the server is the single source of truth for paging, searching and
         /// filtering: client-side <c>CustomFilterFunc</c>, <c>EntityFilters</c> and text
@@ -131,6 +139,7 @@ namespace CretNet.Platform.Blazor.Services
         where TId : notnull
     {
         public bool IsLoading { get; private set; } = true;
+        public bool HasLoadedOnce { get; private set; }
         public bool IsServerPaged => _entityDefinition?.HasFetchPagedAction == true;
         public bool IsBackedByQuery => _entityDefinition?.HasBackedByQuery == true;
         public int TotalCount { get; private set; }
@@ -332,7 +341,12 @@ namespace CretNet.Platform.Blazor.Services
                         "move the predicate onto the query record (so it travels to the server) and clear it here.");
                 }
 
-                IsLoading = false;
+                // Keep IsLoading=true (the field's default). The page's AfterInit
+                // hook calls AttachQueryState, whose first emission kicks off
+                // LoadFromQuery — that sets IsLoading=false when the first fetch
+                // completes. Flipping to false here would briefly render the
+                // grid's empty-state between Init returning and the first fetch
+                // arriving (BUG: "loading → no data → data" flash).
                 StateHasChanged();
                 return;
             }
@@ -379,9 +393,10 @@ namespace CretNet.Platform.Blazor.Services
             }
 
             IsLoading = false;
+            HasLoadedOnce = true;
             StateHasChanged();
         }
-        
+
         private void ClearSelectedEntities()
         {
             _selectedEntityCache.Clear();
@@ -565,6 +580,7 @@ namespace CretNet.Platform.Blazor.Services
             finally
             {
                 IsLoading = false;
+                HasLoadedOnce = true;
                 StateHasChanged();
             }
         }
@@ -604,6 +620,7 @@ namespace CretNet.Platform.Blazor.Services
             ClearSelectedEntities();
 
             IsLoading = false;
+            HasLoadedOnce = true;
             StateHasChanged();
         }
         

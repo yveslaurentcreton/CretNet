@@ -4,25 +4,36 @@
 @typeparam TId where TId : struct
 @using System.Linq.Expressions
 @using CretNet.Platform.Querying
+@using Microsoft.FluentUI.AspNetCore.Components
 
-<div style="flex-grow: 1;">
-    <FluentCombobox id="@_inputId"
-                    TOption="TItem"
-                    Height="200px"
-                    Items="_items"
-                    Label="@DisplayedLabel"
-                    Placeholder="@Placeholder"
-                    OptionText="x => x.DisplayLabel"
-                    OptionValue="x => x.Id.ToString()"
-                    @bind-SelectedOption:get="_selectedItem"
-                    @bind-SelectedOption:set="OnSelectionChangedAsync"
-                    @oninput="OnTypedAsync"
-                    ReadOnly="ReadOnly"
-                    Disabled="Disabled || ReadOnly"
-                    Required="Required" />
+<div style="display: flex; flex-direction: row; align-items: end; gap: 4px; flex-grow: 1;">
+    <div style="flex-grow: 1;">
+        <FluentCombobox id="@_inputId"
+                        TOption="TItem"
+                        Height="200px"
+                        Items="_items"
+                        Label="@DisplayedLabel"
+                        Placeholder="@Placeholder"
+                        OptionText="x => x.DisplayLabel"
+                        OptionValue="x => x.Id.ToString()"
+                        @bind-SelectedOption:get="_selectedItem"
+                        @bind-SelectedOption:set="OnSelectionChangedAsync"
+                        @oninput="OnTypedAsync"
+                        ReadOnly="ReadOnly"
+                        Disabled="Disabled || ReadOnly"
+                        Required="Required" />
 
-    @if (For is not null)
+        @if (For is not null)
+        {
+            <FluentValidationMessage For="@For" />
+        }
+    </div>
+
+    @if (ShowAdd && OnAddAsync.HasDelegate)
     {
-        <FluentValidationMessage For="@For" />
+        <FluentButton IconStart="@(new Icons.Regular.Size16.Add())"
+                      OnClick="OnAddClickedAsync"
+                      Disabled="Disabled || ReadOnly"
+                      title="@($"Add {DisplayedLabel}")" />
     }
 </div>

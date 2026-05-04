@@ -5,7 +5,8 @@
 @using CretNet.Platform.Querying
 
 <div style="flex-grow: 1;">
-    <FluentCombobox TOption="TItem"
+    <FluentCombobox id="@_inputId"
+                    TOption="TItem"
                     Height="200px"
                     Items="_items"
                     Label="@Label"
@@ -15,7 +16,6 @@
                     @bind-SelectedOption:get="_selectedItem"
                     @bind-SelectedOption:set="OnSelectionChangedAsync"
                     @oninput="OnTypedAsync"
-                    Immediate
                     ReadOnly="ReadOnly"
                     Disabled="Disabled || ReadOnly"
                     Required="Required" />

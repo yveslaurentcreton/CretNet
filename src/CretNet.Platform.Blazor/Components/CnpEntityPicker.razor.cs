@@ -2,30 +2,27 @@ using System.Linq.Expressions;
 using CretNet.Platform.Querying;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 
 namespace CretNet.Platform.Blazor.Components;
 
 /// <summary>
 /// Search-as-you-type picker bound to a server-side query. Wraps
-/// <c>FluentCombobox</c> as a dropdown — the page supplies a
-/// <see cref="SearchAsync"/> callback (typically a Fluxor dispatch
-/// hitting a <c>{Entity}PickerEndpoint</c>); typing the input fires the
-/// callback (debounced + last-write-wins-cancelled), and the result is
-/// shown in the dropdown.
+/// <c>FluentCombobox</c> as a dropdown.
 /// </summary>
 /// <remarks>
 /// <para>
 /// We deliberately do NOT set <c>Autocomplete</c> on the FluentCombobox
-/// (it would re-filter our server-returned items client-side, ending up
-/// over-filtered or empty when the typed text doesn't match the
-/// localised label exactly). The dropdown shows the items as the server
-/// returned them.
+/// (any value would re-filter our server-returned items client-side).
+/// The dropdown shows the items as the server returned them.
 /// </para>
 /// <para>
-/// On selection, we keep the picked item in <see cref="_items"/> so the
-/// FluentCombobox can show its label even if subsequent searches don't
-/// return it, and we also pass the picked id as <c>includeIds</c> on
-/// every fetch so the server-side handler keeps it in the result set.
+/// FluentCombobox raises its <c>oninput</c> event before its internal
+/// <c>value</c> attribute updates, which means
+/// <see cref="ChangeEventArgs.Value"/> is one keystroke behind. To
+/// avoid filtering on stale text we re-read the current value from the
+/// DOM via <see cref="IJSRuntime"/> after the debounce window — by then
+/// the web component has committed the latest character.
 /// </para>
 /// </remarks>
 public partial class CnpEntityPicker<TItem, TId>
@@ -54,6 +51,12 @@ public partial class CnpEntityPicker<TItem, TId>
     /// <summary>Debounce window in ms before the typed input triggers a fetch. Default 300.</summary>
     [Parameter] public int DebounceMs { get; set; } = 300;
 
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+
+    // Unique id per picker instance so we can read the actual value from
+    // the DOM (FluentCombobox's @oninput delivers a stale ChangeEventArgs.Value).
+    private readonly string _inputId = $"cnp-picker-{Guid.NewGuid():N}";
+
     private List<TItem> _items = new();
     private TItem? _selectedItem;
     private CancellationTokenSource? _searchCts;
@@ -62,10 +65,6 @@ public partial class CnpEntityPicker<TItem, TId>
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
-        // Initial fetch: empty term + the selected id (if any) so the
-        // dropdown is populated AND the selected item is in _items so
-        // FluentCombobox can show its label.
         await RunSearchAsync(searchTerm: null);
         ResolveSelectionFromItems();
     }
@@ -78,7 +77,6 @@ public partial class CnpEntityPicker<TItem, TId>
         {
             _resolvedSelectionId = SelectedId;
 
-            // External change. Make sure the selected one is in _items.
             if (SelectedId is { } id && !_items.Any(i => EqualityComparer<TId>.Default.Equals(i.Id, id)))
                 await RunSearchAsync(searchTerm: null);
 
@@ -93,22 +91,28 @@ public partial class CnpEntityPicker<TItem, TId>
             : default;
     }
 
-    private async Task OnTypedAsync(ChangeEventArgs e)
+    private async Task OnTypedAsync(ChangeEventArgs _)
     {
         // Debounce: cancel any in-flight search and start a new one after
-        // the typed input has settled. Last-write-wins via cancellation;
-        // a fast typer never sees stale results.
+        // the typed input has settled.
         _searchCts?.Cancel();
         _searchCts?.Dispose();
         _searchCts = new CancellationTokenSource();
         var ct = _searchCts.Token;
 
-        var term = e.Value?.ToString();
-
         try
         {
             await Task.Delay(DebounceMs, ct);
             ct.ThrowIfCancellationRequested();
+
+            // Re-read the actual current value from the DOM. The
+            // ChangeEventArgs.Value from FluentCombobox's @oninput is one
+            // keystroke behind because the web component's internal value
+            // attribute updates after the event fires.
+            var term = await JSRuntime.InvokeAsync<string?>(
+                "eval", ct,
+                $"document.getElementById('{_inputId}')?.value");
+
             await RunSearchAsync(term, ct);
             ResolveSelectionFromItems();
             StateHasChanged();

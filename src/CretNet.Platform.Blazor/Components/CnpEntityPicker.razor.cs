@@ -1,28 +1,28 @@
 using System.Linq.Expressions;
 using CretNet.Platform.Querying;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.FluentUI.AspNetCore.Components;
 
 namespace CretNet.Platform.Blazor.Components;
 
 /// <summary>
-/// Search-as-you-type combobox bound to a server-side picker query.
-/// The page supplies a <see cref="SearchAsync"/> callback (typically
-/// dispatching a Fluxor action that hits a <c>{Entity}PickerEndpoint</c>);
-/// this component handles debounced typing, cancellation, and binding the
-/// resulting items into the FluentCombobox.
+/// Search-as-you-type picker bound to a server-side query. Wraps
+/// <see cref="FluentAutocomplete{TOption}"/> in single-selection mode
+/// (<c>MaximumSelectedOptions=1</c>). The page supplies a
+/// <see cref="SearchAsync"/> callback (typically dispatching a Fluxor
+/// action that hits a <c>{Entity}PickerEndpoint</c>); this component
+/// drives the FluentAutocomplete's <c>OnOptionsSearch</c> event with
+/// it and translates selections back into <see cref="SelectedId"/>.
 /// </summary>
 /// <remarks>
 /// <para>
-/// Sibling of <c>CnpEntitySelect</c>. The legacy select loads the entire
-/// entity list into memory and filters client-side; this picker fetches
-/// matches per keystroke and is what BackedBy screens use for typeahead.
-/// </para>
-/// <para>
-/// On selection or initial mount with a non-null <see cref="SelectedId"/>,
-/// the picker calls <see cref="SearchAsync"/> with that id in
-/// <c>includeIds</c> so the selected item appears in the dropdown even
-/// when the user has typed something that wouldn't match it.
+/// FluentAutocomplete is the right primitive for server-side typeahead
+/// (FluentCombobox is built for static lists with client-side filtering).
+/// The selected pick renders as a chip above the input and stays visible
+/// while the user types something else, so we don't need to pin the
+/// current selection into every search result — though we still pass
+/// it as <c>includeIds</c> so the dropdown also surfaces it on a brand
+/// new search session.
 /// </para>
 /// </remarks>
 public partial class CnpEntityPicker<TItem, TId>
@@ -35,8 +35,9 @@ public partial class CnpEntityPicker<TItem, TId>
 
     /// <summary>
     /// Async fetcher: <c>(searchTerm, includeIds, cancellationToken) =&gt; items</c>.
-    /// Called on every typed-input change (after debouncing) and to resolve
-    /// the initial / current selection.
+    /// Called on every typed-input change (FluentAutocomplete debounces
+    /// internally) and once during init to resolve the selected item's
+    /// label.
     /// </summary>
     [Parameter, EditorRequired]
     public required Func<string?, IReadOnlyList<TId>?, CancellationToken, Task<IReadOnlyList<TItem>>> SearchAsync { get; set; }
@@ -48,106 +49,83 @@ public partial class CnpEntityPicker<TItem, TId>
     [Parameter] public bool ReadOnly { get; set; }
     [Parameter] public bool Disabled { get; set; }
 
-    /// <summary>Debounce window in ms before the typed input triggers a fetch. Default 300.</summary>
-    [Parameter] public int DebounceMs { get; set; } = 300;
+    /// <summary>Hard cap on results returned per search. Forwarded to FluentAutocomplete's MaximumOptionsSearch.</summary>
+    [Parameter] public int MaximumResults { get; set; } = 50;
 
-    private IReadOnlyList<TItem> _items = Array.Empty<TItem>();
-    private TItem? _selectedItem;
-    private CancellationTokenSource? _searchCts;
-    private TId? _lastResolvedSelectionId;
-
-    // FluentCombobox keys its rendering on its initial state; bumping this
-    // re-runs Items binding cleanly when we replace _items wholesale.
-    private int _renderKey;
+    private List<TItem> _selectedOptions = new();
+    private TId? _resolvedSelectionId;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
-        // Initial search: empty term + the selected id (if any) so the
-        // dropdown shows top-N results AND keeps the selected one visible.
-        await RefetchAsync(string.Empty);
-        ResolveSelectionFromItems();
+        await ResolveInitialSelectionAsync();
     }
 
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
 
-        // SelectedId changed externally — re-resolve the displayed item.
-        if (!Nullable.Equals(_lastResolvedSelectionId, SelectedId))
-        {
-            _lastResolvedSelectionId = SelectedId;
-            ResolveSelectionFromItems();
-        }
+        // External SelectedId change → re-resolve the displayed chip.
+        if (!Nullable.Equals(_resolvedSelectionId, SelectedId))
+            await ResolveInitialSelectionAsync();
     }
 
-    private void ResolveSelectionFromItems()
+    private async Task ResolveInitialSelectionAsync()
     {
+        _resolvedSelectionId = SelectedId;
+
         if (SelectedId is null)
         {
-            _selectedItem = default;
+            _selectedOptions = new List<TItem>();
             return;
         }
 
-        _selectedItem = _items.FirstOrDefault(i => EqualityComparer<TId>.Default.Equals(i.Id, SelectedId.Value));
-    }
-
-    private async Task OnInputChanged(ChangeEventArgs e)
-    {
-        // Debounce: cancel any in-flight search and start a new one after the
-        // typed-input has settled. Last-write-wins via cancellation; a fast
-        // typer never sees stale results.
-        _searchCts?.Cancel();
-        _searchCts?.Dispose();
-        _searchCts = new CancellationTokenSource();
-        var ct = _searchCts.Token;
-
-        var term = e.Value?.ToString();
+        // Already in the chips list — nothing to do (avoids needless fetch).
+        if (_selectedOptions.Any(i => EqualityComparer<TId>.Default.Equals(i.Id, SelectedId.Value)))
+            return;
 
         try
         {
-            await Task.Delay(DebounceMs, ct);
-            ct.ThrowIfCancellationRequested();
-            await RefetchAsync(term);
-            ResolveSelectionFromItems();
-            StateHasChanged();
+            var items = await SearchAsync(null, new[] { SelectedId.Value }, CancellationToken.None);
+            var resolved = items.FirstOrDefault(i => EqualityComparer<TId>.Default.Equals(i.Id, SelectedId.Value));
+            _selectedOptions = resolved is null ? new List<TItem>() : new List<TItem> { resolved };
         }
-        catch (OperationCanceledException)
+        catch
         {
-            // Newer keystroke superseded this fetch; nothing to do.
+            _selectedOptions = new List<TItem>();
         }
     }
 
-    private async Task RefetchAsync(string? term)
+    private async Task OnOptionsSearchAsync(OptionsSearchEventArgs<TItem> args)
     {
-        var includeIds = SelectedId is { } id
-            ? new[] { id }
-            : null;
-
-        var ct = _searchCts?.Token ?? CancellationToken.None;
+        var includeIds = SelectedId is { } id ? new[] { id } : null;
 
         try
         {
-            _items = await SearchAsync(term, includeIds, ct);
-            _renderKey++;
+            var items = await SearchAsync(args.Text, includeIds, CancellationToken.None);
+            args.Items = items;
         }
-        catch (OperationCanceledException)
+        catch
         {
-            // Cancellation is benign here too.
+            // Surface to ICnpToastService if needed; for now silently drop —
+            // a failed search just shows no matches, the selected chip stays.
+            args.Items = Array.Empty<TItem>();
         }
     }
 
-    private async Task OnSelectionChanged(TItem? item)
+    private async Task OnSelectedOptionsChangedAsync(IEnumerable<TItem>? selected)
     {
-        _selectedItem = item;
-        var newId = item is null ? (TId?)null : item.Id;
-        _lastResolvedSelectionId = newId;
+        var list = selected?.ToList() ?? new List<TItem>();
+        _selectedOptions = list;
+
+        var pick = list.FirstOrDefault();
+        var newId = pick is null ? (TId?)null : pick.Id;
+        _resolvedSelectionId = newId;
 
         if (SelectedIdChanged.HasDelegate)
             await SelectedIdChanged.InvokeAsync(newId);
 
         if (SelectedItemChanged.HasDelegate)
-            await SelectedItemChanged.InvokeAsync(item);
+            await SelectedItemChanged.InvokeAsync(pick);
     }
 }

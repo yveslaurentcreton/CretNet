@@ -105,13 +105,18 @@ public partial class CnpEntityPicker<TItem, TId>
             await Task.Delay(DebounceMs, ct);
             ct.ThrowIfCancellationRequested();
 
-            // Re-read the actual current value from the DOM. The
+            // Re-read the actual current typed text from the DOM. The
             // ChangeEventArgs.Value from FluentCombobox's @oninput is one
             // keystroke behind because the web component's internal value
             // attribute updates after the event fires.
+            //
+            // Critically: the OUTER element's .value is the selected option's
+            // value (a Guid string in our case), NOT the typed text. The
+            // typed text lives in the shadow DOM <input> inside the web
+            // component. FAST UI uses open shadow roots so we can reach it.
             var term = await JSRuntime.InvokeAsync<string?>(
                 "eval", ct,
-                $"document.getElementById('{_inputId}')?.value");
+                $"document.getElementById('{_inputId}')?.shadowRoot?.querySelector('input')?.value ?? ''");
 
             await RunSearchAsync(term, ct);
             ResolveSelectionFromItems();

@@ -74,10 +74,20 @@ namespace CretNet.Platform.Blazor.Services
         /// Without it, sort clicks are no-ops in BackedBy mode and FluentDataGrid's
         /// per-page in-memory sort takes over (which is misleading for the user).
         /// </param>
+        /// <param name="structuralKey">
+        /// Optional func that returns an opaque "structural identity" of the
+        /// query (everything except <see cref="IPagedQuery{TRow}.PageIndex"/>
+        /// / <see cref="IPagedQuery{TRow}.PageSize"/> / Sort). When supplied,
+        /// selection is preserved across refetches whose structural key is
+        /// equal to the previous one (so paging / sort don't lose selection)
+        /// and cleared when it changes (filter / search). Without it, every
+        /// refetch clears selection — safe but pessimistic.
+        /// </param>
         void AttachQueryState<TQuery>(
             QueryState<TQuery> queryState,
             Func<TQuery, int, int, string?, TQuery>? pagingMutator = null,
-            Func<TQuery, SortSpec?, TQuery>? sortMutator = null
+            Func<TQuery, SortSpec?, TQuery>? sortMutator = null,
+            Func<TQuery, object>? structuralKey = null
         ) where TQuery : class;
 
         /// <summary>
@@ -424,10 +434,17 @@ namespace CretNet.Platform.Blazor.Services
         // the display order matches what the server returned.
         private readonly Dictionary<TId, int> _backedByOrder = new();
 
+        // Optional page-supplied structural-key func + last observed key.
+        // Used by LoadFromQuery to decide whether to clear selection across
+        // refetches (preserve when key unchanged, clear when it differs).
+        private Func<object, object>? _structuralKeyOf;
+        private object? _lastStructuralKey;
+
         public void AttachQueryState<TQuery>(
             QueryState<TQuery> queryState,
             Func<TQuery, int, int, string?, TQuery>? pagingMutator = null,
-            Func<TQuery, SortSpec?, TQuery>? sortMutator = null
+            Func<TQuery, SortSpec?, TQuery>? sortMutator = null,
+            Func<TQuery, object>? structuralKey = null
         ) where TQuery : class
         {
             ArgumentNullException.ThrowIfNull(queryState);
@@ -462,6 +479,9 @@ namespace CretNet.Platform.Blazor.Services
             }
 
             _reloader = ct => LoadFromQuery(queryState.Current, ct);
+
+            if (structuralKey is not null)
+                _structuralKeyOf = q => structuralKey((TQuery)q);
         }
 
         public void UpdateSort(SortSpec? sort)
@@ -502,7 +522,22 @@ namespace CretNet.Platform.Blazor.Services
                     }
                 });
 
-                ClearSelectedEntities();
+                // Selection policy: if the page supplied a structural-key
+                // function, preserve selection across refetches whose
+                // structural identity is unchanged (paging / sort) and
+                // clear it when the identity differs (filter / search).
+                // Without a key supplier, clear on every refetch (safe v1).
+                if (_structuralKeyOf is null)
+                {
+                    ClearSelectedEntities();
+                }
+                else
+                {
+                    var newKey = query is null ? null : _structuralKeyOf(query);
+                    if (_lastStructuralKey is null || !Equals(_lastStructuralKey, newKey))
+                        ClearSelectedEntities();
+                    _lastStructuralKey = newKey;
+                }
             }
             catch (OperationCanceledException)
             {

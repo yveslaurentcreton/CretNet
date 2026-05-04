@@ -100,6 +100,103 @@ For each legacy screen:
 10. **Once every screen using the entity is migrated**, remove the
     legacy definition and the `WithFetchPagedAction` overload usage.
 
+## CRUD parity via adapter actions
+
+The legacy `EntityDefinition` shared its `WithOpenAddDialogAction` /
+`WithOpenEditDialogAction` / `WithOpenRemoveDialogAction` wiring with
+the legacy data grid because the data source's `TEntity` matched what
+the dialog actions accepted. In BackedBy mode the data source is typed
+on a slim row projection (e.g. `ProjectListItem`), but the legacy
+dialog actions still take the full domain entity (`Project`). Two
+pieces close that gap:
+
+### 1. Per-op adapter actions
+
+Naming convention: `Open{Op}{Entity}FromListDialogAction`. Three
+flavours:
+
+```csharp
+// Add — takes context, dispatches the legacy add dialog,
+//       maps the created entity to the row.
+[CnpEntityAction(typeof(ProjectListItem), false, true)]
+public partial class OpenAddProjectFromListDialogAction(Guid? CustomerId, Guid? WorkerId)
+{
+    public async Task<ProjectListItem?> Effect(IDispatcher dispatcher)
+    {
+        var created = await dispatcher.DispatchAsync(new OpenAddProjectDialogAction(CustomerId, WorkerId));
+        return created is null ? null : MapToListItem(created);
+    }
+}
+
+// Edit / Remove — fetch the full entity by id first, then dispatch.
+[CnpEntityAction(typeof(ProjectListItem), false, true)]
+public partial class OpenEditProjectFromListDialogAction(ProjectListItem ListItem)
+{
+    public async Task<ProjectListItem?> Effect(IDispatcher dispatcher)
+    {
+        var project = await dispatcher.DispatchAsync(new FetchProjectAction(ListItem.Id));
+        if (project is null) return null;
+        var updated = await dispatcher.DispatchAsync(new OpenEditProjectDialogAction(project));
+        return updated is null ? null : MapToListItem(updated);
+    }
+}
+```
+
+Wire on the per-screen `XListDefinition` via the standard fluent
+methods:
+
+```csharp
+.WithOpenAddDialogAction<ProjectListDependencyArgs, OpenAddProjectFromListDialogAction>(
+    args => new OpenAddProjectFromListDialogAction(args.CustomerId, args.WorkerId))
+.WithOpenEditDialogAction(item => new OpenEditProjectFromListDialogAction(item))
+.WithOpenRemoveDialogAction(item => new OpenRemoveProjectFromListDialogAction(item));
+```
+
+The page-context args (`XListDependencyArgs` with `CustomerId`,
+`WorkerId`, etc.) flow through the grid component's
+`DependencyArgs` callback into the Add adapter.
+
+### 2. Auto-reload after Add / Edit / Remove
+
+Legacy data sources keep their cache in step with CRUD via the
+`SubscribeCreateSuccess` / `SubscribeUpdateSuccess` /
+`SubscribeDeleteSuccess` events the dispatched action fires —
+that works because the entity types line up. BackedBy adapter
+actions wrap a legacy dialog action whose entity type differs
+from the data source's `TEntity`, so those subscribe-success
+hooks fire for the **wrapped** entity (e.g. `Project`) and never
+reach the data source's `TEntity` (`ProjectListItem`).
+
+CretNet's `CnpDataSource.Add` / `Edit` / `Remove` therefore
+**auto-reload** the current `QueryState` after the underlying
+dispatch completes (in BackedBy mode). One extra round trip per
+CRUD op; cheap, reliable, and keeps the adapter actions trivial.
+
+The same auto-reload also covers bulk actions — see "Bulk
+SecondaryActions" below.
+
+## Bulk SecondaryActions parity
+
+Same adapter pattern as per-row CRUD, taking `IEnumerable<TRow>`
+instead of one row. The page-side `<SecondaryActions>` block
+dispatches the bulk adapter, which fetches the entities by id
+(if needed) and dispatches the legacy bulk dialog action.
+
+```csharp
+[CnpEntityAction(typeof(ProjectListItem), false, true)]
+public partial class OpenChangeProjectStatusFromListDialogAction(IEnumerable<Guid> Ids)
+{
+    public async Task<ProjectListItem?> Effect(IDispatcher dispatcher)
+    {
+        var dispatched = await dispatcher.DispatchAsync(new OpenChangeProjectStatusDialogAction(Ids));
+        return null;  // auto-reload picks up the changes
+    }
+}
+```
+
+Render in the grid's `<SecondaryActions>` slot, same as the legacy
+grid did.
+
 ## Gotchas
 
 - **TEntity vs TRow**. The legacy `WamTask` has client-computed

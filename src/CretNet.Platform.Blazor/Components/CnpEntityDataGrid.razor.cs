@@ -57,6 +57,11 @@ public partial class CnpEntityDataGrid<TGridItem, TId> : CnpComponent
 
     private bool _filterControlsOpen;
 
+    // Anchor id must be unique per grid instance — a page can render several
+    // grids (e.g. one per tab on a detail page), and FluentPopover anchors to
+    // the first element carrying the id, which may be a hidden one.
+    private readonly string _filterControlsButtonId = Identifier.NewId();
+
     [Parameter] public bool IsPrimary { get; set; } = true;
     [Parameter] public Func<TGridItem, bool>? CustomFilterFunc { get; set; }
     [Parameter] public Func<object>? DependencyArgs { get; set; }

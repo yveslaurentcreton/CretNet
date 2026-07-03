@@ -43,11 +43,11 @@
                     <FluentSearch Style="width: 100%; min-width: 200px;" @bind-Value="DataSource.Filter" @bind-Value:after="OnSearchChanged" Immediate/>
                     @if (FilterControls is not null)
                     {
-                        <FluentButton id="cnpFilterControlsButton" slot="end"
+                        <FluentButton id="@_filterControlsButtonId" slot="end"
                                       Appearance="Appearance.Stealth"
                                       IconEnd="@(new Icons.Regular.Size20.Filter())"
                                       @onclick="() => _filterControlsOpen = !_filterControlsOpen" />
-                        <FluentPopover AnchorId="cnpFilterControlsButton"
+                        <FluentPopover AnchorId="@_filterControlsButtonId"
                                        @bind-Open="_filterControlsOpen"
                                        AutoFocus="true"
                                        FixedPlacement="true">

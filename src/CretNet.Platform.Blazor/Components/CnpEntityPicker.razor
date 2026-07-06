@@ -6,34 +6,38 @@
 @using CretNet.Platform.Querying
 @using Microsoft.FluentUI.AspNetCore.Components
 
-<div style="display: flex; flex-direction: row; align-items: end; gap: 4px; flex-grow: 1;">
-    <div style="flex-grow: 1;">
-        <FluentCombobox id="@_inputId"
-                        TOption="TItem"
-                        Height="200px"
-                        Items="_items"
-                        Label="@DisplayedLabel"
-                        Placeholder="@Placeholder"
-                        OptionText="x => x.DisplayLabel"
-                        OptionValue="x => x.Id.ToString()"
-                        @bind-SelectedOption:get="_selectedItem"
-                        @bind-SelectedOption:set="OnSelectionChangedAsync"
-                        @oninput="OnTypedAsync"
-                        ReadOnly="ReadOnly"
-                        Disabled="Disabled || ReadOnly"
-                        Required="Required" />
+<div style="flex-grow: 1;">
+    @* The validation message lives OUTSIDE this row: with align-items:end the
+       add button would drop down next to the message once it appears. *@
+    <div style="display: flex; flex-direction: row; align-items: end; gap: 4px;">
+        <div style="flex-grow: 1;">
+            <FluentCombobox id="@_inputId"
+                            TOption="TItem"
+                            Height="200px"
+                            Items="_items"
+                            Label="@DisplayedLabel"
+                            Placeholder="@Placeholder"
+                            OptionText="x => x.DisplayLabel"
+                            OptionValue="x => x.Id.ToString()"
+                            @bind-SelectedOption:get="_selectedItem"
+                            @bind-SelectedOption:set="OnSelectionChangedAsync"
+                            @oninput="OnTypedAsync"
+                            ReadOnly="ReadOnly"
+                            Disabled="Disabled || ReadOnly"
+                            Required="Required" />
+        </div>
 
-        @if (For is not null)
+        @if (ShowAdd && OnAddAsync.HasDelegate)
         {
-            <FluentValidationMessage For="@For" />
+            <FluentButton IconStart="@(new Icons.Regular.Size16.Add())"
+                          OnClick="OnAddClickedAsync"
+                          Disabled="Disabled || ReadOnly"
+                          title="@($"Add {DisplayedLabel}")" />
         }
     </div>
 
-    @if (ShowAdd && OnAddAsync.HasDelegate)
+    @if (For is not null)
     {
-        <FluentButton IconStart="@(new Icons.Regular.Size16.Add())"
-                      OnClick="OnAddClickedAsync"
-                      Disabled="Disabled || ReadOnly"
-                      title="@($"Add {DisplayedLabel}")" />
+        <FluentValidationMessage For="@For" />
     }
 </div>

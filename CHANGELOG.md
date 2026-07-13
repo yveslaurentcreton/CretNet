@@ -1,3 +1,16 @@
+# [0.7.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.6.1...v0.7.0) (2026-07-13)
+
+
+### Bug Fixes
+
+* **blazor:** entity picker validation message no longer drops the add button ([c4a4591](https://github.com/yveslaurentcreton/CretNet/commit/c4a459191586c7247586fd8b523d671422af4e66))
+* **blazor:** unique filter-popover anchor ids per component instance ([22d2ce6](https://github.com/yveslaurentcreton/CretNet/commit/22d2ce6fb0f51b7f947577bdd4a1eee59210d9b2))
+
+
+### Features
+
+* **picker+datasource:** ShowAdd, FluentCombobox sizing, BackedBy lifecycle ([14495e1](https://github.com/yveslaurentcreton/CretNet/commit/14495e15e1471238d5b7113a15c0e6da9aaf54bc))
+
 ## [0.6.1](https://github.com/yveslaurentcreton/CretNet/compare/v0.6.0...v0.6.1) (2026-02-26)
 
 

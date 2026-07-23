@@ -6,37 +6,30 @@ using IFluentToastService = IToastService;
 
 public class CnpToastService : ICnpToastService
 {
-    private readonly IMessageService _messageService;
     private readonly IFluentToastService _fluentToastService;
 
-    public CnpToastService(IMessageService messageService, IFluentToastService fluentToastService)
+    public CnpToastService(IFluentToastService fluentToastService)
     {
-        _messageService = messageService;
         _fluentToastService = fluentToastService;
     }
     
     public void Show(ToastTypes toastType, string title, string message, params object[] messageParameters)
     {
         var toastIntent = ToastIntent.Custom;
-        var messageIntent = MessageIntent.Custom;
 
         switch (toastType)
         {
             case ToastTypes.Info:
                 toastIntent = ToastIntent.Info;
-                messageIntent = MessageIntent.Info;
                 break;
             case ToastTypes.Success:
                 toastIntent = ToastIntent.Success;
-                messageIntent = MessageIntent.Success;
                 break;
             case ToastTypes.Warning:
                 toastIntent = ToastIntent.Warning;
-                messageIntent = MessageIntent.Warning;
                 break;
             case ToastTypes.Error:
                 toastIntent = ToastIntent.Error;
-                messageIntent = MessageIntent.Error;
                 break;
             default:
                 break;
@@ -50,15 +43,6 @@ public class CnpToastService : ICnpToastService
         if (messageParameters.Length != 0)
             formattedMessage = Smart.Format(message, messageParameters);
         
-        _messageService.ShowMessageBar(options =>
-        {
-            options.Intent = messageIntent;
-            options.Title = formattedTitle;
-            options.Body = formattedMessage.Replace("\r\n", "<br/>");
-            options.Timestamp = DateTime.Now;
-            options.Section = "MESSAGES_NOTIFICATION_CENTER";
-        });
-
         _fluentToastService.ShowCommunicationToast(new ToastParameters<CommunicationToastContent>()
         {
             Intent = toastIntent,

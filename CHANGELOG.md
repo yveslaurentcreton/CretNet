@@ -1,3 +1,10 @@
+# [0.8.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.7.0...v0.8.0) (2026-07-23)
+
+
+### Features
+
+* **blazor:** add durable notification inbox ([998ebb1](https://github.com/yveslaurentcreton/CretNet/commit/998ebb1f34853ca9585139521a99834e6c57cdb3))
+
 # [0.7.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.6.1...v0.7.0) (2026-07-13)
 
 

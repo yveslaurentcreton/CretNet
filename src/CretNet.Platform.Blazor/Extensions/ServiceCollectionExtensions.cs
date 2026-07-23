@@ -4,6 +4,7 @@ using CretNet.Platform.Blazor.Services;
 using CretNet.Platform.Blazor.Services.Countries;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FluentUI.AspNetCore.Components;
+using CretNet.Platform.Blazor.Notifications;
 
 namespace CretNet.Platform.Blazor.Extensions;
 
@@ -25,6 +26,7 @@ public static class ServiceCollectionExtensions
         
         // Implementations
         services.AddScoped<ICnpToastService, CnpToastService>();
+        services.AddScoped<CnpNotificationState>();
         services.AddScoped<IBreadcrumbService, BreadcrumbService>();
         services.AddScoped<ICnpSectionService, CnpSectionService>();
         services.AddScoped<INavigationService, NavigationService>();

@@ -1,0 +1,68 @@
+.cnp-inbox {
+    --inbox-ink: var(--cn-text, #1d2320);
+    --inbox-muted: var(--cn-text-muted, #67706b);
+    --inbox-line: var(--cn-border, #e2e7e3);
+    --inbox-surface: var(--cn-surface, #fff);
+    --inbox-soft: var(--cn-bg, #f5f7f5);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: min(760px, calc(100vh - 48px));
+    margin: -20px;
+    background: var(--inbox-surface);
+    color: var(--inbox-ink);
+    font-family: var(--cn-font, ui-sans-serif, system-ui, sans-serif);
+}
+
+.cnp-inbox-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 26px 24px 18px;
+    border-bottom: 1px solid var(--inbox-line);
+    background: linear-gradient(145deg, color-mix(in srgb, var(--cn-accent, #17af3d) 8%, var(--inbox-surface)), var(--inbox-surface) 68%);
+}
+
+.cnp-inbox-eyebrow { color: var(--cn-accent, #17af3d); font-size: .65rem; font-weight: 850; letter-spacing: .16em; }
+.cnp-inbox-header h2 { margin: 5px 0 2px; font-size: 1.55rem; letter-spacing: -.035em; }
+.cnp-inbox-header p { margin: 0; color: var(--inbox-muted); font-size: .82rem; }
+.cnp-icon-action { width: 34px; height: 34px; border: 1px solid var(--inbox-line); border-radius: 50%; background: color-mix(in srgb, var(--inbox-surface) 82%, transparent); color: var(--inbox-muted); font: 400 1.35rem/1 inherit; cursor: pointer; }
+
+.cnp-inbox-filters { display: flex; gap: 5px; overflow-x: auto; padding: 12px 18px 10px; border-bottom: 1px solid var(--inbox-line); scrollbar-width: none; }
+.cnp-inbox-filters button { border: 0; border-radius: 7px; background: transparent; color: var(--inbox-muted); padding: 7px 10px; font: 700 .73rem inherit; white-space: nowrap; cursor: pointer; }
+.cnp-inbox-filters button.is-active { background: var(--inbox-ink); color: var(--inbox-surface); }
+
+.cnp-inbox-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 9px 20px; background: var(--inbox-soft); color: var(--inbox-muted); font-size: .72rem; }
+.cnp-inbox-toolbar button, .cnp-item-actions button { border: 0; background: none; color: var(--cn-accent-strong, #128f32); font: 750 .7rem inherit; cursor: pointer; }
+.cnp-inbox-content { flex: 1; overflow-y: auto; padding-bottom: 24px; }
+.cnp-inbox-day { padding: 18px 22px 7px; color: var(--inbox-muted); font-size: .66rem; font-weight: 850; letter-spacing: .09em; text-transform: uppercase; }
+
+.cnp-inbox-item { margin: 0 14px 8px; overflow: hidden; border: 1px solid var(--inbox-line); border-radius: 11px; background: var(--inbox-surface); transition: border-color 140ms ease, transform 140ms ease; }
+.cnp-inbox-item:hover { border-color: color-mix(in srgb, var(--cn-accent, #17af3d) 38%, var(--inbox-line)); transform: translateY(-1px); }
+.cnp-inbox-item.is-unread { box-shadow: inset 3px 0 var(--cn-accent, #17af3d); }
+.cnp-item-main { display: grid; grid-template-columns: 10px minmax(0, 1fr) 12px; gap: 8px; width: 100%; border: 0; background: transparent; color: inherit; padding: 13px 13px 10px; text-align: left; font: inherit; cursor: pointer; }
+.cnp-item-indicator { width: 7px; height: 7px; margin-top: 5px; border-radius: 50%; background: #5e7ea8; }
+.is-success .cnp-item-indicator { background: var(--cn-accent, #17af3d); }
+.is-warning .cnp-item-indicator { background: #d68a19; }
+.is-error .cnp-item-indicator { background: #cf3434; }
+.cnp-item-copy { display: grid; min-width: 0; gap: 4px; }
+.cnp-item-meta { display: flex; justify-content: space-between; gap: 8px; color: var(--inbox-muted); font-size: .65rem; font-weight: 650; }
+.cnp-item-copy strong { font-size: .84rem; letter-spacing: -.01em; }
+.cnp-item-message { display: -webkit-box; overflow: hidden; color: var(--inbox-muted); font-size: .75rem; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.cnp-action-label { width: max-content; margin-top: 3px; border-radius: 5px; background: #fff0db; color: #9b5900; padding: 3px 6px; font-size: .62rem; font-weight: 800; text-transform: uppercase; }
+.cnp-item-chevron { align-self: center; color: var(--inbox-muted); font-size: 1.25rem; }
+.cnp-item-actions { display: flex; gap: 12px; padding: 0 13px 9px 30px; opacity: .7; }
+.cnp-item-actions button:last-child { color: var(--inbox-muted); }
+
+.cnp-inbox-empty { display: grid; justify-items: center; gap: 8px; padding: 72px 30px; color: var(--inbox-muted); text-align: center; }
+.cnp-inbox-empty strong { color: var(--inbox-ink); font-size: .95rem; }
+.cnp-inbox-empty p { max-width: 280px; margin: 0; font-size: .78rem; line-height: 1.5; }
+.cnp-empty-mark { display: grid; place-items: center; width: 46px; height: 46px; margin-bottom: 5px; border: 1px solid color-mix(in srgb, var(--cn-accent, #17af3d) 30%, var(--inbox-line)); border-radius: 14px; background: color-mix(in srgb, var(--cn-accent, #17af3d) 9%, var(--inbox-surface)); color: var(--cn-accent, #17af3d); font-size: 1.2rem; }
+.cnp-inbox-error button, .cnp-load-more { border: 1px solid var(--inbox-line); border-radius: 8px; background: var(--inbox-surface); color: var(--inbox-ink); padding: 8px 12px; font: 700 .74rem inherit; cursor: pointer; }
+.cnp-inbox-loading { display: grid; gap: 9px; padding: 24px 14px; }
+.cnp-inbox-loading span { height: 92px; border-radius: 11px; background: linear-gradient(100deg, var(--inbox-soft) 20%, color-mix(in srgb, var(--inbox-soft) 55%, white) 40%, var(--inbox-soft) 60%); background-size: 200% 100%; animation: cnp-shimmer 1.2s infinite; }
+.cnp-load-more { display: block; margin: 16px auto; }
+
+@keyframes cnp-shimmer { to { background-position-x: -200%; } }
+@media (prefers-reduced-motion: reduce) { .cnp-inbox-item, .cnp-inbox-loading span { transition: none; animation: none; } }

@@ -1,22 +1,194 @@
-﻿@implements IDialogContentComponent<GlobalState>
-@inject IMessageService MessageService
+@using System.Globalization
+@using CretNet.Platform.Blazor.Notifications
+@implements IDialogContentComponent<GlobalState>
+@implements IDisposable
+@inject CnpNotificationState Notifications
+@inject NavigationManager Navigation
+@* The panel itself is supplied by Fluent UI; all content/state is CretNet-owned. *@
 
-<div>
+<section class="cnp-inbox" aria-label="Meldingen">
+    <header class="cnp-inbox-header">
+        <div>
+            <span class="cnp-inbox-eyebrow">ACTIVITEIT</span>
+            <h2>Meldingen</h2>
+            <p>@Summary</p>
+        </div>
+        <button type="button" class="cnp-icon-action" title="Sluiten" aria-label="Sluiten" @onclick="CloseAsync">×</button>
+    </header>
 
-    <FluentStack>
-        <FluentSpacer />
+    <nav class="cnp-inbox-filters" aria-label="Meldingen filteren">
+        @FilterButton(CnpNotificationFilter.All, "Alles")
+        @FilterButton(CnpNotificationFilter.Unread, "Ongelezen")
+        @FilterButton(CnpNotificationFilter.ActionRequired, $"Actie {Notifications.ActionRequiredCount}")
+        @FilterButton(CnpNotificationFilter.Archived, "Archief")
+    </nav>
 
-        <FluentAnchor Appearance="@Appearance.Hypertext" Href="javascript:void(0)" OnClick="@(e => MessageService.Clear("MESSAGES_NOTIFICATION_CENTER") )">
-            Dismiss all
-        </FluentAnchor>
-    </FluentStack>
+    @if (Notifications.UnreadCount > 0 && Notifications.Filter != CnpNotificationFilter.Archived)
+    {
+        <div class="cnp-inbox-toolbar">
+            <span>@Notifications.UnreadCount ongelezen</span>
+            <button type="button" @onclick="MarkAllReadAsync">Alles gelezen</button>
+        </div>
+    }
 
-    <br />
+    <div class="cnp-inbox-content" aria-live="polite">
+        @if (Notifications.IsLoading)
+        {
+            <div class="cnp-inbox-loading"><span></span><span></span><span></span></div>
+        }
+        else if (Notifications.Error is not null)
+        {
+            <div class="cnp-inbox-empty cnp-inbox-error">
+                <strong>Meldingen konden niet worden geladen</strong>
+                <p>@Notifications.Error</p>
+                <button type="button" @onclick="RefreshAsync">Opnieuw proberen</button>
+            </div>
+        }
+        else if (Notifications.Items.Count == 0)
+        {
+            <div class="cnp-inbox-empty">
+                <span class="cnp-empty-mark">✓</span>
+                <strong>@EmptyTitle</strong>
+                <p>@EmptyText</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var group in Notifications.Items.GroupBy(item => DayLabel(item.OccurredAt)))
+            {
+                <div class="cnp-inbox-day">@group.Key</div>
+                @foreach (var item in group)
+                {
+                    <article class="cnp-inbox-item @SeverityClass(item) @(item.ReadAt is null ? "is-unread" : null)">
+                        <button type="button" class="cnp-item-main" @onclick="() => OpenAsync(item)">
+                            <span class="cnp-item-indicator" aria-hidden="true"></span>
+                            <span class="cnp-item-copy">
+                                <span class="cnp-item-meta">
+                                    <span>@CategoryLabel(item.Category)</span>
+                                    <time datetime="@item.OccurredAt.ToString("O")">@TimeLabel(item.OccurredAt)</time>
+                                </span>
+                                <strong>@item.Title</strong>
+                                <span class="cnp-item-message">@item.Message</span>
+                                @if (item.RequiresAction)
+                                {
+                                    <span class="cnp-action-label">Actie vereist</span>
+                                }
+                            </span>
+                            @if (item.ActionPath is not null)
+                            {
+                                <span class="cnp-item-chevron" aria-hidden="true">›</span>
+                            }
+                        </button>
+                        <div class="cnp-item-actions">
+                            <button type="button" @onclick="() => ToggleReadAsync(item)">
+                                @(item.ReadAt is null ? "Gelezen" : "Ongelezen")
+                            </button>
+                            @if (Notifications.Filter != CnpNotificationFilter.Archived)
+                            {
+                                <button type="button" @onclick="() => ArchiveAsync(item)">Archiveer</button>
+                            }
+                        </div>
+                    </article>
+                }
+            }
 
-    <FluentMessageBarProvider Section="MESSAGES_NOTIFICATION_CENTER" MaxMessageCount="-1" Type="@MessageType.Notification" />
-</div>
+            @if (Notifications.NextCursor is not null)
+            {
+                <button type="button" class="cnp-load-more" disabled="@Notifications.IsLoadingMore" @onclick="LoadMoreAsync">
+                    @(Notifications.IsLoadingMore ? "Laden…" : "Eerdere meldingen")
+                </button>
+            }
+        }
+    </div>
+</section>
 
 @code {
-    [Parameter]
-    public GlobalState Content { get; set; } = default!;
+    [Parameter] public GlobalState Content { get; set; } = default!;
+    [CascadingParameter] public FluentDialog Dialog { get; set; } = default!;
+
+    private string Summary => Notifications.ActionRequiredCount > 0
+        ? $"{Notifications.ActionRequiredCount} vragen je aandacht"
+        : "Je bent helemaal bij";
+
+    private string EmptyTitle => Notifications.Filter switch
+    {
+        CnpNotificationFilter.Archived => "Nog niets gearchiveerd",
+        CnpNotificationFilter.ActionRequired => "Geen openstaande acties",
+        CnpNotificationFilter.Unread => "Alles gelezen",
+        _ => "Nog geen meldingen"
+    };
+
+    private string EmptyText => Notifications.Filter == CnpNotificationFilter.All
+        ? "Belangrijke achtergrondresultaten verschijnen voortaan hier."
+        : "Er zijn geen meldingen voor deze selectie.";
+
+    protected override void OnInitialized()
+    {
+        Notifications.Changed += OnChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await Notifications.RefreshAsync();
+    }
+
+    private RenderFragment FilterButton(CnpNotificationFilter filter, string label) => @<button
+        type="button"
+        class="@(Notifications.Filter == filter ? "is-active" : null)"
+        aria-pressed="@(Notifications.Filter == filter)"
+        @onclick="() => ChangeFilterAsync(filter)">@label</button>;
+
+    private Task ChangeFilterAsync(CnpNotificationFilter filter) => Notifications.RefreshAsync(filter);
+    private Task RefreshAsync() => Notifications.RefreshAsync();
+    private Task LoadMoreAsync() => Notifications.LoadMoreAsync();
+    private Task MarkAllReadAsync() => Notifications.MarkAllReadAsync();
+    private Task ToggleReadAsync(CnpNotificationItem item) => Notifications.SetReadAsync(item, item.ReadAt is null);
+    private Task ArchiveAsync(CnpNotificationItem item) => Notifications.ArchiveAsync(item);
+
+    private async Task OpenAsync(CnpNotificationItem item)
+    {
+        if (item.ReadAt is null)
+            await Notifications.SetReadAsync(item, true);
+        if (item.ActionPath is null)
+            return;
+
+        Navigation.NavigateTo(item.ActionPath);
+        await CloseAsync();
+    }
+
+    private Task CloseAsync() => Dialog.CancelAsync();
+
+    private static string SeverityClass(CnpNotificationItem item) => item.Severity switch
+    {
+        CnpNotificationSeverity.Error => "is-error",
+        CnpNotificationSeverity.Warning => "is-warning",
+        CnpNotificationSeverity.Success => "is-success",
+        _ => "is-info"
+    };
+
+    private static string CategoryLabel(string category) => category switch
+    {
+        "Billing" => "Facturatie",
+        "Payments" => "Betalingen",
+        "Work" => "Werk",
+        "Inventory" => "Voorraad",
+        _ => "Systeem"
+    };
+
+    private static string DayLabel(DateTimeOffset value)
+    {
+        var local = value.ToLocalTime().Date;
+        var today = DateTime.Today;
+        if (local == today)
+            return "Vandaag";
+        if (local == today.AddDays(-1))
+            return "Gisteren";
+        return local.ToString("dddd d MMMM", CultureInfo.CurrentCulture);
+    }
+
+    private static string TimeLabel(DateTimeOffset value) => value.ToLocalTime().ToString("HH:mm");
+    private void OnChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose() => Notifications.Changed -= OnChanged;
 }

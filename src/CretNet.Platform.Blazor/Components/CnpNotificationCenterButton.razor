@@ -1,77 +1,86 @@
-﻿@implements IDisposable
+@using CretNet.Platform.Blazor.Notifications
+@implements IDisposable
 @inject IDialogService DialogService
-@inject IMessageService MessageService
+@inject CnpNotificationState Notifications
 
-<FluentButton BackgroundColor="var(--accent-fill-rest)" OnClick="OpenNotificationCenterAsync" Title="Notification center">
-@if (MessageService.Count("MESSAGES_NOTIFICATION_CENTER") > 0)
-{
-    <FluentCounterBadge Count="@MessageService.Count("MESSAGES_NOTIFICATION_CENTER")"
-                        Max="9"
-                        ShowOverflow="true"
-                        BackgroundColor="@Color.Error"
-                        Color="Color.Fill"
-                        Appearance="Appearance.Accent">
-        <ChildContent>
-            @NotificationIcon()
-        </ChildContent>
-    </FluentCounterBadge>
-}
-else
-{
-    @NotificationIcon() 
-}
-</FluentButton>
+<button type="button"
+        class="cnp-notification-trigger cn-icon-btn"
+        title="Meldingen"
+        aria-label="Meldingen: @Notifications.UnreadCount ongelezen"
+        @onclick="OpenNotificationCenterAsync">
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M8 2.2a4 4 0 0 1 4 4v2.6l1.2 2.2H2.8L4 8.8V6.2a4 4 0 0 1 4-4Z" />
+        <path d="M6.6 13.2a1.5 1.5 0 0 0 2.8 0" />
+    </svg>
+    @if (Notifications.UnreadCount > 0)
+    {
+        <span class="cnp-notification-count">@(Notifications.UnreadCount > 99 ? "99+" : Notifications.UnreadCount)</span>
+    }
+</button>
 
 @code {
-    private IDialogReference? _dialog;
-   
+    private PeriodicTimer? _timer;
+    private CancellationTokenSource? _pollCancellation;
+
     protected override void OnInitialized()
     {
-        MessageService.OnMessageItemsUpdated += UpdateCount;    
+        Notifications.Changed += OnChanged;
+        _pollCancellation = new CancellationTokenSource();
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
+        _ = PollAsync(_pollCancellation.Token);
     }
 
-    private void UpdateCount()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        InvokeAsync(StateHasChanged);
+        if (firstRender)
+            await SafeRefreshSummaryAsync();
     }
-
-    private RenderFragment NotificationIcon() =>
-        @<FluentIcon Value="@(new Icons.Regular.Size20.Alert())" Color="Color.Fill"  Title="Notification center" />;
 
     private async Task OpenNotificationCenterAsync()
     {
-        // DemoLogger.WriteLine($"Open notification center");
-
-        _dialog = await DialogService.ShowPanelAsync<CnpNotificationCenter>(new DialogParameters<GlobalState>()
-            {
-                Alignment = HorizontalAlignment.Right,
-                Title = "Notifications",
-                PrimaryAction = null,
-                SecondaryAction = null,
-                ShowDismiss = true
-            });
-        var result = await _dialog.Result;
-        HandlePanel(result);
+        await DialogService.ShowPanelAsync<CnpNotificationCenter>(new DialogParameters<GlobalState>
+        {
+            Alignment = HorizontalAlignment.Right,
+            Title = null,
+            PrimaryAction = null,
+            SecondaryAction = null,
+            ShowDismiss = false,
+            Width = "min(440px, 100vw)"
+        });
     }
 
-    private static void HandlePanel(DialogResult result)
+    private async Task PollAsync(CancellationToken cancellationToken)
     {
-        if (result.Cancelled)
+        try
         {
-            // DemoLogger.WriteLine($"Notification center dismissed");
-            return;
+            while (_timer is not null && await _timer.WaitForNextTickAsync(cancellationToken))
+                await SafeRefreshSummaryAsync(cancellationToken);
         }
-
-        if (result.Data is not null)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            // DemoLogger.WriteLine($"Notification center closed");
-            return;
         }
     }
+
+    private async Task SafeRefreshSummaryAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await Notifications.RefreshSummaryAsync(cancellationToken);
+        }
+        catch
+        {
+            // The durable inbox catches up on the next tick/open; the shell
+            // should not surface a recurring connectivity toast.
+        }
+    }
+
+    private void OnChanged() => _ = InvokeAsync(StateHasChanged);
 
     public void Dispose()
     {
-        MessageService.OnMessageItemsUpdated -= UpdateCount;
+        Notifications.Changed -= OnChanged;
+        _pollCancellation?.Cancel();
+        _pollCancellation?.Dispose();
+        _timer?.Dispose();
     }
-
 }

@@ -1,0 +1,35 @@
+@using CretNet.Platform.Blazor.Ui.Dialogs
+@implements IDisposable
+@inject CnDialogService DialogService
+
+@* Lifted from HCMT.WasmApp/Ui (ADR-011, S-075): renders the CnDialogService
+   stack. Chrome text is a parameter instead of a CnpLabels reach (the lift's
+   standing rule); hosts pass a localized string when they care. *@
+
+@foreach (var dialog in DialogService.Stack)
+{
+    var titleId = $"cn-dialog-title-{System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(dialog):x}";
+    <div class="cn-overlay">
+        <div class="cn-overlay-backdrop" @onclick="dialog.Cancel"></div>
+        <div class="cn-dialog" style="@($"max-width: {dialog.Width ?? "560px"}")" role="dialog" aria-modal="true" aria-labelledby="@titleId">
+            <div class="cn-dialog-header">
+                <h3 id="@titleId" class="cn-dialog-title">@dialog.Title</h3>
+                <span class="cn-card-spacer"></span>
+                <CnButton Role="CnButtonRole.Subtle" Icon="CnIconKind.Dismiss" Title="@CancelTitle" OnClick="() => dialog.Cancel()"/>
+            </div>
+            <CascadingValue Value="dialog" IsFixed="true">
+                <DynamicComponent Type="dialog.ContentType" Parameters="dialog.Parameters" />
+            </CascadingValue>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string CancelTitle { get; set; } = "Cancel";
+
+    protected override void OnInitialized() => DialogService.Changed += OnChanged;
+
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose() => DialogService.Changed -= OnChanged;
+}

@@ -1,0 +1,14 @@
+@* Renders nothing itself: registers with the owning CnTabs, which renders
+   the tab strip and the active tab's ChildContent. *@
+
+@code {
+    [CascadingParameter] public CnTabs Tabs { get; set; } = default!;
+
+    [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
+    [Parameter] public int? Count { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    internal ElementReference ButtonReference { get; set; }
+
+    protected override void OnInitialized() => Tabs.AddTab(this);
+}

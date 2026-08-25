@@ -1,0 +1,20 @@
+@using CretNet.Platform.Blazor.Ui.Dialogs
+
+@* Lifted from HCMT.WasmApp/Ui: yes/no confirmation content on the Cn dialog
+   stack. Button labels are parameters instead of CnpLabels reaches; the
+   ConfirmAsync extension passes localized strings through. *@
+
+<div class="cn-dialog-body">
+    <p style="margin: 0;">@Message</p>
+</div>
+<div class="cn-dialog-footer">
+    <CnButton Label="@NoLabel" OnClick="() => Dialog.Cancel()"/>
+    <CnButton Label="@YesLabel" Role="CnButtonRole.Accent" OnClick="() => Dialog.Close(true)"/>
+</div>
+
+@code {
+    [CascadingParameter] public CnDialogInstance Dialog { get; set; } = default!;
+    [Parameter] public string Message { get; set; } = string.Empty;
+    [Parameter] public string YesLabel { get; set; } = "Yes";
+    [Parameter] public string NoLabel { get; set; } = "No";
+}

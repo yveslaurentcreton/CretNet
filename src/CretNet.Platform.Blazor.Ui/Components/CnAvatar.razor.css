@@ -1,0 +1,11 @@
+.cn-avatar {
+    display: grid; place-items: center; flex: none;
+    border-radius: 50%;
+    background: var(--cn-accent-tint);
+    color: var(--cn-accent-hover);
+    font-family: var(--cn-font);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.cn-avatar--photo { object-fit: cover; background: var(--cn-ground); }

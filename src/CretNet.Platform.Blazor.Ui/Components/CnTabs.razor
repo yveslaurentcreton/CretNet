@@ -1,0 +1,108 @@
+@* Own tabs (S-084): CnTab children register themselves via cascading, the
+   same mechanism CnGridColumn uses on CnDataGrid. Only the active tab's
+   ChildContent renders — inactive tabs never build their markup. *@
+
+<CascadingValue Value="this" IsFixed="true">@ChildContent</CascadingValue>
+
+<div class="cn-tabs @Class">
+    <div class="cn-tabs-list" role="tablist">
+        @foreach (var tab in _tabs)
+        {
+            var current = tab;
+            <button type="button"
+                    id="@TabId(current)"
+                    class="cn-tab @(current == _active ? "cn-tab--active" : null)"
+                    role="tab"
+                    aria-selected="@(current == _active ? "true" : "false")"
+                    aria-controls="@PanelId"
+                    tabindex="@(current == _active ? 0 : -1)"
+                    @ref="current.ButtonReference"
+                    @onkeydown="args => HandleKeyDownAsync(args, current)"
+                    @onclick="() => Activate(current)">
+                @current.Label
+                @if (current.Count is not null)
+                {
+                    <span class="cn-tab-count">@current.Count</span>
+                }
+            </button>
+        }
+        @if (RightContent is not null)
+        {
+            <div class="cn-tabs-right">@RightContent</div>
+        }
+    </div>
+    <div id="@PanelId"
+         class="cn-tabs-panel"
+         role="tabpanel"
+         aria-labelledby="@(_active is null ? null : TabId(_active))">
+        @_active?.ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Right-aligned content on the tab row itself (mock P3: the
+    /// period chip lives beside the tabs, valid for every tab).</summary>
+    [Parameter] public RenderFragment? RightContent { get; set; }
+
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public int InitialActiveIndex { get; set; }
+
+    /// <summary>
+    /// Optional: raised with the new tab index on user activation, so a host
+    /// can mirror the active tab into the URL (single source of truth).
+    /// </summary>
+    [Parameter] public EventCallback<int> ActiveIndexChanged { get; set; }
+
+    private readonly List<CnTab> _tabs = [];
+    private readonly string _id = $"cn-tabs-{Guid.NewGuid():N}";
+    private CnTab? _active;
+
+    private string PanelId => $"{_id}-panel";
+
+    internal void AddTab(CnTab tab)
+    {
+        _tabs.Add(tab);
+        if (_tabs.Count - 1 == InitialActiveIndex)
+            _active = tab;
+        else
+            _active ??= tab;
+        StateHasChanged();
+    }
+
+    private async Task Activate(CnTab tab)
+    {
+        if (_active == tab)
+            return;
+
+        _active = tab;
+        if (ActiveIndexChanged.HasDelegate)
+            await ActiveIndexChanged.InvokeAsync(_tabs.IndexOf(tab));
+    }
+
+    private string TabId(CnTab tab) => $"{_id}-tab-{_tabs.IndexOf(tab)}";
+
+    private async Task HandleKeyDownAsync(KeyboardEventArgs args, CnTab current)
+    {
+        var currentIndex = _tabs.IndexOf(current);
+        if (currentIndex < 0 || _tabs.Count == 0)
+            return;
+
+        var targetIndex = args.Key switch
+        {
+            "ArrowRight" or "ArrowDown" => (currentIndex + 1) % _tabs.Count,
+            "ArrowLeft" or "ArrowUp" => (currentIndex - 1 + _tabs.Count) % _tabs.Count,
+            "Home" => 0,
+            "End" => _tabs.Count - 1,
+            _ => currentIndex,
+        };
+        if (targetIndex == currentIndex)
+            return;
+
+        var target = _tabs[targetIndex];
+        await Activate(target);
+        await InvokeAsync(StateHasChanged);
+        await target.ButtonReference.FocusAsync();
+    }
+}

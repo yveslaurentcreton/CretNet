@@ -1,0 +1,31 @@
+.cnb { display: flex; align-items: center; gap: 6px; min-width: 0; font: 600 13px/1 var(--cn-font); }
+
+.cnb a, .cnb-link { color: var(--cn-text-2); text-decoration: none; white-space: nowrap; }
+
+.cnb a:hover { color: var(--cn-accent-hover); }
+
+.cnb-sep { color: var(--cn-stroke); font-weight: 400; }
+
+.cnb-here { color: var(--cn-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.cnb-more {
+    border: 0; background: transparent; padding: 2px 5px; border-radius: 4px;
+    color: var(--cn-text-2); font: 600 13px/1 var(--cn-font); cursor: pointer;
+}
+
+.cnb-more:hover { background: var(--cn-ground); color: var(--cn-text); }
+
+.cnb-more-wrap { position: relative; }
+
+.cnb-backdrop { position: fixed; inset: 0; z-index: 39; background: transparent; border: 0; padding: 0; cursor: default; }
+
+.cnb-menu {
+    position: absolute; left: 0; top: 24px; z-index: 40; min-width: 180px;
+    padding: 6px; display: grid;
+    border: 1px solid var(--cn-stroke-soft); border-radius: 10px;
+    background: var(--cn-card); box-shadow: var(--cn-shadow);
+}
+
+.cnb-menu a, .cnb-menu .cnb-link { padding: 7px 9px; border-radius: 6px; font: 600 12.5px/1.2 var(--cn-font); color: var(--cn-text); }
+
+.cnb-menu a:hover { background: var(--cn-row-hover); color: var(--cn-text); }

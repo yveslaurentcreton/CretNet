@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCretNetBlazorUi(this IServiceCollection services)
     {
         services.AddScoped<Theme.CnThemeService>();
+        services.AddScoped<Dialogs.CnDialogService>();
         return services;
     }
 }

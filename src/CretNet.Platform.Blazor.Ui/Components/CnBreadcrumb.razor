@@ -1,0 +1,75 @@
+@* S-265 (owner 2026-08-19): the place indicator, rebuilt from scratch and
+   CretNet-bound — pure presentation, no services or app types. Feed it
+   items; the last one is "here" (ink, ellipsised), ancestors render as
+   links, and anything deeper than section + parent folds behind an "…"
+   menu so the trail never grows past two levels + current. *@
+
+@if (Items is { Count: > 0 })
+{
+    <nav class="cnb" aria-label="@AriaLabel">
+        @if (Ancestors.Count <= MaxAncestors)
+        {
+            @foreach (var crumb in Ancestors)
+            {
+                @Link(crumb)
+                <span class="cnb-sep" aria-hidden="true">/</span>
+            }
+        }
+        else
+        {
+            @Link(Ancestors[0])
+            <span class="cnb-sep" aria-hidden="true">/</span>
+            <span class="cnb-more-wrap">
+                <button type="button" class="cnb-more" aria-label="@AriaLabel" @onclick="ToggleMore">…</button>
+                @if (_moreOpen)
+                {
+                    <button type="button" class="cnb-backdrop" @onclick="CloseMore" aria-label="close"></button>
+                    <div class="cnb-menu" role="menu">
+                        @foreach (var crumb in Ancestors.Skip(1).Take(Ancestors.Count - 2))
+                        {
+                            @Link(crumb)
+                        }
+                    </div>
+                }
+            </span>
+            <span class="cnb-sep" aria-hidden="true">/</span>
+            @Link(Ancestors[^1])
+            <span class="cnb-sep" aria-hidden="true">/</span>
+        }
+        <span class="cnb-here" title="@Current!.Text">@Current.Text</span>
+    </nav>
+}
+
+@code {
+    /// <summary>Trail, root first; the last item is the current place.</summary>
+    [Parameter] public IReadOnlyList<CnBreadcrumbItem>? Items { get; set; }
+
+    /// <summary>Ancestor levels shown before collapsing behind "…".</summary>
+    [Parameter] public int MaxAncestors { get; set; } = 2;
+
+    [Parameter] public string AriaLabel { get; set; } = "Breadcrumb";
+
+    private bool _moreOpen;
+
+    private IReadOnlyList<CnBreadcrumbItem> Ancestors =>
+        Items is { Count: > 1 } ? Items.Take(Items.Count - 1).ToList() : [];
+
+    private CnBreadcrumbItem? Current => Items is { Count: > 0 } ? Items[^1] : null;
+
+    private RenderFragment Link(CnBreadcrumbItem crumb) => __builder =>
+    {
+        if (string.IsNullOrEmpty(crumb.Href))
+        {
+            <span class="cnb-link">@crumb.Text</span>
+        }
+        else
+        {
+            <a href="@crumb.Href" @onclick="CloseMore">@crumb.Text</a>
+        }
+    };
+
+    private void ToggleMore() => _moreOpen = !_moreOpen;
+    private void CloseMore() => _moreOpen = false;
+
+    protected override void OnParametersSet() => _moreOpen = false;
+}

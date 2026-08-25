@@ -1,0 +1,50 @@
+@typeparam TValue
+@inherits CnInputBase<TValue>
+
+<label class="cn-field @Class" style="@Style">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span class="cn-label">@Label</span>
+    }
+    <select class="cn-input cn-select @SubtleClass @InvalidClass"
+            disabled="@(ReadOnly || Disabled)"
+            @onchange="OnChange"
+            @attributes="AdditionalAttributes">
+        @if (Placeholder is not null || SelectedIndex < 0)
+        {
+            <option value="-1" selected="@(SelectedIndex < 0)">@Placeholder</option>
+        }
+        @for (var i = 0; i < _options.Count; i++)
+        {
+            var index = i;
+            <option value="@index" selected="@(index == SelectedIndex)">@OptionText(_options[index])</option>
+        }
+    </select>
+    @foreach (var message in ValidationMessages)
+    {
+        <span class="cn-field-error">@message</span>
+    }
+</label>
+
+@code {
+    // Options are index-mapped so TValue never round-trips through strings.
+    [Parameter, EditorRequired] public IEnumerable<TValue> Options { get; set; } = [];
+    [Parameter] public Func<TValue, string> OptionText { get; set; } = value => value?.ToString() ?? string.Empty;
+    [Parameter] public string? Placeholder { get; set; }
+
+    private List<TValue> _options = [];
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        _options = Options.ToList();
+    }
+
+    private int SelectedIndex => _options.FindIndex(option => EqualityComparer<TValue?>.Default.Equals(option, Value));
+
+    private Task OnChange(ChangeEventArgs e)
+    {
+        var index = int.TryParse(e.Value?.ToString(), out var parsed) ? parsed : -1;
+        return SetValueAsync(index >= 0 && index < _options.Count ? _options[index] : default);
+    }
+}

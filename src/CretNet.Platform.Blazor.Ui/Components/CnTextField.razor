@@ -1,0 +1,25 @@
+@inherits CnInputBase<string>
+
+<label class="cn-field @Class" style="@Style">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span class="cn-label">@Label</span>
+    }
+    <input type="text"
+           class="cn-input @SubtleClass @InvalidClass @InputClass"
+           value="@Value"
+           placeholder="@Placeholder"
+           readonly="@ReadOnly"
+           disabled="@Disabled"
+           @oninput="e => SetValueAsync(e.Value?.ToString())"
+           @attributes="AdditionalAttributes" />
+    @foreach (var message in ValidationMessages)
+    {
+        <span class="cn-field-error">@message</span>
+    }
+</label>
+
+@code {
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? InputClass { get; set; }
+}

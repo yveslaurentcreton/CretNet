@@ -1,0 +1,203 @@
+@typeparam TItem
+
+@* Own data grid (ADR-011, S-080): a light render layer over a server-side
+   provider callback — search (debounced), allow-listed sort, paging. Columns
+   declare themselves as CnGridColumn children. *@
+
+<CascadingValue Value="this" IsFixed="true">@ChildContent</CascadingValue>
+
+<div class="cn-grid @Class">
+    <div class="cn-grid-toolbar">
+        @if (ShowSearch)
+        {
+            <div class="cn-grid-search">
+                <CnTextField Value="@_search" ValueChanged="OnSearchChanged" Placeholder="@SearchPlaceholder" />
+            </div>
+        }
+        @FilterContent
+        <span class="cn-card-spacer"></span>
+        @ToolbarActions
+    </div>
+
+    <div class="cn-grid-scroll">
+        <table class="cn-grid-table">
+            <thead>
+                <tr>
+                    @foreach (var column in _columns)
+                    {
+                        var current = column;
+                        <th class="@AlignClass(current)" style="@(current.Width is null ? null : $"width: {current.Width}")">
+                            @if (current.SortField is not null)
+                            {
+                                <button type="button" class="cn-grid-sort @(_sortField == current.SortField ? "cn-grid-sort--active" : null)"
+                                        @onclick="() => SortBy(current)">
+                                    @current.Title
+                                    @if (_sortField == current.SortField)
+                                    {
+                                        <span class="cn-grid-sort-ind">@(_sortDescending ? "▼" : "▲")</span>
+                                    }
+                                </button>
+                            }
+                            else
+                            {
+                                @current.Title
+                            }
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (_items.Count == 0 && !_loading)
+                {
+                    <tr><td class="cn-grid-empty" colspan="@Math.Max(1, _columns.Count)">@EmptyText</td></tr>
+                }
+                @foreach (var item in _items)
+                {
+                    var row = item;
+                    <tr class="@(OnRowClick.HasDelegate ? "cn-grid-row--clickable" : null) @RowClass?.Invoke(row)"
+                        @onclick="() => OnRowClick.InvokeAsync(row)">
+                        @foreach (var column in _columns)
+                        {
+                            <td class="@AlignClass(column)">
+                                @if (column.CellTemplate is not null)
+                                {
+                                    @column.CellTemplate(row)
+                                }
+                                else
+                                {
+                                    @column.Value?.Invoke(row)
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="cn-grid-footer">
+        @if (FooterSummary is not null)
+        {
+            <span class="cn-grid-summary">@FooterSummary</span>
+        }
+        <span class="cn-card-hint">@PagingLabel</span>
+        <span class="cn-card-spacer"></span>
+        <CnButton Role="CnButtonRole.Subtle" Icon="CnIconKind.ArrowLeft" Disabled="@(_pageIndex <= 1 || _loading)"
+                  OnClick="() => LoadPageAsync(_pageIndex - 1)" Title="@PreviousPageTitle"/>
+        <CnButton Role="CnButtonRole.Subtle" Icon="CnIconKind.ArrowRight" Disabled="@(_pageIndex >= TotalPages || _loading)"
+                  OnClick="() => LoadPageAsync(_pageIndex + 1)" Title="@NextPageTitle"/>
+    </div>
+</div>
+
+@code {
+    // Chrome text as parameters instead of a host localizer: a library
+    // component cannot depend on its host's resource class (the lift's one
+    // real HCMT coupling). Defaults match the HCMT originals; hosts pass
+    // localized strings when they care.
+    [Parameter] public string SearchPlaceholder { get; set; } = "Search";
+    [Parameter] public string PreviousPageTitle { get; set; } = "Move left";
+    [Parameter] public string NextPageTitle { get; set; } = "Move right";
+    [Parameter] public string EmptyText { get; set; } = "Nothing found";
+
+    [Parameter, EditorRequired] public Func<CnGridRequest, Task<CnGridPage<TItem>>> Provider { get; set; } = default!;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? FilterContent { get; set; }
+    [Parameter] public RenderFragment? ToolbarActions { get; set; }
+
+    /// <summary>S-263: optional footer summary (totals) left of the pager.</summary>
+    [Parameter] public RenderFragment? FooterSummary { get; set; }
+
+    /// <summary>S-263: optional per-row class — hosts dim done rows with
+    /// "cn-grid-row--done" instead of filtering them away.</summary>
+    [Parameter] public Func<TItem, string?>? RowClass { get; set; }
+    [Parameter] public EventCallback<TItem> OnRowClick { get; set; }
+    [Parameter] public bool ShowSearch { get; set; } = true;
+    [Parameter] public int PageSize { get; set; } = 20;
+    [Parameter] public string? Class { get; set; }
+
+    private readonly List<CnGridColumn<TItem>> _columns = [];
+    private List<TItem> _items = [];
+    private string? _search;
+    private string? _sortField;
+    private bool _sortDescending;
+    private int _pageIndex = 1;
+    private int _totalCount;
+    private bool _loading;
+    private CancellationTokenSource? _searchDebounce;
+
+    private int TotalPages => Math.Max(1, (int)Math.Ceiling(_totalCount / (double)PageSize));
+    private string PagingLabel => $"{_pageIndex}/{TotalPages} — {_totalCount}";
+
+    internal void AddColumn(CnGridColumn<TItem> column)
+    {
+        _columns.Add(column);
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await LoadPageAsync(1);
+    }
+
+    /// <summary>Re-fetches the current page (e.g. after an add/remove).</summary>
+    public Task ReloadAsync() => LoadPageAsync(_pageIndex);
+
+    private async Task OnSearchChanged(string? value)
+    {
+        _search = value;
+        _searchDebounce?.Cancel();
+        _searchDebounce = new CancellationTokenSource();
+        var token = _searchDebounce.Token;
+
+        try
+        {
+            await Task.Delay(300, token);
+            await LoadPageAsync(1);
+        }
+        catch (TaskCanceledException)
+        {
+            // superseded by newer input
+        }
+    }
+
+    private async Task SortBy(CnGridColumn<TItem> column)
+    {
+        if (_sortField == column.SortField)
+        {
+            _sortDescending = !_sortDescending;
+        }
+        else
+        {
+            _sortField = column.SortField;
+            _sortDescending = false;
+        }
+
+        await LoadPageAsync(1);
+    }
+
+    private async Task LoadPageAsync(int pageIndex)
+    {
+        _loading = true;
+        _pageIndex = pageIndex;
+
+        var page = await Provider(new CnGridRequest(
+            string.IsNullOrWhiteSpace(_search) ? null : _search,
+            pageIndex,
+            PageSize,
+            _sortField,
+            _sortDescending));
+
+        _items = page.Items.ToList();
+        _totalCount = page.TotalCount;
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private static string? AlignClass(CnGridColumn<TItem> column) => column.Align switch
+    {
+        CnGridAlign.Right => "cn-grid-cell--right",
+        CnGridAlign.Center => "cn-grid-cell--center",
+        _ => null,
+    };
+}

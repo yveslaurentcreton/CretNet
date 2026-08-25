@@ -1,0 +1,18 @@
+@typeparam TItem
+
+@* Renders nothing itself: the column registers with the owning CnDataGrid,
+   which renders header and cells. *@
+
+@code {
+    [CascadingParameter] public CnDataGrid<TItem> Grid { get; set; } = default!;
+
+    [Parameter] public string? Title { get; set; }
+    /// <summary>Server sort key (allow-listed server-side); omit for an unsortable column.</summary>
+    [Parameter] public string? SortField { get; set; }
+    [Parameter] public Func<TItem, object?>? Value { get; set; }
+    [Parameter] public RenderFragment<TItem>? CellTemplate { get; set; }
+    [Parameter] public CnGridAlign Align { get; set; } = CnGridAlign.Left;
+    [Parameter] public string? Width { get; set; }
+
+    protected override void OnInitialized() => Grid.AddColumn(this);
+}

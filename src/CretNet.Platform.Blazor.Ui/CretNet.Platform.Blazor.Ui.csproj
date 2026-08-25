@@ -16,6 +16,10 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+        <!-- CnButton formats its label through Smart.Format, identical to the
+             HCMT original; the dependency is small and already part of the
+             CretNet dependency set. -->
+        <PackageReference Include="SmartFormat" />
     </ItemGroup>
 
 </Project>

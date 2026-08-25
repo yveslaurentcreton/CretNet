@@ -1,27 +1,71 @@
-@using System.Globalization
 @inherits CnInputBase<DateTime?>
 
-<label class="cn-field @Class" style="@Style">
+@* One date: a field you can type into (see CnDateMask for the rules) with a
+   calendar hanging under it. The calendar is navigation only — every value
+   that lands in the model comes through the same completion path, whether it
+   was typed or clicked. *@
+
+<div class="cn-field cn-date @Class" style="@Style">
     @if (!string.IsNullOrEmpty(Label))
     {
         <span class="cn-label">@Label</span>
     }
-    <input type="date"
-           class="cn-input @SubtleClass @InvalidClass"
-           value="@(Value?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))"
-           readonly="@ReadOnly"
-           disabled="@Disabled"
-           @onchange="OnChange"
-           @attributes="AdditionalAttributes" />
+    <div class="cn-date-anchor">
+        <div class="cn-date-shell cn-input @SubtleClass @InvalidClass @(_open ? "cn-date-shell--open" : null) @(Disabled ? "cn-date-shell--disabled" : null)">
+            <svg class="cn-date-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false" @onclick="OpenAsync">
+                <rect x="2.5" y="3.5" width="11" height="10" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4" />
+                <path d="M2.5 6.5h11M5.5 2.2v2.4M10.5 2.2v2.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+            </svg>
+            <CnDateInput @ref="_input"
+                         Value="Value"
+                         ValueChanged="OnValueChangedAsync"
+                         Placeholder="@(Placeholder ?? DateFormatHint)"
+                         AriaLabel="@(Label ?? AriaLabel)"
+                         ReadOnly="ReadOnly"
+                         Disabled="Disabled"
+                         OnTyping="OnTypingAsync"
+                         OnCommitted="OnCommittedAsync"
+                         OnFocused="OpenAsync"
+                         OnEnter="Close"
+                         OnEscape="RevertAsync"
+                         OnArrowDown="Close" />
+        </div>
+
+        @if (_open && !ReadOnly && !Disabled)
+        {
+            <div class="cn-date-pop" role="dialog" aria-label="@Label">
+                <CnCalendarPanel @ref="_calendar"
+                                 From="Value"
+                                 To="Value"
+                                 MonthCount="1"
+                                 MinDate="MinDate"
+                                 MaxDate="MaxDate"
+                                 OnPick="PickAsync"
+                                 PreviousLabel="@PreviousMonthLabel"
+                                 NextLabel="@NextMonthLabel">
+                    <Readout>
+                        @if (Value is { } value)
+                        {
+                            <b>@CnDateMask.Format(value)</b>
+                        }
+                        else
+                        {
+                            <span class="cn-cal-hint">@PickHint</span>
+                        }
+                    </Readout>
+                    <FooterActions>
+                        <button type="button" class="cn-cal-action" @onclick="TodayAsync">@TodayLabel</button>
+                        @if (Value is not null)
+                        {
+                            <button type="button" class="cn-cal-action" @onclick="ClearAsync">@ClearLabel</button>
+                        }
+                    </FooterActions>
+                </CnCalendarPanel>
+            </div>
+        }
+    </div>
     @foreach (var message in ValidationMessages)
     {
         <span class="cn-field-error">@message</span>
     }
-</label>
-
-@code {
-    private Task OnChange(ChangeEventArgs e) =>
-        SetValueAsync(DateTime.TryParseExact(e.Value?.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed)
-            ? parsed
-            : null);
-}
+</div>

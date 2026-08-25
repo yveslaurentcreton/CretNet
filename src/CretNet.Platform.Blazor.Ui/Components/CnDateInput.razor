@@ -1,0 +1,24 @@
+@using Microsoft.AspNetCore.Components.Web
+
+@* The typable half of a date field: one masked input, no chrome. Used on
+   its own by CnDateField and twice by CnDateRangeField, so the typing rules
+   live in exactly one place. See CnDateMask for those rules. *@
+
+<input @ref="Element"
+       type="text"
+       class="cn-date-input @Class"
+       style="@Style"
+       value="@_text"
+       placeholder="@Placeholder"
+       readonly="@ReadOnly"
+       disabled="@Disabled"
+       inputmode="numeric"
+       autocomplete="off"
+       spellcheck="false"
+       aria-label="@AriaLabel"
+       aria-invalid="@(Invalid ? "true" : "false")"
+       @oninput="OnInputAsync"
+       @onblur="OnBlurAsync"
+       @onfocus="OnFocusAsync"
+       @onkeydown="OnKeyDownAsync"
+       @attributes="AdditionalAttributes" />

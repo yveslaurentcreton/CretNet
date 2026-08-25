@@ -23,6 +23,7 @@
     <ItemGroup>
       <ProjectReference Include="..\CretNet\CretNet.csproj" />
       <ProjectReference Include="..\CretNet.Platform.Blazor\CretNet.Platform.Blazor.csproj" />
+      <ProjectReference Include="..\CretNet.Platform.Blazor.Ui\CretNet.Platform.Blazor.Ui.csproj" />
     </ItemGroup>
 
 </Project>

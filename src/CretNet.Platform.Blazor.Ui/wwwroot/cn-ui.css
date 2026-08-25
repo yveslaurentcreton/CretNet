@@ -3761,3 +3761,210 @@ tr:hover .cn-task-more,
    belong to different scoped components); the doubled class outranks the
    scoped [b-…] attribute selector that ties on specificity otherwise. */
 .pe-ico.pe-ico--human:has(.cn-avatar--photo) { border-color: transparent; background: var(--cn-card); color: transparent; }
+
+/* ---------- CnDateField / CnDateRangeField ----------
+   One pill holding one date, or two with a dash between them. The inputs are
+   sized to exactly what a full date renders so no slack piles up on one side
+   of the dash. The calendar underneath paints a range band across the days
+   and zooms out to months and years. */
+.cn-date-anchor { position: relative; }
+
+.cn-date-shell {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: auto;
+    padding: 0 10px;
+}
+
+.cn-date-shell--open { border-color: var(--cn-accent); box-shadow: 0 0 0 2px var(--cn-accent-tint); }
+.cn-date-shell--disabled { opacity: .6; }
+
+.cn-date-icon { width: 15px; height: 15px; flex: none; color: var(--cn-text-2); cursor: pointer; }
+
+.cn-date-input {
+    /* Exactly the width a full date renders at 13px tabular figures. */
+    width: 67px;
+    border: 0;
+    outline: none;
+    padding: 0;
+    background: transparent;
+    color: var(--cn-text);
+    font: 13px/1 var(--cn-font);
+    font-variant-numeric: tabular-nums;
+}
+
+.cn-date-input::placeholder { color: var(--cn-text-2); }
+.cn-date-sep { color: var(--cn-text-2); font-size: 13px; }
+
+.cn-date-pop {
+    position: absolute;
+    z-index: 40;
+    top: calc(100% + 6px);
+    left: 0;
+    display: flex;
+    border: 1px solid var(--cn-stroke);
+    border-radius: var(--cn-radius);
+    background: var(--cn-card);
+    box-shadow: var(--cn-shadow);
+}
+
+.cn-date-presets {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px;
+    min-width: 148px;
+    border-right: 1px solid var(--cn-stroke-soft);
+}
+
+.cn-date-preset {
+    text-align: left;
+    border: 0;
+    border-radius: var(--cn-radius-s);
+    background: transparent;
+    color: var(--cn-text);
+    font: 500 13px/1 var(--cn-font);
+    padding: 7px 9px;
+    cursor: pointer;
+}
+
+.cn-date-preset:hover { background: var(--cn-row-hover); }
+.cn-date-preset[aria-pressed="true"] { background: var(--cn-accent-tint); color: var(--cn-accent-hover); font-weight: 600; }
+
+/* ---------- CnCalendarPanel ---------- */
+.cn-cal { padding: 10px 12px 12px; }
+.cn-cal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+
+.cn-cal-nav {
+    width: 26px;
+    height: 26px;
+    flex: none;
+    border: 0;
+    border-radius: var(--cn-radius-s);
+    background: transparent;
+    color: var(--cn-text-2);
+    font: 600 14px/1 var(--cn-font);
+    cursor: pointer;
+}
+
+.cn-cal-nav:hover { background: var(--cn-row-hover); color: var(--cn-text); }
+
+.cn-cal-titles { flex: 1; display: flex; justify-content: space-around; gap: 24px; }
+.cn-cal-titles--zoom { justify-content: center; }
+.cn-cal-titles span { font: 600 13.5px/1 var(--cn-font); }
+
+.cn-cal-title {
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: 600 13.5px/1 var(--cn-font);
+    padding: 5px 8px;
+    border-radius: var(--cn-radius-s);
+    cursor: pointer;
+}
+
+.cn-cal-title:hover { background: var(--cn-row-hover); color: var(--cn-accent-hover); }
+
+.cn-cal-body { display: flex; gap: 22px; }
+.cn-cal-month { width: 224px; }
+
+.cn-cal-dow, .cn-cal-grid { display: grid; grid-template-columns: repeat(7, 32px); }
+
+.cn-cal-dow span {
+    height: 24px;
+    display: grid;
+    place-items: center;
+    font: 600 11px/1 var(--cn-font);
+    color: var(--cn-text-2);
+}
+
+/* Each cell paints its own slice of the band, so the tint runs on
+   uninterrupted across a week while every day stays a circle. */
+.cn-cal-cell { position: relative; height: 32px; display: grid; place-items: center; }
+.cn-cal-cell::before { content: ""; position: absolute; inset: 2px 0; background: transparent; }
+.cn-cal-cell--in::before { background: color-mix(in srgb, var(--cn-accent) 12%, var(--cn-card)); }
+.cn-cal-cell--edge-start::before { left: 2px; border-radius: 999px 0 0 999px; }
+.cn-cal-cell--edge-end::before { right: 2px; border-radius: 0 999px 999px 0; }
+.cn-cal-cell--solo::before { left: 2px; right: 2px; border-radius: 999px; }
+
+.cn-cal-day {
+    position: relative;
+    z-index: 1;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--cn-text);
+    font: 500 13px/1 var(--cn-font);
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+}
+
+.cn-cal-day:hover { background: var(--cn-row-hover); }
+.cn-cal-day--today { box-shadow: inset 0 0 0 1.5px var(--cn-stroke); font-weight: 700; }
+.cn-cal-day--sel { background: var(--cn-accent); color: #fff; font-weight: 700; }
+.cn-cal-day--sel:hover { background: var(--cn-accent-hover); }
+.cn-cal-day:disabled { color: var(--cn-text-2); opacity: .45; cursor: default; }
+.cn-cal-day:disabled:hover { background: transparent; }
+
+/* Zoomed out: the months of a year, then a block of years. Same height as six
+   week rows plus the day-name strip, so zooming never resizes the popover. */
+.cn-cal-zoom {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 6px;
+    width: 100%;
+    min-height: 216px;
+}
+
+.cn-cal-zoom button {
+    width: 100%;
+    max-width: 96px;
+    justify-self: center;
+    border: 0;
+    border-radius: var(--cn-radius-s);
+    background: transparent;
+    color: var(--cn-text);
+    font: 500 13px/1 var(--cn-font);
+    cursor: pointer;
+}
+
+.cn-cal-zoom button:hover { background: var(--cn-row-hover); }
+.cn-cal-zoom--today { box-shadow: inset 0 0 0 1.5px var(--cn-stroke); font-weight: 700; }
+.cn-cal-zoom--sel { background: var(--cn-accent); color: #fff; font-weight: 700; }
+.cn-cal-zoom--sel:hover { background: var(--cn-accent-hover); }
+
+.cn-cal-foot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    padding-top: 10px;
+    border-top: 1px solid var(--cn-stroke-soft);
+}
+
+.cn-cal-foot-spacer { flex: 1; }
+.cn-cal-readout { font: 13px/1 var(--cn-font); color: var(--cn-text-2); font-variant-numeric: tabular-nums; }
+.cn-cal-readout b { color: var(--cn-text); font-weight: 600; }
+.cn-cal-hint { font: 12px/1 var(--cn-font); color: var(--cn-text-2); }
+
+.cn-cal-action {
+    border: 0;
+    background: transparent;
+    color: var(--cn-text-2);
+    font: 600 13px/1 var(--cn-font);
+    padding: 6px 8px;
+    border-radius: var(--cn-radius-s);
+    cursor: pointer;
+}
+
+.cn-cal-action:hover { background: var(--cn-row-hover); color: var(--cn-accent-hover); }
+
+@media (max-width: 720px) {
+    .cn-date-pop { flex-direction: column; }
+    .cn-date-presets { flex-direction: row; flex-wrap: wrap; min-width: 0; border-right: 0; border-bottom: 1px solid var(--cn-stroke-soft); }
+    .cn-cal-body { flex-direction: column; }
+}

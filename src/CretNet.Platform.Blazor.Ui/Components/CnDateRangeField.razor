@@ -1,0 +1,97 @@
+@* A period: the same date field twice inside one pill, with a calendar that
+   paints the band between them. Type both halves (Tab steps from one to the
+   other, a ninth digit flows over by itself) or drag the range out with the
+   mouse — the band follows either way. *@
+
+<div class="cn-field cn-date @Class" style="@Style">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span class="cn-label">@Label</span>
+    }
+    <div class="cn-date-anchor">
+        <div class="cn-date-shell cn-input cn-date-shell--range @(_open ? "cn-date-shell--open" : null) @(Disabled ? "cn-date-shell--disabled" : null)">
+            <svg class="cn-date-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false" @onclick="Open">
+                <rect x="2.5" y="3.5" width="11" height="10" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4" />
+                <path d="M2.5 6.5h11M5.5 2.2v2.4M10.5 2.2v2.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+            </svg>
+            <CnDateInput @ref="_fromInput"
+                         Value="From"
+                         ValueChanged="OnFromChangedAsync"
+                         Placeholder="@DateFormatHint"
+                         AriaLabel="@FromLabel"
+                         ReadOnly="ReadOnly"
+                         Disabled="Disabled"
+                         OnTyping="OnFromTypingAsync"
+                         OnCommitted="OnFromCommittedAsync"
+                         OnOverflow="OnOverflowAsync"
+                         OnFocused="Open"
+                         OnEnter="FocusToAsync"
+                         OnEscape="RevertAsync" />
+            <span class="cn-date-sep" aria-hidden="true">–</span>
+            <CnDateInput @ref="_toInput"
+                         Value="To"
+                         ValueChanged="OnToChangedAsync"
+                         Placeholder="@DateFormatHint"
+                         AriaLabel="@ToLabel"
+                         ReadOnly="ReadOnly"
+                         Disabled="Disabled"
+                         OnTyping="OnToTypingAsync"
+                         OnCommitted="OnToCommittedAsync"
+                         OnFocused="Open"
+                         OnEnter="Close"
+                         OnEscape="RevertAsync"
+                         OnBackspaceAtStart="FocusFromAsync" />
+        </div>
+
+        @if (_open && !ReadOnly && !Disabled)
+        {
+            <div class="cn-date-pop cn-date-pop--range" role="dialog" aria-label="@Label">
+                @if (Presets.Count > 0)
+                {
+                    <div class="cn-date-presets">
+                        @foreach (var preset in Presets)
+                        {
+                            var current = preset;
+                            <button type="button"
+                                    class="cn-date-preset"
+                                    aria-pressed="@((From == current.From.Date && To == current.To.Date) ? "true" : "false")"
+                                    @onclick="() => ApplyPresetAsync(current)">@current.Label</button>
+                        }
+                    </div>
+                }
+                <CnCalendarPanel @ref="_calendar"
+                                 From="BandFrom"
+                                 To="BandTo"
+                                 MonthCount="MonthCount"
+                                 MinDate="MinDate"
+                                 MaxDate="MaxDate"
+                                 OnPick="PickAsync"
+                                 OnHover="HoverAsync"
+                                 PreviousLabel="@PreviousMonthLabel"
+                                 NextLabel="@NextMonthLabel">
+                    <Readout>
+                        @if (BandFrom is { } bandFrom && BandTo is { } bandTo)
+                        {
+                            <b>@CnDateMask.Format(bandFrom)</b>@(" – ")<b>@CnDateMask.Format(bandTo)</b>
+                            <span>@(" · ")@DayCountText(bandFrom, bandTo)</span>
+                            @if (_anchor is not null)
+                            {
+                                <span class="cn-cal-hint">@(" ")@PickEndHint</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="cn-cal-hint">@PickStartHint</span>
+                        }
+                    </Readout>
+                    <FooterActions>
+                        @if (From is not null || To is not null)
+                        {
+                            <button type="button" class="cn-cal-action" @onclick="ClearAsync">@ClearLabel</button>
+                        }
+                    </FooterActions>
+                </CnCalendarPanel>
+            </div>
+        }
+    </div>
+</div>

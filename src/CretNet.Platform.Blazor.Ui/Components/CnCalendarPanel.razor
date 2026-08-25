@@ -1,0 +1,103 @@
+@using System.Globalization
+
+@* The calendar body shared by CnDateField and CnDateRangeField. It draws
+   three zoom levels — days, the months of a year, a block of years — and
+   paints a range band across the days. A single date is simply a range
+   whose ends are the same day, so one renderer serves both fields. *@
+
+<div class="cn-cal">
+    <div class="cn-cal-head">
+        <button type="button" class="cn-cal-nav" @onclick="() => Shift(-1)" aria-label="@PreviousLabel">◂</button>
+        <span class="cn-cal-titles @(_level == Level.Days ? null : "cn-cal-titles--zoom")">
+            @if (_level == Level.Days)
+            {
+                @for (var i = 0; i < MonthCount; i++)
+                {
+                    var offset = i;
+                    var shown = _view.AddMonths(offset);
+                    <button type="button" class="cn-cal-title" @onclick="() => ZoomOut(shown)">
+                        @Culture.DateTimeFormat.GetMonthName(shown.Month) @shown.Year
+                    </button>
+                }
+            }
+            else if (_level == Level.Months)
+            {
+                <button type="button" class="cn-cal-title" @onclick="() => _level = Level.Years">@_view.Year</button>
+            }
+            else
+            {
+                <span class="cn-num">@YearBlockStart – @(YearBlockStart + YearBlockSize - 1)</span>
+            }
+        </span>
+        <button type="button" class="cn-cal-nav" @onclick="() => Shift(1)" aria-label="@NextLabel">▸</button>
+    </div>
+
+    <div class="cn-cal-body" style="@BodyStyle">
+        @if (_level == Level.Days)
+        {
+            @for (var i = 0; i < MonthCount; i++)
+            {
+                var month = _view.AddMonths(i);
+                <div class="cn-cal-month">
+                    <div class="cn-cal-dow" aria-hidden="true">
+                        @foreach (var name in DayNames)
+                        {
+                            <span>@name</span>
+                        }
+                    </div>
+                    <div class="cn-cal-grid" role="grid">
+                        @for (var blank = 0; blank < LeadingBlanks(month); blank++)
+                        {
+                            <span class="cn-cal-cell"></span>
+                        }
+                        @for (var day = 1; day <= DateTime.DaysInMonth(month.Year, month.Month); day++)
+                        {
+                            var date = new DateTime(month.Year, month.Month, day);
+                            <span class="cn-cal-cell @BandClass(date)">
+                                <button type="button"
+                                        class="cn-cal-day @(IsEnd(date) ? "cn-cal-day--sel" : null) @(date == Today ? "cn-cal-day--today" : null)"
+                                        disabled="@IsDisabled(date)"
+                                        aria-label="@date.ToString("d", Culture)"
+                                        @onclick="() => OnPick.InvokeAsync(date)"
+                                        @onmouseover="() => OnHover.InvokeAsync(date)">@day</button>
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else if (_level == Level.Months)
+        {
+            <div class="cn-cal-zoom">
+                @for (var m = 1; m <= 12; m++)
+                {
+                    var month = m;
+                    <button type="button"
+                            class="@(IsSelectedMonth(_view.Year, month) ? "cn-cal-zoom--sel" : IsCurrentMonth(_view.Year, month) ? "cn-cal-zoom--today" : null)"
+                            @onclick="() => ZoomIn(new DateTime(_view.Year, month, 1))">
+                        @Culture.DateTimeFormat.GetAbbreviatedMonthName(month)
+                    </button>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="cn-cal-zoom">
+                @for (var i = 0; i < YearBlockSize; i++)
+                {
+                    var year = YearBlockStart + i;
+                    <button type="button" class="cn-num @(IsSelectedYear(year) ? "cn-cal-zoom--sel" : year == Today.Year ? "cn-cal-zoom--today" : null)"
+                            @onclick="() => { _view = new DateTime(year, _view.Month, 1); _level = Level.Months; }">
+                        @year
+                    </button>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="cn-cal-foot">
+        <span class="cn-cal-readout">@Readout</span>
+        <span class="cn-cal-foot-spacer"></span>
+        @FooterActions
+    </div>
+</div>

@@ -4,8 +4,8 @@
 <button type="@(Submit ? "submit" : "button")"
         class="cn-btn @RoleClass @(IconOnly ? "cn-btn--icononly" : null) @(Dashed ? "cn-btn--dashed" : null) @Class"
         style="@Style"
-        title="@Title"
-        aria-label="@(Title ?? Label)"
+        title="@FormattedTitle"
+        aria-label="@(FormattedTitle ?? FormattedLabel)"
         disabled="@(Disabled || IsLoading)"
         @onclick="HandleClick">
     @if (Icon is not null)
@@ -14,7 +14,7 @@
     }
     @if (UseLabel)
     {
-        <span>@Smart.Format(Label!, IsLoading)</span>
+        <span>@FormattedLabel</span>
     }
     @ChildContent
     @if (IconEnd is not null)
@@ -43,6 +43,12 @@
     private bool _busy;
 
     private bool IsLoading => Loading || _busy;
+
+    // Title goes through the same busy-label convention as Label
+    // ("{0:Editing|Edit}") — icon-only buttons pass CnpLabels values as
+    // tooltips, which would otherwise render the raw template.
+    private string? FormattedTitle => Title is null ? null : Smart.Format(Title, IsLoading);
+    private string? FormattedLabel => Label is null ? null : Smart.Format(Label, IsLoading);
     private bool UseLabel => !string.IsNullOrEmpty(Label);
     private bool IconOnly => !UseLabel && ChildContent is null;
 

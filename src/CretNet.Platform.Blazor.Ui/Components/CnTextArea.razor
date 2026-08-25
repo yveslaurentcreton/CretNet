@@ -1,0 +1,27 @@
+@inherits CnInputBase<string>
+
+<label class="cn-field @Class" style="@Style">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span class="cn-label">@Label</span>
+    }
+    @* value as attribute, not child content: child content only seeds the
+       initial DOM value, so a cleared parameter never resets a typed field. *@
+    <textarea class="cn-input @SubtleClass @InvalidClass"
+              rows="@Rows"
+              placeholder="@Placeholder"
+              readonly="@ReadOnly"
+              disabled="@Disabled"
+              value="@Value"
+              @oninput="e => SetValueAsync(e.Value?.ToString())"
+              @attributes="AdditionalAttributes"></textarea>
+    @foreach (var message in ValidationMessages)
+    {
+        <span class="cn-field-error">@message</span>
+    }
+</label>
+
+@code {
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public int Rows { get; set; } = 4;
+}

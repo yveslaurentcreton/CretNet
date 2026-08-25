@@ -1,0 +1,27 @@
+@using System.Globalization
+@inherits CnInputBase<DateTime?>
+
+<label class="cn-field @Class" style="@Style">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span class="cn-label">@Label</span>
+    }
+    <input type="date"
+           class="cn-input @SubtleClass @InvalidClass"
+           value="@(Value?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))"
+           readonly="@ReadOnly"
+           disabled="@Disabled"
+           @onchange="OnChange"
+           @attributes="AdditionalAttributes" />
+    @foreach (var message in ValidationMessages)
+    {
+        <span class="cn-field-error">@message</span>
+    }
+</label>
+
+@code {
+    private Task OnChange(ChangeEventArgs e) =>
+        SetValueAsync(DateTime.TryParseExact(e.Value?.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed)
+            ? parsed
+            : null);
+}

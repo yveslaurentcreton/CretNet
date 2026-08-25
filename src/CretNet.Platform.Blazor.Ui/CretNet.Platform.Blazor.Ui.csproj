@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+    <!-- The Cn component set: plain HTML/CSS, no shadow DOM, no third-party
+         UI framework (HCMT ADR-011, WAM ADR-007). Born in HCMT.WasmApp/Ui,
+         lifted here component by component; HCMT keeps its copies until it
+         adopts this package. Deliberately no reference to
+         CretNet.Platform.Blazor: this project must never pull FluentUI. -->
+
+    <PropertyGroup>
+        <Description>The Cn design system: an owned Blazor component set styled by --cn-* design tokens.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <SupportedPlatform Include="browser" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    </ItemGroup>
+
+</Project>

@@ -7,6 +7,7 @@
   <Project Path="CretNet/CretNet.csproj" />
   <Project Path="CretNet.Platform.Blazor.Server/CretNet.Platform.Blazor.Server.csproj" />
   <Project Path="CretNet.Platform.Blazor/CretNet.Platform.Blazor.csproj" />
+  <Project Path="CretNet.Platform.Blazor.Ui/CretNet.Platform.Blazor.Ui.csproj" />
   <Project Path="CretNet.Platform.Data.Abstractions\CretNet.Platform.Data.Abstractions.csproj" Type="Classic C#" />
   <Project Path="CretNet.Platform.Data\CretNet.Platform.Data.csproj" Type="Classic C#" />
   <Project Path="CretNet.Platform.Fluxor.Generators/CretNet.Platform.Fluxor.Generators.csproj" />

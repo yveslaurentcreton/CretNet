@@ -1,0 +1,3763 @@
+/* ============================================================
+   cn-ui — own component library styles (ADR-011, M-014/S-073).
+   Design tokens taken from the owner-approved composer mockup:
+   accent #17af3d, 4px grid, compact 28/32px controls, light+dark.
+   Lifted into CretNet.Platform.Blazor.Ui later (S-076).
+   ============================================================ */
+
+:root {
+    --cn-accent: #17af3d;
+    --cn-accent-hover: #128a30;
+    --cn-accent-tint: rgba(23, 175, 61, 0.08);
+    --cn-ground: #f5f5f5;
+    --cn-card: #ffffff;
+    --cn-text: #1b1b1b;
+    --cn-text-2: #5f6360;
+    --cn-stroke: #d6d6d6;
+    --cn-stroke-soft: #e6e6e6;
+    --cn-row-hover: #fafcfa;
+
+    /* CretNet's durable notification inbox still consumes the original
+       semantic token names. Keep those names as aliases instead of giving
+       the component a second theme: var() resolves the active HCMT light or
+       dark values at use time. */
+    --cn-surface: var(--cn-card);
+    --cn-surface-muted: var(--cn-ground);
+    --cn-bg: var(--cn-ground);
+    --cn-border: var(--cn-stroke);
+    --cn-text-muted: var(--cn-text-2);
+    --cn-accent-strong: var(--cn-accent-hover);
+
+    --cn-danger: #d13438;
+    --cn-warn: #b8860b;
+    --cn-lane-phys: #00876f;
+    --cn-lane-phys-tint: rgba(0, 135, 111, .10);
+    --cn-lane-fin: #3159a7;
+    --cn-lane-fin-tint: rgba(49, 89, 167, .10);
+    --cn-lane-ink: #ffffff;
+    /* Google Calendar-inspired event palette (BUG-048). Stored enum names
+       stay stable; labels, outlines and billing edges remain authoritative. */
+    --cn-tag-blue: #3f51b5;
+    --cn-tag-purple: #8e24aa;
+    --cn-tag-teal: #33b679;
+    --cn-tag-pink: #e67c73;
+    --cn-tag-orange: #f4511e;
+    --cn-tag-sky: #039be5;
+    --cn-tag-yellow: #f6bf26;
+    --cn-tag-slate: #616161;
+    --cn-shadow: 0 0 2px rgba(0, 0, 0, .12), 0 2px 6px rgba(0, 0, 0, .10);
+    --cn-radius: 8px;
+    --cn-radius-s: 4px;
+    --cn-font: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+/* Theme resolution (S-083): the user's stored choice stamps
+   data-cn-theme="light|dark" on <html> and must win in both directions;
+   without the attribute (system) the media query decides. */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-cn-theme="light"]) {
+        --cn-ground: #1f1f1f;
+        --cn-card: #2b2b2b;
+        --cn-text: #f0f0f0;
+        --cn-text-2: #a5aaa6;
+        --cn-stroke: #4a4a4a;
+        --cn-stroke-soft: #3d3d3d;
+        --cn-row-hover: #2f332f;
+        --cn-shadow: 0 0 2px rgba(0, 0, 0, .4), 0 2px 6px rgba(0, 0, 0, .35);
+        --cn-lane-phys: #1aa385;
+        --cn-lane-phys-tint: rgba(26, 163, 133, .14);
+        --cn-lane-fin: #6b8fd4;
+        --cn-lane-fin-tint: rgba(107, 143, 212, .14);
+        --cn-lane-ink: rgba(0, 0, 0, .8);
+        --cn-tag-blue: #7986cb;
+        --cn-tag-purple: #b39ddb;
+        --cn-tag-teal: #57bb8a;
+        --cn-tag-pink: #ef9a9a;
+        --cn-tag-orange: #ff8a65;
+        --cn-tag-sky: #4fc3f7;
+        --cn-tag-yellow: #ffd54f;
+        --cn-tag-slate: #bdbdbd;
+    }
+}
+
+:root[data-cn-theme="dark"] {
+    --cn-ground: #1f1f1f;
+    --cn-card: #2b2b2b;
+    --cn-text: #f0f0f0;
+    --cn-text-2: #a5aaa6;
+    --cn-stroke: #4a4a4a;
+    --cn-stroke-soft: #3d3d3d;
+    --cn-row-hover: #2f332f;
+    --cn-shadow: 0 0 2px rgba(0, 0, 0, .4), 0 2px 6px rgba(0, 0, 0, .35);
+    --cn-lane-phys: #1aa385;
+    --cn-lane-phys-tint: rgba(26, 163, 133, .14);
+    --cn-lane-fin: #6b8fd4;
+    --cn-lane-fin-tint: rgba(107, 143, 212, .14);
+    --cn-lane-ink: rgba(0, 0, 0, .8);
+    --cn-tag-blue: #7986cb;
+    --cn-tag-purple: #b39ddb;
+    --cn-tag-teal: #57bb8a;
+    --cn-tag-pink: #ef9a9a;
+    --cn-tag-orange: #ff8a65;
+    --cn-tag-sky: #4fc3f7;
+    --cn-tag-yellow: #ffd54f;
+    --cn-tag-slate: #bdbdbd;
+}
+
+/* ---------- CnButton ---------- */
+.cn-btn {
+    height: 32px;
+    padding: 0 12px;
+    border-radius: var(--cn-radius-s);
+    border: 1px solid var(--cn-stroke);
+    background: var(--cn-card);
+    color: var(--cn-text);
+    font: 600 14px/1 var(--cn-font);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.cn-btn:hover { border-color: var(--cn-text-2); }
+
+.cn-btn--accent {
+    background: var(--cn-accent);
+    border-color: var(--cn-accent);
+    color: #fff;
+}
+
+.cn-btn--accent:hover {
+    background: var(--cn-accent-hover);
+    border-color: var(--cn-accent-hover);
+}
+
+.cn-btn--subtle {
+    border-color: transparent;
+    background: transparent;
+    color: var(--cn-text-2);
+}
+
+.cn-btn--subtle:hover {
+    background: var(--cn-accent-tint);
+    border-color: transparent;
+    color: var(--cn-text);
+}
+
+.cn-btn--danger {
+    border-color: transparent;
+    background: transparent;
+    color: var(--cn-text-2);
+}
+
+.cn-btn--danger:hover {
+    background: rgba(209, 52, 56, .10);
+    border-color: transparent;
+    color: var(--cn-danger);
+}
+
+.cn-btn--icononly {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    justify-content: center;
+}
+
+.cn-btn--dashed {
+    border-style: dashed;
+    border-color: var(--cn-stroke);
+    color: var(--cn-text-2);
+    background: transparent;
+}
+
+.cn-btn--dashed:hover {
+    border-color: var(--cn-accent);
+    color: var(--cn-accent);
+    background: var(--cn-accent-tint);
+}
+
+.cn-btn:disabled {
+    opacity: .45;
+    cursor: default;
+}
+
+.cn-btn:focus-visible,
+.cn-input:focus-visible,
+.cn-check:focus-visible {
+    outline: 2px solid var(--cn-accent);
+    outline-offset: 1px;
+}
+
+.cn-icon {
+    width: 16px;
+    height: 16px;
+    flex: none;
+}
+
+.cn-toolbar {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+/* ---------- CnCard ---------- */
+.cn-card {
+    background: var(--cn-card);
+    border-radius: var(--cn-radius);
+    box-shadow: var(--cn-shadow);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.cn-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cn-card-title {
+    font: 600 16px/1.3 var(--cn-font);
+    margin: 0;
+}
+
+.cn-card-spacer { flex: 1; }
+
+.cn-card-hint {
+    color: var(--cn-text-2);
+    font-size: 12.5px;
+}
+
+.cn-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+/* ---------- Form layout ---------- */
+.cn-form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px 14px;
+    /* Grid rows stretch children to the row's height by default, which pushes
+       any field shorter than its row-mates (e.g. .cn-picker-with-add, whose
+       inner flex uses align-items:flex-end to line up its "+" button with
+       the input) down inside that extra space. Top-align every grid item so
+       all fields in a row start flush with each other (owner bug: customer
+       picker hanging low on Sales/PurchaseOrder detail). */
+    align-items: start;
+}
+
+@media (max-width: 1000px) { .cn-form-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .cn-form-grid { grid-template-columns: 1fr; } }
+
+/* Ultrawide pass: page-level forms may pick up extra columns as their wrapper widens
+   past the --cn-page-max steps (cn-shell.css) — auto-fit computes however many
+   ~220px-min columns actually fit, so field width stays roughly constant instead of
+   just stretching 4 fixed columns wider. Dialogs share .cn-form-grid too (their own
+   width is capped well below 1600px regardless of viewport, e.g. CnDialog's 560px
+   default) — pinned back to the familiar fixed 4 columns so a dialog opened on an
+   ultrawide monitor doesn't fit an unrelated number of columns into its narrow body. */
+@media (min-width: 1600px) {
+    .cn-form-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .cn-dialog-body .cn-form-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ---------- Fields ---------- */
+.cn-field {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.cn-label {
+    font: 600 13px/1.3 var(--cn-font);
+    color: var(--cn-text);
+}
+
+.cn-input {
+    height: 32px;
+    width: 100%;
+    border: 1px solid var(--cn-stroke);
+    border-radius: var(--cn-radius-s);
+    background: var(--cn-card);
+    color: var(--cn-text);
+    padding: 0 8px;
+    font: 14px var(--cn-font);
+    box-sizing: border-box;
+}
+
+textarea.cn-input {
+    height: auto;
+    padding: 6px 8px;
+    resize: vertical;
+}
+
+.cn-input:focus {
+    outline: none;
+    border-color: var(--cn-accent);
+    box-shadow: 0 0 0 1px var(--cn-accent) inset;
+}
+
+.cn-input[readonly],
+.cn-input:disabled {
+    color: var(--cn-text-2);
+    background: var(--cn-ground);
+}
+
+.cn-input--right { text-align: right; font-variant-numeric: tabular-nums; }
+
+.cn-input--invalid,
+.cn-input--invalid:focus {
+    border-color: var(--cn-danger);
+    box-shadow: 0 0 0 1px var(--cn-danger) inset;
+}
+
+.cn-field-error {
+    color: var(--cn-danger);
+    font: 12px var(--cn-font);
+    margin-top: 2px;
+}
+
+/* Subtle: borderless until hover/focus — the matrix cell variant. */
+.cn-input--subtle {
+    border-color: transparent;
+    background: transparent;
+    height: 28px;
+    padding: 0 6px;
+    font-size: 13.5px;
+}
+
+.cn-input--subtle:hover:not([readonly]):not(:disabled) { border-color: var(--cn-stroke); }
+
+.cn-input--subtle:focus {
+    border-color: var(--cn-accent);
+    background: var(--cn-card);
+}
+
+.cn-input--subtle[readonly],
+.cn-input--subtle:disabled {
+    background: transparent;
+}
+
+select.cn-input { cursor: pointer; }
+select.cn-input:disabled { cursor: default; }
+
+/* ---------- CnCheckbox ----------
+   Custom box per the mockup: 20px, 4px radius, generous room around the
+   check. The native input stays (invisible) for a11y and focus. */
+.cn-check-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font: 14px var(--cn-font);
+    cursor: pointer;
+    position: relative;
+}
+
+.cn-check {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.cn-check:disabled { cursor: default; }
+
+.cn-check-box {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--cn-stroke);
+    border-radius: 4px;
+    background: var(--cn-card);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    pointer-events: none;
+}
+
+.cn-check-box svg {
+    width: 12px;
+    height: 12px;
+    display: none;
+}
+
+.cn-check:hover:not(:disabled) + .cn-check-box {
+    border-color: var(--cn-text-2);
+}
+
+.cn-check:checked + .cn-check-box {
+    background: var(--cn-accent);
+    border-color: var(--cn-accent);
+}
+
+.cn-check:checked + .cn-check-box svg { display: block; }
+
+.cn-check:focus-visible + .cn-check-box {
+    outline: 2px solid var(--cn-accent);
+    outline-offset: 1px;
+}
+
+.cn-check:disabled + .cn-check-box { opacity: .55; }
+
+/* ---------- CnBadge ---------- */
+.cn-badge {
+    font: 600 12px/1 var(--cn-font);
+    padding: 3px 8px;
+    border-radius: 10px;
+    background: var(--cn-ground);
+    color: var(--cn-text-2);
+    border: 1px solid var(--cn-stroke-soft);
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.cn-badge--accent {
+    background: var(--cn-accent-tint);
+    color: var(--cn-accent);
+    border-color: var(--cn-accent);
+}
+
+/* ---------- CnMessageBar ---------- */
+.cn-messagebar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--cn-danger);
+    background: rgba(209, 52, 56, .08);
+    color: var(--cn-text);
+    border-radius: var(--cn-radius-s);
+    padding: 6px 6px 6px 12px;
+    font: 13.5px var(--cn-font);
+}
+
+.cn-messagebar--warning {
+    border-color: #b8860b;
+    background: rgba(184, 134, 11, .08);
+}
+
+.cn-messagebar--info {
+    border-color: var(--cn-stroke);
+    background: var(--cn-ground);
+}
+
+.cn-messagebar-text { flex: 1; }
+
+/* ---------- CnDialog ---------- */
+.cn-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 1000;
+}
+
+.cn-overlay-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .4);
+}
+
+.cn-dialog {
+    position: relative;
+    background: var(--cn-card);
+    border-radius: var(--cn-radius);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .28);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    max-height: min(85vh, 760px);
+}
+
+.cn-dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px 8px;
+}
+
+.cn-dialog-title {
+    font: 600 16px/1.3 var(--cn-font);
+    margin: 0;
+}
+
+.cn-dialog-body {
+    padding: 4px 16px 12px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cn-dialog-footer {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 12px 16px 14px;
+    border-top: 1px solid var(--cn-stroke-soft);
+}
+
+/* ---------- Chips (filters / selection tray) ---------- */
+.cn-chip-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.cn-chip {
+    height: 26px;
+    padding: 0 12px;
+    border: 1px solid var(--cn-stroke);
+    border-radius: 13px;
+    background: transparent;
+    color: var(--cn-text-2);
+    font: 600 12.5px var(--cn-font);
+    cursor: pointer;
+}
+
+.cn-chip:hover {
+    border-color: var(--cn-text-2);
+    color: var(--cn-text);
+}
+
+.cn-chip--on {
+    background: var(--cn-accent-tint);
+    border-color: var(--cn-accent);
+    color: var(--cn-accent);
+}
+
+/* ---------- Party address editor (edit/add card, in-grid) ---------- */
+.cn-addr-form {
+    grid-column: 1 / -1;
+    border: 1.5px solid var(--cn-accent);
+    border-radius: var(--cn-radius);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--cn-card);
+}
+
+/* S-263: done rows stay visible but recede; the footer carries totals. */
+.cn-grid-table tr.cn-grid-row--done td { color: var(--cn-text-2); }
+.cn-grid-summary { color: var(--cn-text-2); font-size: 12px; margin-right: 12px; }
+
+/* S-261: two short fields sharing one full-width line (firstname/lastname). */
+.cn-form-row2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* S-261: the VAT field carries its lookup button; the outcome is an inline
+   status line, never only a toast. */
+.cn-vat-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: end;
+}
+
+.cn-vat-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font: 600 12px/1.4 var(--cn-font);
+}
+
+.cn-vat-status--ok { color: var(--cn-accent-hover); }
+.cn-vat-status--warn { color: var(--cn-warn); }
+.cn-vat-status--error { color: var(--cn-danger); }
+
+/* S-261: the editor lists addresses as full-width rows (mock anatomy); the
+   tile grid stays for read-only detail pages. */
+.cn-addrlist {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.cn-addrrow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 11px;
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: var(--cn-radius-s);
+    background: var(--cn-card);
+}
+
+.cn-addrrow:hover { background: var(--cn-row-hover); }
+
+.cn-addrrow-main {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+}
+
+.cn-addrrow-main b {
+    overflow: hidden;
+    font: 600 13px/1.35 var(--cn-font);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-addrrow-main small {
+    overflow: hidden;
+    color: var(--cn-text-2);
+    font-size: 11.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-addrrow-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 36px;
+    width: 100%;
+    border: 1px dashed var(--cn-stroke);
+    border-radius: var(--cn-radius-s);
+    background: transparent;
+    color: var(--cn-text-2);
+    font: 600 12.5px/1 var(--cn-font);
+    cursor: pointer;
+}
+
+.cn-addrrow-add:hover {
+    border-color: var(--cn-accent);
+    color: var(--cn-accent);
+    background: var(--cn-accent-tint);
+}
+
+/* S-261: address draft lines at natural widths (street wide + nr/bus narrow;
+   postal narrow + city wide; country picker + role chips). */
+.cn-addr-line1 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 72px 72px;
+    gap: 8px;
+}
+
+.cn-addr-line2 {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 8px;
+}
+
+.cn-addr-line3 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.cn-country-flag {
+    flex: none;
+    font-size: 15px;
+}
+
+/* ---------- Party contact information editor ---------- */
+.cn-contactinfo-list { display: flex; flex-direction: column; gap: 8px; }
+
+/* S-261: icon-prefixed rows added per type — no type dropdown. */
+.cn-contactinfo-row {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) auto auto;
+    gap: 8px;
+    align-items: center;
+}
+
+.cn-contactinfo-ico {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 32px;
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: var(--cn-radius-s);
+    background: var(--cn-ground);
+    color: var(--cn-text-2);
+    font-size: 13px;
+}
+
+.cn-contactinfo-add {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* ---------- Totals strip (dialogs) ---------- */
+.cn-totals-strip {
+    display: flex;
+    gap: 18px;
+    justify-content: flex-end;
+    background: var(--cn-ground);
+    border-radius: var(--cn-radius-s);
+    padding: 8px 12px;
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+}
+
+.cn-totals-label {
+    color: var(--cn-text-2);
+    margin-right: 6px;
+}
+
+.cn-totals-total { font-weight: 600; }
+
+/* ---------- CnDataGrid ---------- */
+.cn-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.cn-grid-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.cn-grid-search { width: min(320px, 100%); }
+
+.cn-grid-scroll { overflow-x: auto; }
+
+/* S-263: the mock's table idiom — 13px cells on tight rows, uppercase
+   11px letterspaced headers on a single hairline. */
+.cn-grid-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 13px;
+}
+
+.cn-grid-table th,
+.cn-grid-table td {
+    border-bottom: 1px solid var(--cn-stroke-soft);
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.cn-grid-table thead th {
+    border-bottom: 1px solid var(--cn-stroke);
+    padding: 7px 12px;
+    color: var(--cn-text-2);
+    font: 600 11px/1.3 var(--cn-font);
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.cn-grid-table tbody tr:hover { background: var(--cn-row-hover); }
+
+/* S-263: action controls inside rows stay within the row rhythm — the row,
+   not the button, decides the height. */
+.cn-grid-table td .cn-icon-btn { width: 26px; height: 26px; border-radius: 5px; }
+.cn-grid-table td .cn-icon-btn svg { width: 15px; height: 15px; }
+.cn-grid-table td .cn-btn { height: 26px; min-height: 26px; padding: 0 9px; font-size: 12px; }
+.cn-grid-table td:has(.cn-icon-btn),
+.cn-grid-table td:has(.cn-btn) { padding-block: 3px; }
+
+.cn-grid-row--clickable { cursor: pointer; }
+
+.cn-grid-cell--right { text-align: right !important; font-variant-numeric: tabular-nums; }
+.cn-grid-cell--center { text-align: center !important; }
+
+/* ---------- Lines table: drag reorder, row actions, drop indicator, full-width totals ---------- */
+/* Additive to .cn-grid-table (M-018/F2): draggable rows with a reorder handle and hover-only
+   row actions, plus full-width tfoot totals rows — mirrors the docflow-editors mock's
+   .drag-handle / .row-actions / .totals-row. Do NOT fold into .cn-totals-strip above (dialogs'
+   compact totals line) — that stays as-is. */
+.cn-drag-handle {
+    cursor: grab;
+    color: var(--cn-text-2);
+    user-select: none;
+    font-size: 15px;
+    letter-spacing: -1px;
+    padding: 0 2px;
+    opacity: 0;
+}
+
+.cn-line-row { transition: background .12s; }
+.cn-line-row:hover .cn-drag-handle { opacity: .9; }
+
+.cn-row-actions {
+    display: flex;
+    gap: 2px;
+    justify-content: flex-end;
+    opacity: 0;
+}
+
+.cn-line-row:hover .cn-row-actions { opacity: 1; }
+
+.cn-line-dragging { opacity: .45; }
+
+.cn-line-drop-above > td { border-top: 2px solid var(--cn-accent); }
+
+.cn-line-sub {
+    font-size: 11.5px;
+    color: var(--cn-text-2);
+    margin-top: 1px;
+}
+
+.cn-line-origin {
+    font-size: 12px;
+    color: var(--cn-text-2);
+    background: var(--cn-ground);
+    border-radius: var(--cn-radius-s);
+    padding: 6px 10px;
+    margin: 0 0 12px;
+}
+
+.cn-totals-row td {
+    background: var(--cn-accent-tint);
+    font-weight: 600;
+    border-bottom: none;
+    padding-top: 10px;
+    font-variant-numeric: tabular-nums;
+}
+
+.cn-totals-row td:first-child { border-radius: 6px 0 0 6px; }
+.cn-totals-row td:last-child { border-radius: 0 6px 6px 0; }
+
+.cn-totals-row-label {
+    color: var(--cn-text-2);
+    font-weight: 600;
+    text-align: right;
+}
+
+.cn-totals-row--grand td {
+    font-size: 15px;
+    font-weight: 700;
+    border-top: 2px solid var(--cn-accent);
+}
+
+.cn-totals-row--grand .cn-totals-row-label { color: var(--cn-text); }
+
+.cn-grid-sort {
+    border: none;
+    background: transparent;
+    padding: 0;
+    font: inherit;
+    font-weight: 600;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    color: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cn-grid-sort:hover { color: var(--cn-accent); }
+
+.cn-grid-sort--active { color: var(--cn-accent); }
+
+.cn-grid-sort-ind { font-size: 0.65rem; }
+
+.cn-grid-empty {
+    color: var(--cn-text-2);
+    text-align: center;
+    padding: 20px 0;
+}
+
+.cn-grid-footer {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ---------- CnPicker (v2: combobox + advanced grid dialog) ---------- */
+.cn-picker-field {
+    position: relative;
+}
+
+/* The wrapper carries the .cn-input frame; the inner <input> is transparent
+   so the clear/magnifier buttons can sit flush inside the field on the right. */
+.cn-picker-inputwrap {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    cursor: text;
+}
+
+.cn-picker-inputwrap--open,
+.cn-picker-inputwrap:focus-within {
+    outline: none;
+    border-color: var(--cn-accent);
+    box-shadow: 0 0 0 1px var(--cn-accent) inset;
+}
+
+.cn-picker-input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    padding: 0 8px;
+    font: 14px var(--cn-font);
+    text-overflow: ellipsis;
+}
+
+.cn-picker-input::placeholder { color: var(--cn-text-2); }
+
+.cn-picker-input:disabled,
+.cn-picker-input[readonly] { cursor: default; }
+
+/* Disabled/readonly pickers must LOOK inert (owner feedback): dimmed field on
+   the ground tint, muted text, and no text cursor. */
+.cn-picker-inputwrap--disabled,
+.cn-picker-inputwrap--readonly {
+    background: var(--cn-ground);
+    cursor: default;
+}
+
+.cn-picker-inputwrap--disabled .cn-picker-input,
+.cn-picker-inputwrap--readonly .cn-picker-input {
+    color: var(--cn-text-2);
+}
+
+.cn-picker-inputwrap--disabled {
+    opacity: .65;
+}
+
+.cn-picker-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding-right: 4px;
+    flex-shrink: 0;
+}
+
+.cn-picker-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    border-radius: var(--cn-radius-s);
+    background: transparent;
+    color: var(--cn-text-2);
+    cursor: pointer;
+}
+
+.cn-picker-btn:hover {
+    background: var(--cn-row-hover);
+    color: var(--cn-text);
+}
+
+.cn-picker-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    /* S-256: size to content — at least the field, never off-screen. The
+       fixed-position JS placement applies the same rule with viewport math. */
+    right: auto;
+    min-width: 100%;
+    width: max-content;
+    max-width: min(460px, 92vw);
+    margin-top: 4px;
+    z-index: 901;
+    background: var(--cn-card);
+    border: 1px solid var(--cn-stroke);
+    border-radius: var(--cn-radius-s);
+    box-shadow: var(--cn-shadow);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cn-picker-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    /* Scrolling lives on .cn-picker-dropdown (row-snapped by CnPicker.razor.js) —
+       a second scroll container here reintroduced half-visible rows. */
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.cn-picker-option {
+    padding: 6px 10px;
+    border-radius: var(--cn-radius-s);
+    cursor: pointer;
+    font: 13.5px/1.4 var(--cn-font);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+}
+
+.cn-picker-option:hover,
+.cn-picker-option--active { background: var(--cn-accent-tint); }
+
+.cn-picker-option--selected {
+    background: var(--cn-accent-tint);
+    color: var(--cn-accent);
+    font-weight: 600;
+}
+
+.cn-picker-empty {
+    padding: 10px 8px;
+    color: var(--cn-text-2);
+    text-align: center;
+    font-size: 13px;
+}
+
+/* S-256: rich rows (title + context + meta), Recent/All groups and the
+   dropdown footer with advanced search and quick-create. */
+.cn-picker-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cn-picker-option-main {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.cn-picker-option-title {
+    font: 600 13px/1.25 var(--cn-font);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-picker-option--selected .cn-picker-option-title { color: var(--cn-accent); }
+
+.cn-picker-option-context {
+    font: 400 11.5px/1.3 var(--cn-font);
+    color: var(--cn-text-2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-picker-option-meta { flex: none; }
+
+.cn-picker-avatar {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--cn-accent-tint);
+    color: var(--cn-accent-hover);
+    font: 700 10px/1 var(--cn-font);
+    letter-spacing: .3px;
+}
+
+.cn-picker-group {
+    font: 700 10px/1 var(--cn-font);
+    letter-spacing: .7px;
+    text-transform: uppercase;
+    color: var(--cn-text-2);
+    padding: 7px 10px 3px;
+}
+
+.cn-picker-foot {
+    display: flex;
+    gap: 4px;
+    border-top: 1px solid var(--cn-stroke-soft);
+    margin: 0 -6px -6px;
+    padding: 5px;
+    background: var(--cn-ground);
+    border-radius: 0 0 var(--cn-radius-s) var(--cn-radius-s);
+}
+
+.cn-picker-foot-btn {
+    flex: 1;
+    height: 28px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--cn-text-2);
+    font: 600 12px/1 var(--cn-font);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.cn-picker-foot-btn:hover {
+    background: var(--cn-accent-tint);
+    color: var(--cn-accent);
+}
+
+.cn-picker-foot-btn .cn-icon {
+    width: 13px;
+    height: 13px;
+}
+
+.cn-picker-with-add {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.cn-picker-with-add > .cn-picker { flex: 1; min-width: 0; }
+
+/* The generic icon-only button is intentionally 28px, while form controls are
+   32px. A picker-side create/check action is part of the field row, so give it
+   the field control height instead of bottom-aligning two unequal controls. */
+.cn-picker-with-add > .cn-btn--icononly {
+    width: 32px;
+    height: 32px;
+}
+
+.cn-picker-griddialog { padding-top: 4px; }
+
+/* ---------- CnTabs ---------- */
+.cn-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.cn-tabs-list {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--cn-stroke-soft);
+    flex-wrap: wrap;
+}
+
+.cn-tab {
+    border: none;
+    background: transparent;
+    color: var(--cn-text-2);
+    font: 600 14px/1 var(--cn-font);
+    padding: 10px 4px;
+    margin-bottom: -1px;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cn-tab:hover { color: var(--cn-text); }
+
+.cn-tab--active {
+    color: var(--cn-accent);
+    border-bottom-color: var(--cn-accent);
+}
+
+.cn-tab-count {
+    font: 600 11.5px/1 var(--cn-font);
+    color: var(--cn-text-2);
+    background: var(--cn-ground);
+    border-radius: 9px;
+    padding: 2px 7px;
+}
+
+.cn-tab--active .cn-tab-count {
+    color: var(--cn-accent);
+    background: var(--cn-accent-tint);
+}
+
+/* Mock P3: right-aligned content (the period chip) on the tab row. */
+.cn-tabs-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    padding-bottom: 6px;
+}
+
+.cn-tabs-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ---------- CustomerDialog ---------- */
+.cn-dialog-toprow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.cn-dialog-toprow .cn-seg { width: 220px; }
+
+.cn-vies-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 22px 8px 10px;
+}
+
+.cn-vies-row { display: flex; gap: 8px; align-items: flex-start; }
+.cn-vies-row .cn-field { flex: 1; }
+
+.cn-vies-input .cn-input {
+    height: 38px;
+    font-size: 16px;
+    letter-spacing: .5px;
+}
+
+.cn-vies-row .cn-btn { height: 38px; margin-top: 20px; }
+
+.cn-vies-ok {
+    display: inline-block;
+    margin-top: 3px;
+    color: var(--cn-accent);
+    font-size: 11.5px;
+    font-weight: 600;
+}
+
+.cn-invoicable {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    background: var(--cn-ground);
+    border-radius: var(--cn-radius-s);
+    font-size: 12.5px;
+}
+
+.cn-invoicable-label { font-weight: 600; color: var(--cn-text-2); }
+
+.cn-invoicable-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--cn-text-2);
+}
+
+.cn-invoicable-item--ok { color: var(--cn-accent); }
+
+.cn-invoicable-item .cn-icon { width: 14px; height: 14px; }
+
+/* ============ Flow rail (S-093/M-018, REQ-004 #7) ============ */
+.cn-flowrail {
+    display: flex;
+    align-items: stretch;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.cn-flowrail-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    border-radius: 9px;
+    border: 1px solid var(--cn-stroke-soft);
+    background: var(--cn-card);
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    min-width: 168px;
+    cursor: pointer;
+    transition: box-shadow .12s, border-color .12s;
+}
+
+.cn-flowrail-step:disabled { cursor: default; }
+.cn-flowrail-step:not(:disabled):hover { box-shadow: var(--cn-shadow); }
+
+.cn-flowrail-step--current {
+    border-color: var(--cn-accent);
+    background: var(--cn-accent-tint);
+    cursor: default;
+}
+
+.cn-flowrail-step--pending { opacity: .65; }
+
+.cn-flowrail-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    flex: none;
+    font-size: 12px;
+    font-weight: 800;
+    border: 2px solid var(--cn-stroke);
+    color: var(--cn-text-2);
+    background: var(--cn-card);
+}
+
+.cn-flowrail-dot .cn-icon { width: 13px; height: 13px; }
+
+.cn-flowrail-step--done .cn-flowrail-dot {
+    background: var(--cn-accent);
+    border-color: var(--cn-accent);
+    color: #fff;
+}
+
+.cn-flowrail-step--current .cn-flowrail-dot {
+    border-color: var(--cn-accent);
+    color: var(--cn-accent);
+}
+
+.cn-flowrail-step--pending .cn-flowrail-dot { opacity: .5; }
+
+.cn-flowrail-text b { display: block; font-size: 13px; }
+.cn-flowrail-text small { display: block; font-size: 11px; color: var(--cn-text-2); margin-top: 1px; }
+
+.cn-flowrail-arrow {
+    color: var(--cn-stroke);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    padding: 0 1px;
+    flex: none;
+}
+
+@media (max-width: 900px) {
+    .cn-flowrail { flex-direction: column; align-items: stretch; }
+    .cn-flowrail-step { min-width: 0; }
+    .cn-flowrail-arrow { display: none; }
+}
+
+/* Large variant (UI-1 Dossier page): same steps, more presence at the top of the chain view. */
+.cn-flowrail--lg { gap: 10px; }
+.cn-flowrail--lg .cn-flowrail-step { padding: 14px 18px; min-width: 200px; gap: 12px; border-radius: 12px; }
+.cn-flowrail--lg .cn-flowrail-dot { width: 32px; height: 32px; font-size: 14px; }
+.cn-flowrail--lg .cn-flowrail-text b { font-size: 14.5px; }
+.cn-flowrail--lg .cn-flowrail-text small { font-size: 12px; }
+.cn-flowrail--lg .cn-flowrail-arrow { font-size: 20px; }
+
+/* Small dialogs opt out of the wide dialog form grid: one full-width column. */
+.cn-dialog-body .cn-form-grid--stack {
+    grid-template-columns: 1fr !important;
+}
+
+/* ---------- Billit-style ultrawide split (M-018) ----------
+   Editor column + sticky document pane from ~1500px. Global (not scoped):
+   the wrapper sits directly under <EditForm>, where Blazor's ::deep scoping
+   never matches (no scope-attributed ancestor) — the original scoped rules
+   silently applied nothing, stacking the pane below the editor. */
+.cn-wide-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+}
+
+@media (min-width: 1500px) {
+    .cn-wide-split {
+        grid-template-columns: minmax(560px, 1fr) minmax(420px, 42%);
+    }
+}
+
+.cn-wide-editor-col {
+    min-width: 0;
+}
+
+/* ---------- Quantity picker dialogs (M-018 register delivery/receipt/invoice) ----------
+   Owner-approved shape: context line, select-all bar, one row card per order line with
+   checkbox + description/progress + a stepper clamped to the remainder, meta fields
+   below, summary in the footer. Shared by the four chain dialogs. */
+.cn-qty-context {
+    font: 600 12.5px var(--cn-font);
+    color: var(--cn-text-2);
+}
+
+.cn-qty-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cn-qty-selectall {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    font: 600 12px var(--cn-font);
+    color: var(--cn-text-2);
+}
+
+.cn-qty-selectall .cn-qty-count { margin-left: auto; font-weight: 500; }
+
+.cn-qty-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 1px solid var(--cn-stroke-soft);
+    border-left: 3px solid transparent;
+    border-radius: var(--cn-radius-s);
+    transition: background .12s, border-color .12s;
+}
+
+.cn-qty-row--on {
+    background: var(--cn-accent-tint);
+    border-left-color: var(--cn-accent);
+}
+
+.cn-qty-row--done {
+    opacity: .55;
+}
+
+.cn-qty-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    flex: 1;
+}
+
+.cn-qty-desc {
+    font-size: 13.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-qty-sub {
+    font-size: 11.5px;
+    color: var(--cn-text-2);
+}
+
+.cn-qty-ctrl {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: none;
+}
+
+.cn-qty-step {
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--cn-stroke);
+    border-radius: var(--cn-radius-s);
+    background: var(--cn-card);
+    color: var(--cn-text-2);
+    font: 600 15px/1 var(--cn-font);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+}
+
+.cn-qty-step:hover:not(:disabled) {
+    background: var(--cn-accent-tint);
+    color: var(--cn-accent);
+    border-color: var(--cn-accent);
+}
+
+.cn-qty-step:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+.cn-qty-ctrl .cn-field { width: 64px; }
+.cn-qty-ctrl input { text-align: right; }
+
+.cn-qty-of {
+    font: 500 12px var(--cn-font);
+    color: var(--cn-text-2);
+    min-width: 34px;
+    font-variant-numeric: tabular-nums;
+}
+
+.cn-qty-line-extra {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.cn-qty-meta {
+    border-top: 1px solid var(--cn-stroke-soft);
+    padding-top: 12px;
+}
+
+.cn-qty-summary {
+    margin-right: auto;
+    font: 600 12.5px var(--cn-font);
+    color: var(--cn-text-2);
+}
+
+/* ADR-024 serialized receiving: dense, scanner-friendly warehouse workbench. */
+.cn-receive-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 2px 2px 8px;
+}
+
+.cn-receive-head > div { display: flex; flex-direction: column; gap: 2px; }
+
+.cn-receive-kicker {
+    color: var(--cn-text-2);
+    font: 700 10px var(--cn-font);
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+
+.cn-receive-total {
+    color: var(--cn-accent);
+    font: 700 22px/1 var(--cn-font);
+    font-variant-numeric: tabular-nums;
+}
+
+.cn-receive-total small {
+    color: var(--cn-text-2);
+    font-size: 10px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+.cn-receive-row { align-items: flex-start; }
+.cn-receive-row > .cn-checkbox { margin-top: 3px; }
+
+.cn-serial-workbench {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 8px;
+    padding: 9px;
+    border: 1px solid color-mix(in srgb, var(--cn-accent) 25%, var(--cn-stroke-soft));
+    border-radius: var(--cn-radius-s);
+    background: color-mix(in srgb, var(--cn-card) 84%, var(--cn-ground));
+}
+
+.cn-serial-entry { display: flex; gap: 6px; }
+
+.cn-serial-input {
+    flex: 1;
+    min-width: 0;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    letter-spacing: .025em;
+    text-transform: uppercase;
+}
+
+.cn-serial-add,
+.cn-serial-bulk-add {
+    border: 1px solid var(--cn-accent);
+    border-radius: var(--cn-radius-s);
+    background: var(--cn-accent);
+    color: white;
+    font: 700 11px var(--cn-font);
+    padding: 0 13px;
+    cursor: pointer;
+}
+
+.cn-serial-add:disabled { opacity: .45; cursor: default; }
+
+.cn-serial-bulk summary {
+    width: max-content;
+    color: var(--cn-accent);
+    font: 600 11px var(--cn-font);
+    cursor: pointer;
+}
+
+.cn-serial-bulk textarea {
+    display: block;
+    width: 100%;
+    min-height: 68px;
+    margin: 7px 0 6px;
+    resize: vertical;
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+
+.cn-serial-bulk-add { min-height: 28px; }
+
+.cn-serial-error {
+    color: var(--cn-danger, #b42318);
+    font: 600 11px var(--cn-font);
+}
+
+.cn-serial-list { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.cn-serial-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    padding: 3px 4px 3px 6px;
+    border: 1px solid var(--cn-stroke);
+    border-radius: 4px;
+    background: var(--cn-card);
+    font: 600 11px ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+
+.cn-serial-chip b { color: var(--cn-text-2); font-size: 9px; }
+.cn-serial-chip span { overflow: hidden; text-overflow: ellipsis; }
+
+.cn-serial-chip button {
+    width: 20px;
+    height: 20px;
+    border: 0;
+    border-radius: 3px;
+    background: transparent;
+    color: var(--cn-text-2);
+    cursor: pointer;
+}
+
+.cn-serial-chip button:hover { background: var(--cn-ground); color: var(--cn-danger, #b42318); }
+.cn-serial-progress { padding-top: 3px; font-weight: 700; }
+
+.cn-stock-state {
+    display: inline-flex;
+    align-items: center;
+    width: max-content;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: var(--cn-ground);
+    color: var(--cn-text-2);
+    font: 700 10.5px var(--cn-font);
+    white-space: nowrap;
+}
+
+.cn-stock-state--available { background: #e7f7ec; color: #128f32; }
+.cn-stock-state--reserved { background: #fff3d6; color: #9b6100; }
+.cn-stock-state--delivered { background: #e9eef8; color: #405779; }
+.cn-stock-state--pendingreceipt { background: #f2f2f2; color: #6b6b6b; }
+
+/* ---------- Catalog (M-020) — moved from CatalogListPage.razor.css to the global sheet:
+   scoped-css + unfingerprinted bundle caching made page styles unreliable after deploys. ---------- */
+/* M-020/S-103a: product-card grid, ported 1:1 from the owner-approved mock
+   (catalog-mockup.html .prod-* rules) onto the app's own cn-* design tokens. */
+
+.cn-prod-search {
+    display: inline-flex;
+}
+
+.cn-prod-search .cn-input {
+    height: 32px;
+    border-radius: 16px;
+    width: 280px;
+}
+
+.cn-prod-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+}
+
+.cn-prod {
+    background: var(--cn-card);
+    border-radius: 8px;
+    box-shadow: var(--cn-shadow);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    position: relative;
+    transition: transform .1s;
+}
+
+.cn-prod:hover {
+    transform: translateY(-1px);
+}
+
+/* Image boxes use flex centering + px clamps + overflow:hidden, NOT
+   grid + percentage max-sizes: in a grid the auto track first grows to
+   the photo's intrinsic size, so max-height:100% resolves against the
+   blown-up track and constrains nothing (owner-visible overflow bug,
+   fixed 2026-07-12). Same pattern for gallery/compare/onboard below. */
+.cn-prod-img {
+    height: 120px;
+    background: var(--cn-ground);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: var(--cn-text-2);
+}
+
+.cn-prod-img img {
+    max-width: 100%;
+    max-height: 120px;
+    object-fit: contain;
+}
+
+.cn-prod-img svg {
+    width: 32px;
+    height: 32px;
+}
+
+.cn-prod-brand {
+    font: 700 10.5px var(--cn-font);
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: var(--cn-text-2);
+}
+
+.cn-prod-name {
+    font: 600 13.5px var(--cn-font);
+    line-height: 1.3;
+}
+
+.cn-prod-specs {
+    font-size: 11.5px;
+    color: var(--cn-text-2);
+    line-height: 1.5;
+}
+
+.cn-prod-cmp {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid var(--cn-stroke);
+    background: var(--cn-card);
+    color: var(--cn-text-2);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+}
+
+.cn-prod-cmp--on {
+    background: var(--cn-accent);
+    border-color: var(--cn-accent);
+    color: #fff;
+}
+
+.cn-prod-cmp-tray {
+    position: sticky;
+    bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: var(--cn-card);
+    border: 1px solid var(--cn-accent);
+    border-radius: 10px;
+    box-shadow: var(--cn-shadow);
+    padding: 8px 12px;
+}
+
+.cn-prod-cmp-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--cn-accent-tint);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font: 600 12px var(--cn-font);
+}
+
+.cn-prod-cmp-chip button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--cn-text-2);
+    font-size: 12px;
+    padding: 0;
+}
+
+/* ---------- Catalog (M-020) — moved from CatalogComparePage.razor.css to the global sheet:
+   scoped-css + unfingerprinted bundle caching made page styles unreliable after deploys. ---------- */
+/* M-020/S-104: comparison v2 (owner-approved mock, catalog-mockup.html
+   .cmp-table/.cmp-prod-head/.cmp-diff/.cmp-group/.toggle rules) ported onto
+   the app's own cn-* design tokens; the table itself reuses cn-grid-table. */
+
+.cn-cmp-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12.5px;
+    color: var(--cn-text-2);
+    cursor: pointer;
+}
+
+.cn-cmp-table {
+    min-width: 640px;
+}
+
+.cn-cmp-table .cn-cmp-lbl {
+    color: var(--cn-text-2);
+    width: 180px;
+    white-space: nowrap;
+}
+
+.cn-cmp-head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    min-width: 170px;
+}
+
+.cn-cmp-head-img {
+    height: 70px;
+    width: 100%;
+    background: var(--cn-ground);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: var(--cn-text-2);
+}
+
+.cn-cmp-head-img img {
+    max-width: 100%;
+    max-height: 70px;
+    object-fit: contain;
+}
+
+.cn-cmp-add {
+    min-width: 120px;
+}
+
+.cn-cmp-diff td {
+    background: var(--cn-accent-tint);
+    font-weight: 600;
+}
+
+.cn-cmp-group-row td {
+    font: 700 10.5px var(--cn-font);
+    letter-spacing: .7px;
+    text-transform: uppercase;
+    color: var(--cn-text-2);
+    background: var(--cn-ground);
+    padding: 4px 12px;
+}
+
+/* ---------- Catalog (M-020) — moved from CatalogItemDetailPage.razor.css to the global sheet:
+   scoped-css + unfingerprinted bundle caching made page styles unreliable after deploys. ---------- */
+/* M-020/S-103b+104+105: product fiche — gallery + spec groups + price
+   context (owner-approved mock; the pp / gallery / spec mockup rules)
+   ported onto the app's own cn-* design tokens.
+   NOTE: never write glob text like "x-*" followed by "/" inside these
+   comments — the embedded star-slash ended this comment early and the
+   leaked tail swallowed the .cn-pp grid rule (owner-visible layout bug,
+   fixed 2026-07-12). */
+
+.cn-pp {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 14px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .cn-pp {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cn-pp-right {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.cn-pp-gallery-main {
+    height: 280px;
+    background: var(--cn-ground);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: var(--cn-text-2);
+}
+
+.cn-pp-gallery-main img {
+    max-width: 100%;
+    max-height: 280px;
+    object-fit: contain;
+}
+
+.cn-pp-gallery-main svg {
+    width: 48px;
+    height: 48px;
+}
+
+.cn-pp-gallery-thumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.cn-pp-thumb {
+    width: 56px;
+    height: 56px;
+    background: var(--cn-ground);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+    padding: 0;
+    overflow: hidden;
+}
+
+.cn-pp-thumb img {
+    max-width: 100%;
+    max-height: 52px;
+    object-fit: contain;
+}
+
+.cn-pp-thumb--on {
+    border-color: var(--cn-accent);
+}
+
+.cn-num {
+    font-variant-numeric: tabular-nums;
+}
+
+.cn-pp-links {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.cn-pp-spec-group {
+    margin-bottom: 12px;
+}
+
+.cn-pp-spec-group h4 {
+    margin: 0 0 4px;
+    font: 700 11px var(--cn-font);
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    color: var(--cn-text-2);
+}
+
+.cn-pp-spec-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--cn-stroke-soft);
+    font-size: 13px;
+}
+
+.cn-pp-spec-row span:first-child {
+    color: var(--cn-text-2);
+}
+
+.cn-pp-card-title {
+    margin: 0 0 8px;
+    font: 700 11px var(--cn-font);
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    color: var(--cn-text-2);
+}
+
+.cn-pp-linked-item {
+    border: 1px solid var(--cn-stroke-soft);
+    cursor: pointer;
+    font: inherit;
+}
+
+.cn-pp-linked-item:hover {
+    background: var(--cn-accent-tint);
+    color: var(--cn-accent);
+    border-color: var(--cn-accent);
+}
+
+/* ---------- Catalog (M-020) — moved from CatalogOnboardPage.razor.css to the global sheet:
+   scoped-css + unfingerprinted bundle caching made page styles unreliable after deploys. ---------- */
+/* M-020/S-103a: onboarding wizard, ported from the owner-approved mock
+   (catalog-mockup.html .onb-* rules) onto the app's own cn-* design tokens. */
+
+.cn-onb-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 1080px;
+}
+
+.cn-onb-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 1080px;
+}
+
+.cn-onb-heading {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.cn-onb-heading p {
+    margin: 3px 0 0;
+}
+
+.cn-onb-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--cn-accent);
+    color: #fff;
+    font: 700 12px var(--cn-font);
+    display: grid;
+    place-items: center;
+    flex: none;
+    margin-top: 2px;
+}
+
+.cn-onb-sources {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-left: 34px;
+}
+
+.cn-onb-source {
+    border: 1px solid var(--cn-stroke);
+    border-radius: 10px;
+    background: var(--cn-ground);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    min-width: 0;
+}
+
+.cn-onb-source--primary {
+    border-color: color-mix(in srgb, var(--cn-accent) 45%, var(--cn-stroke));
+    background: color-mix(in srgb, var(--cn-accent-tint) 40%, var(--cn-card));
+}
+
+.cn-onb-source-head {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.cn-onb-source-head > svg {
+    width: 22px;
+    height: 22px;
+    color: var(--cn-accent);
+    margin-top: 1px;
+}
+
+.cn-onb-source h2 {
+    font: 650 14px/1.3 var(--cn-font);
+    color: var(--cn-text);
+    margin: 0;
+}
+
+.cn-onb-source p {
+    color: var(--cn-text-2);
+    font-size: 12.5px;
+    line-height: 1.45;
+    margin: 0;
+    min-height: 36px;
+}
+
+.cn-onb-source .cn-btn {
+    align-self: flex-start;
+}
+
+.cn-onb-recommended {
+    display: inline-block;
+    color: var(--cn-accent);
+    font-size: 11px;
+    font-weight: 650;
+    margin-top: 2px;
+}
+
+.cn-onb-preview {
+    display: flex;
+    gap: 14px;
+    background: var(--cn-ground);
+    border-radius: 8px;
+    padding: 14px;
+    margin-top: 8px;
+}
+
+.cn-onb-preview-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cn-onb-img {
+    width: 110px;
+    height: 110px;
+    background: var(--cn-card);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    color: var(--cn-text-2);
+    overflow: hidden;
+}
+
+.cn-onb-img img {
+    max-width: 110px;
+    max-height: 110px;
+    object-fit: contain;
+}
+
+.cn-onb-img svg {
+    width: 32px;
+    height: 32px;
+}
+
+.cn-onb-src-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font: 600 11px var(--cn-font);
+    color: var(--cn-accent);
+    background: var(--cn-accent-tint);
+    border-radius: 10px;
+    padding: 2px 9px;
+    width: fit-content;
+}
+
+.cn-onb-review-card {
+    border-color: color-mix(in srgb, var(--cn-accent) 35%, var(--cn-stroke));
+}
+
+.cn-onb-review-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-left: 34px;
+}
+
+.cn-onb-review-fields > :first-child,
+.cn-onb-review-fields > :last-child {
+    grid-column: 1 / -1;
+}
+
+.cn-onb-import-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-left: 34px;
+}
+
+.cn-onb-ladder {
+    border-top: 1px dashed var(--cn-stroke);
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--cn-text-2);
+}
+
+.cn-onb-ladder-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cn-onb-ladder-row--disabled {
+    opacity: .75;
+}
+
+.cn-onb-ladder-link {
+    border: none;
+    background: none;
+    padding: 0;
+    color: var(--cn-accent);
+    font: 600 12.5px var(--cn-font);
+    cursor: pointer;
+}
+
+.cn-onb-ladder-link:disabled {
+    color: var(--cn-text-2);
+    cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+    .cn-onb-sources,
+    .cn-onb-review-fields {
+        grid-template-columns: 1fr;
+        margin-left: 0;
+    }
+
+    .cn-onb-review-fields > :first-child,
+    .cn-onb-review-fields > :last-child {
+        grid-column: auto;
+    }
+
+    .cn-onb-import-row {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-left: 0;
+    }
+
+    .cn-onb-preview {
+        flex-direction: column;
+    }
+}
+
+/* ---------- Catalog product page overhaul (owner 2026-07-12) ---------- */
+.cn-pp {
+    gap: 14px;
+}
+
+.cn-pp-right {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+}
+
+.cn-pp-specs-columns {
+    column-gap: 28px;
+}
+
+@media (min-width: 1000px) {
+    .cn-pp-specs-columns { columns: 2; }
+}
+
+@media (min-width: 1700px) {
+    .cn-pp-specs-columns { columns: 3; }
+}
+
+.cn-pp-specs-columns .cn-pp-spec-group {
+    break-inside: avoid;
+    margin-bottom: 14px;
+}
+
+/* ---------- Payment state badges (M-021/S-144, prefix pay-) ---------- */
+/* Variants layered on top of .cn-badge via the Class parameter of
+   PaymentStateBadge: unpaid reads as attention, partial as in-between,
+   paid as done. */
+.cn-badge.pay-state--unpaid {
+    background: rgba(209, 52, 56, 0.08);
+    color: var(--cn-danger);
+    border-color: var(--cn-danger);
+}
+
+.cn-badge.pay-state--partial {
+    background: rgba(184, 134, 11, 0.10);
+    color: var(--cn-warn);
+    border-color: var(--cn-warn);
+}
+
+.cn-badge.pay-state--paid {
+    background: var(--cn-accent-tint);
+    color: var(--cn-accent);
+    border-color: var(--cn-accent);
+}
+
+/* ---------- Reconciliation worklist (M-021, S-143) ---------- */
+.cn-rec {
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 14px;
+    align-items: start;
+}
+
+@media (max-width: 1000px) {
+    .cn-rec { grid-template-columns: 1fr; }
+}
+
+.cn-rec-chips { margin-bottom: 4px; }
+
+.cn-rec-list { display: flex; flex-direction: column; gap: 8px; }
+
+.cn-rec-tx {
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: 7px;
+    padding: 9px 11px;
+    cursor: pointer;
+}
+
+.cn-rec-tx:hover { border-color: var(--cn-stroke); }
+
+.cn-rec-tx--sel {
+    border-color: var(--cn-accent);
+    background: var(--cn-accent-tint);
+}
+
+.cn-rec-tx--done { opacity: .6; }
+
+.cn-rec-tx-head { display: flex; align-items: center; gap: 8px; }
+
+.cn-rec-tx-name { font-weight: 700; }
+
+.cn-rec-amt {
+    margin-left: auto;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.cn-rec-sub {
+    font-size: 11.5px;
+    color: var(--cn-text-2);
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-rec-empty { color: var(--cn-text-2); font-size: 12.5px; }
+
+.cn-rec-panel { display: flex; flex-direction: column; gap: 10px; }
+
+.cn-rec-match {
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: 7px;
+    padding: 9px 11px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cn-rec-match--click { cursor: pointer; }
+
+.cn-rec-match--click:hover { border-color: var(--cn-accent); }
+
+.cn-rec-match-main { flex: 1; min-width: 0; }
+
+.cn-rec-why { font-size: 11px; color: var(--cn-text-2); }
+
+.cn-rec-split {
+    background: var(--cn-ground);
+    border-radius: 7px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cn-rec-split-row { display: flex; align-items: center; gap: 10px; }
+
+.cn-rec-split-party { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.cn-rec-split-amt { width: 130px; flex: none; }
+
+.cn-rec-split-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+.cn-rec-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.cn-rec-hint { font-size: 11.5px; color: var(--cn-text-2); }
+
+.cn-rec-table { border-collapse: collapse; width: 100%; }
+
+.cn-rec-table th {
+    text-align: left;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--cn-text-2);
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--cn-stroke);
+}
+
+.cn-rec-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--cn-stroke-soft);
+}
+
+.cn-rec-r { text-align: right; }
+
+.cn-rec-num { font-variant-numeric: tabular-nums; }
+
+/* ---------- Task board (kanban, M-022 S-153) ---------- */
+
+.cn-board { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+
+.cn-board-viewtoggle { margin-bottom: 12px; }
+
+.cn-board-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.cn-board-filters { display: flex; align-items: center; gap: 10px; flex: 1; flex-wrap: wrap; }
+
+.cn-board-casefilter { width: 280px; }
+
+.cn-board-cols {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(230px, 1fr));
+    gap: 12px;
+    align-items: stretch;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.cn-board-col {
+    background: var(--cn-ground);
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: var(--cn-radius);
+    display: flex;
+    flex-direction: column;
+    min-height: 240px;
+}
+
+.cn-board-col--over { border-color: var(--cn-accent); }
+
+.cn-board-col-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px 8px; }
+
+.cn-board-col-title {
+    font: 600 12px var(--cn-font);
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--cn-text-2);
+}
+
+.cn-board-col-count {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    background: var(--cn-card);
+    border: 1px solid var(--cn-stroke-soft);
+    font: 600 11.5px var(--cn-font);
+    color: var(--cn-text-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cn-board-col-body { display: flex; flex-direction: column; gap: 8px; padding: 0 10px 10px; flex: 1; }
+
+/* Drop landing strip below the cards, so an append-at-end target always exists (also in empty columns). */
+.cn-board-col-tail { flex: 1; min-height: 44px; }
+
+.cn-board-card {
+    background: var(--cn-card);
+    border: 1px solid var(--cn-stroke-soft);
+    border-left: 4px solid var(--cn-stroke);
+    border-radius: 7px;
+    box-shadow: var(--cn-shadow);
+    padding: 9px 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    cursor: grab;
+}
+
+/* Running-timer accent: green frame and tint. Declared before the priority
+   rules so the priority color keeps winning on the left edge. */
+.cn-board-card--running {
+    border-color: var(--cn-accent);
+    background: var(--cn-accent-tint);
+}
+
+.cn-board-card--p-high { border-left-color: var(--cn-danger); }
+
+.cn-board-card--p-medium { border-left-color: var(--cn-warn); }
+
+.cn-board-card--p-low { border-left-color: var(--cn-stroke); }
+
+.cn-board-card--dragging { opacity: .45; }
+
+.cn-board-card-name { font: 600 13.5px var(--cn-font); color: var(--cn-text); cursor: pointer; overflow-wrap: anywhere; }
+
+.cn-board-card-name:hover { color: var(--cn-accent); }
+
+.cn-board-card-case { align-self: flex-start; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.cn-board-card-foot { display: flex; align-items: center; gap: 8px; }
+
+.cn-board-foot-spacer { flex: 1; }
+
+.cn-board-timer { font: 600 12px var(--cn-font); color: var(--cn-accent); font-variant-numeric: tabular-nums; }
+
+.cn-board-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--cn-accent-tint);
+    border: 1px solid var(--cn-accent);
+    color: var(--cn-accent);
+    font: 600 11px var(--cn-font);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+}
+
+.cn-board-drop { height: 3px; border-radius: 2px; background: var(--cn-accent); pointer-events: none; flex: none; }
+
+.cn-board-empty { font-size: 12.5px; color: var(--cn-text-2); padding: 8px 2px; }
+
+/* ---------- Timesheet (M-022 S-154, prefix cn-ts-) ---------- */
+
+/* S-244 extends the original week surface into a reusable work ledger. Its
+   fine horizontal rules and dense type deliberately echo a paper timesheet;
+   state colour remains secondary to the readable labels. */
+.cn-ts-workspace { min-width: 0; }
+
+.cn-ts-toolbar {
+    display: flex;
+    align-items: end;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--cn-stroke-soft);
+}
+
+.cn-ts-period { display: flex; align-items: center; gap: 6px; }
+
+.cn-ts-weekbox { display: flex; flex-direction: column; align-items: center; min-width: 112px; }
+
+.cn-ts-weeklabel { font: 600 14px var(--cn-font); }
+
+.cn-ts-weekrange { font: 11.5px var(--cn-font); color: var(--cn-text-2); }
+
+.cn-ts-spacer { flex: 1; }
+
+.cn-ts-worker { width: min(220px, 100%); }
+
+.cn-ts-scope {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 10px;
+    border-left: 2px solid var(--cn-accent);
+    color: var(--cn-text-2);
+    font: 600 12px var(--cn-font);
+}
+
+.cn-ts-contextbar {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-height: 32px;
+    padding: 7px 4px 2px;
+    color: var(--cn-text-2);
+    font-size: 12px;
+}
+
+.cn-ts-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(220px, 360px));
+    gap: 8px;
+    align-items: end;
+    padding: 10px 0 2px;
+}
+
+.cn-ts-contextbar strong { color: var(--cn-text); font-weight: 650; }
+
+.cn-ts-contextbar-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.cn-ts-switch {
+    display: inline-flex;
+    border: 1px solid var(--cn-stroke);
+    border-radius: var(--cn-radius-s);
+    overflow: hidden;
+}
+
+.cn-ts-switch button {
+    min-height: 40px;
+    padding: 0 14px;
+    border: 0;
+    background: transparent;
+    color: var(--cn-text-2);
+    font: 600 12.5px var(--cn-font);
+    cursor: pointer;
+}
+
+.cn-ts-switch button + button { border-left: 1px solid var(--cn-stroke); }
+
+.cn-ts-switch button.cn-ts-switch--on { background: var(--cn-accent-tint); color: var(--cn-accent); }
+
+.cn-ts-switch button:focus-visible,
+.cn-ts-cal-add:focus-visible { outline: 2px solid var(--cn-accent); outline-offset: -2px; }
+
+.cn-ts-panel { min-width: 0; }
+
+.cn-ts-loading,
+.cn-ts-zero {
+    display: flex;
+    min-height: 120px;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--cn-text-2);
+    font-size: 12.5px;
+}
+
+/* Billing badges: orange = closed but not yet invoiced, green = running. */
+.cn-ts-badge--warn { background: rgba(184, 134, 11, .10); color: var(--cn-warn); border-color: var(--cn-warn); }
+
+.cn-ts-badge--run { background: var(--cn-accent-tint); color: var(--cn-accent); border-color: var(--cn-accent); }
+
+/* List view: one group per day with a day total, week total row at the end. */
+.cn-ts-list {
+    display: flex;
+    flex-direction: column;
+    background-image: repeating-linear-gradient(to bottom,
+        transparent 0,
+        transparent 31px,
+        color-mix(in srgb, var(--cn-stroke-soft) 50%, transparent) 32px);
+}
+
+.cn-ts-day { background: var(--cn-card); }
+
+.cn-ts-dayhead { display: flex; align-items: center; gap: 6px; padding: 12px 4px 4px; border-bottom: 1px solid var(--cn-stroke-soft); }
+
+.cn-ts-dayname { font: 600 13px var(--cn-font); text-transform: capitalize; }
+
+.cn-ts-dayhead--today .cn-ts-dayname { color: var(--cn-accent); }
+
+.cn-btn.cn-ts-dayadd { height: 22px; padding: 0 5px; border: 0; }
+
+.cn-ts-dayhours { margin-left: auto; font: 600 13px var(--cn-font); font-variant-numeric: tabular-nums; }
+
+.cn-ts-empty { padding: 6px 4px 10px; color: var(--cn-text-2); font: 12.5px var(--cn-font); }
+
+.cn-ts-row {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.5fr) minmax(120px, .8fr) 96px auto 64px 20px;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+    padding: 6px 4px;
+    border: 0;
+    border-bottom: 1px solid var(--cn-stroke-soft);
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    font: 13.5px var(--cn-font);
+    cursor: pointer;
+}
+
+.cn-ts-row:hover { background: var(--cn-row-hover); }
+
+.cn-ts-row:focus-visible { outline: 2px solid var(--cn-accent); outline-offset: -2px; }
+
+.cn-ts-entry-main { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
+
+.cn-ts-task { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.cn-ts-context { color: var(--cn-text-2); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.cn-ts-meta { color: var(--cn-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.cn-ts-time { color: var(--cn-text-2); font-size: 12px; white-space: nowrap; }
+
+.cn-ts-badgecell { justify-self: start; }
+
+.cn-ts-hours { text-align: right; font-variant-numeric: tabular-nums; }
+
+.cn-ts-open { color: var(--cn-text-2); opacity: .45; transition: opacity .12s ease, color .12s ease; }
+
+.cn-ts-row:hover .cn-ts-open,
+.cn-ts-row:focus-visible .cn-ts-open { color: var(--cn-accent); opacity: 1; }
+
+.cn-ts-weektotal { display: flex; justify-content: space-between; padding: 12px 4px 2px; font: 600 14px var(--cn-font); }
+
+/* Classic Entries view: a compact, honest table rather than a card gallery.
+   The provider still owns search, paging and sorting on the server. */
+.cn-ts-entries { padding-top: 8px; }
+
+.cn-ts-entries .cn-grid-toolbar { min-height: 42px; padding-block: 4px; }
+
+.cn-ts-entries .cn-grid-table th {
+    padding-block: 7px;
+    font-size: 11px;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+}
+
+.cn-ts-entries .cn-grid-table td { padding-block: 7px; }
+
+.cn-ts-entries .cn-grid-table { min-width: 1120px; }
+
+.cn-ts-grid-main { font-weight: 600; }
+
+@media (max-width: 760px) {
+    .cn-ts-row { grid-template-columns: minmax(0, 1fr) 88px 54px 20px; }
+    .cn-ts-meta,
+    .cn-ts-badgecell { display: none; }
+}
+
+/* Calendar view: full 00-24 week grid inside a fixed-height scroller
+   (cn-ts-cal-scroll, end of file), hour lines drawn with a repeating
+   gradient (one line every 48px, matching PixelsPerHour in the page).
+   Weekend columns are the two narrow trailing tracks. */
+.cn-ts-cal { min-width: 760px; }
+
+.cn-ts-cal-head,
+.cn-ts-cal-grid {
+    display: grid;
+    grid-template-columns: 48px repeat(5, minmax(96px, 1fr)) minmax(44px, .5fr) minmax(44px, .5fr);
+}
+
+.cn-ts-cal-head { border-bottom: 1px solid var(--cn-stroke); }
+
+.cn-ts-headcell {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+    padding: 4px 6px 6px;
+    border-left: 1px solid var(--cn-stroke-soft);
+    font: 600 12.5px var(--cn-font);
+    color: var(--cn-text-2);
+    text-transform: capitalize;
+}
+
+.cn-ts-headcell--today { color: var(--cn-accent); }
+
+.cn-ts-headtotal { margin-left: auto; font: 600 11px var(--cn-font); }
+
+.cn-ts-cal-add {
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    margin: -10px -8px -10px 0;
+    border: 0;
+    background: transparent;
+    color: var(--cn-text-2);
+    font: 600 16px var(--cn-font);
+    cursor: pointer;
+}
+
+.cn-ts-cal-add:hover { color: var(--cn-accent); }
+
+.cn-ts-hourlabel { height: 48px; padding-right: 6px; text-align: right; font: 10.5px var(--cn-font); color: var(--cn-text-2); }
+
+.cn-ts-daycol {
+    position: relative;
+    height: 1152px; /* 24 hours at 48px per hour */
+    border-left: 1px solid var(--cn-stroke-soft);
+    background-image: repeating-linear-gradient(to bottom,
+        var(--cn-stroke-soft) 0,
+        var(--cn-stroke-soft) 1px,
+        transparent 1px,
+        transparent 48px);
+    cursor: cell;
+}
+
+.cn-ts-daycol--we { background-color: var(--cn-ground); }
+
+.cn-ts-daycol:focus-visible { outline: 2px solid var(--cn-accent); outline-offset: -2px; }
+
+.cn-ts-block {
+    position: absolute;
+    left: 3px;
+    right: 3px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    overflow: hidden;
+    border: 1px solid var(--cn-stroke-soft);
+    border-left: 3px solid var(--cn-warn);
+    border-radius: 4px;
+    background: var(--cn-card);
+    box-shadow: var(--cn-shadow);
+    padding: 2px 6px;
+    font: 11.5px var(--cn-font);
+    user-select: none;
+    touch-action: none;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.cn-ts-block[data-draggable="1"] { cursor: grab; }
+
+.cn-ts-block--drag {
+    opacity: .85;
+    z-index: 30;
+    pointer-events: none;
+    cursor: grabbing;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .28);
+}
+
+.cn-ts-block--running { background: var(--cn-accent-tint); border-color: var(--cn-accent); border-left-color: var(--cn-accent); }
+
+.cn-ts-block--billed { border-left-color: var(--cn-stroke); color: var(--cn-text-2); }
+
+.cn-ts-block--nonbill { border-left-color: var(--cn-text-2); }
+
+.cn-ts-block--continues-before { border-top-left-radius: 0; border-top-right-radius: 0; }
+
+.cn-ts-block--continues-after { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+
+.cn-ts-block-head {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    min-width: 0;
+}
+
+.cn-ts-block-customer {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--cn-text);
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-ts-block-time { flex: none; margin-left: auto; font: 600 9.5px var(--cn-font); color: var(--cn-text-2); }
+
+.cn-ts-block--running .cn-ts-block-time { color: var(--cn-accent); }
+
+.cn-ts-block-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.cn-ts-block-context { color: var(--cn-text-2); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.cn-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 620px) {
+    .cn-ts-toolbar { align-items: center; }
+    .cn-ts-period { width: 100%; }
+    .cn-ts-weekbox { flex: 1; }
+    .cn-ts-worker { flex: 1 1 100%; width: 100%; }
+    .cn-ts-filters { grid-template-columns: 1fr; }
+    .cn-ts-switch { order: 3; width: 100%; }
+    .cn-ts-switch button { flex: 1; padding-inline: 8px; }
+    .cn-ts-toolbar > .cn-ts-spacer { display: none; }
+    .cn-ts-contextbar { padding-top: 9px; }
+    .cn-ts-cal { min-width: 680px; }
+    .cn-ts-block { min-height: 40px; }
+    .cn-ts-entries .cn-grid-table { min-width: 720px; }
+}
+
+/* S-176: compact editor opened from both timesheet views. */
+.cn-te-context {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px 10px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: var(--cn-radius-s);
+    background: var(--cn-ground);
+}
+
+.cn-te-customer,
+.cn-te-project { grid-column: 1; color: var(--cn-text-2); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.cn-te-task { grid-column: 1; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.cn-te-context .cn-badge { grid-column: 2; grid-row: 1 / span 3; align-self: center; }
+
+.cn-te-locknote {
+    padding: 8px 10px;
+    margin-bottom: 12px;
+    border-radius: var(--cn-radius-s);
+    background: var(--cn-ground);
+    color: var(--cn-text-2);
+    font-size: 12.5px;
+}
+
+.cn-te-footer-spacer { flex: 1; }
+
+.cn-te-delete-confirm { margin-right: auto; color: var(--cn-danger); font-size: 12.5px; }
+
+/* Timesheet calendar scroller (M-022 owner feedback): the 00-24 grid lives
+   in a fixed-height container that scrolls both ways (it replaces the old
+   cn-grid-scroll wrapper); the day header sticks to the top and covers
+   blocks scrolling underneath it, dragged blocks included. The initial
+   scroll position is set by TimesheetPage.razor.js. */
+.cn-ts-cal-scroll { max-height: min(70vh, 900px); min-height: 320px; overflow: auto; }
+
+.cn-ts-cal-head { position: sticky; top: 0; z-index: 35; background: var(--cn-card); }
+
+/* ---------- Payment bundle builder (M-021 polish, owner 2026-07-13) ---------- */
+.cn-bundle {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cn-bundle-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    align-items: start;
+}
+
+@media (max-width: 860px) {
+    .cn-bundle-cols { grid-template-columns: 1fr; }
+}
+
+.cn-bundle-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+
+.cn-bundle-col-title {
+    font: 700 11px var(--cn-font);
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    color: var(--cn-text-2);
+}
+
+.cn-bundle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 260px;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+
+.cn-bundle-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: 7px;
+    padding: 7px 10px;
+    cursor: pointer;
+}
+
+.cn-bundle-row:hover { border-color: var(--cn-stroke); }
+
+.cn-bundle-row-head { display: flex; align-items: center; gap: 8px; }
+
+.cn-bundle-row-main { flex: 1; min-width: 0; }
+
+.cn-bundle-row-name {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-bundle-sub {
+    font-size: 11px;
+    color: var(--cn-text-2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-bundle-amt {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.cn-bundle-lines {
+    background: var(--cn-ground);
+    border-radius: 7px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cn-bundle-line { display: flex; align-items: center; gap: 10px; }
+
+.cn-bundle-line-main {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-bundle-line .cn-field { width: 130px; flex: none; }
+
+.cn-bundle-empty { color: var(--cn-text-2); font-size: 12px; }
+
+.cn-bundle-strip {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--cn-ground);
+    border-radius: 7px;
+    padding: 9px 12px;
+    flex-wrap: wrap;
+}
+
+.cn-bundle-strip-part { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.cn-bundle-diff { font-weight: 700; }
+
+.cn-bundle-diff--ok { color: var(--cn-accent); }
+
+.cn-bundle-diff--off { color: var(--cn-warn); }
+
+.cn-bundle-foot { display: flex; justify-content: flex-end; gap: 8px; }
+
+.cn-rec-tx-check { flex: none; }
+
+/* ---------- Currency field & task-row actions & calendar drag (owner-polish 2026-07-13) ---------- */
+.cn-money { position: relative; display: block; }
+
+.cn-money-sign {
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--cn-text-2);
+    font: 13px var(--cn-font);
+    pointer-events: none;
+}
+
+.cn-money-input { padding-left: 24px; }
+
+/* Optional unit suffix ("/u") inside the field (owner 2026-08-19). */
+.cn-money-unit {
+    position: absolute;
+    right: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--cn-text-2);
+    font: 12px var(--cn-font);
+    pointer-events: none;
+}
+
+.cn-money-input--unit { padding-right: 30px; }
+
+.cn-task-actions { display: inline-flex; align-items: center; gap: 2px; }
+
+.cn-task-more {
+    display: inline-flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity .12s ease;
+}
+
+tr:hover .cn-task-more,
+.cn-task-more:focus-within { opacity: 1; }
+
+.cn-task-timer--on { color: var(--cn-accent); }
+
+.cn-ts-ghost {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    background: var(--cn-accent-tint);
+    border: 1.5px dashed var(--cn-accent);
+    border-radius: 6px;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.cn-ts-ghost::after,
+.cn-ts-block--drag::after {
+    content: attr(data-range);
+    position: absolute;
+    top: 2px;
+    right: 6px;
+    font: 700 10.5px var(--cn-font);
+    color: var(--cn-accent);
+    background: var(--cn-card);
+    border-radius: 6px;
+    padding: 1px 6px;
+    box-shadow: var(--cn-shadow);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.cn-ts-block--drag { z-index: 30; }
+
+/* ---------- Header timer pill (rebuild, owner 2026-07-13) ---------- */
+.cn-timerw { position: relative; }
+
+.cn-timerw-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 16px;
+    border: 1px solid var(--cn-stroke);
+    background: var(--cn-card);
+    color: var(--cn-text-2);
+    font: 600 12.5px var(--cn-font);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.cn-timerw-pill:hover { border-color: var(--cn-accent); color: var(--cn-text); }
+
+.cn-timerw-pill--on {
+    background: var(--cn-accent);
+    border-color: var(--cn-accent);
+    color: #fff;
+    cursor: default;
+}
+
+.cn-timerw-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #fff;
+    animation: cn-timerw-pulse 2s ease-in-out infinite;
+}
+
+@keyframes cn-timerw-pulse {
+    50% { opacity: .35; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cn-timerw-dot { animation: none; }
+}
+
+.cn-timerw-task {
+    background: none;
+    border: 0;
+    color: inherit;
+    font: 600 12.5px var(--cn-font);
+    cursor: pointer;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0;
+}
+
+.cn-timerw-task:hover { text-decoration: underline; }
+
+.cn-timerw-elapsed { font-variant-numeric: tabular-nums; font-weight: 700; }
+
+.cn-timerw-stop {
+    background: rgba(255, 255, 255, .18);
+    border: 0;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    cursor: pointer;
+    padding: 0;
+}
+
+.cn-timerw-stop .cn-icon { width: 11px; height: 11px; }
+
+.cn-timerw-stop:hover { background: rgba(255, 255, 255, .32); }
+
+.cn-timerw-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+}
+
+.cn-timerw-pop {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 95;
+    width: 320px;
+    background: var(--cn-card);
+    border-radius: var(--cn-radius);
+    box-shadow: var(--cn-shadow), 0 10px 30px rgba(0, 0, 0, .16);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cn-timerw-pop-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+/* S-196 catalog source-aware specification refresh dialog. */
+.cn-refresh-source {
+    width: 100%;
+}
+
+.cn-refresh-source button {
+    min-height: 38px;
+    height: auto;
+    padding: 6px 10px;
+}
+
+.cn-refresh-warning {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 7px;
+    background: var(--cn-ground);
+    color: var(--cn-text-2);
+    font-size: 12px;
+}
+/* M-035 — Project living ledger. A calm, source-led cockpit with one visual
+   spine; financial meaning remains available in tables and text. */
+.project-kicker {
+    display: block;
+    color: var(--cn-text-2);
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .11em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.project-profit-bridge,
+.project-panel,
+.project-flows {
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: 14px;
+    background: var(--cn-card);
+}
+
+.project-profit-bridge {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(18px, 2.2vw, 30px);
+    box-shadow: 0 18px 45px rgba(18, 29, 25, .055);
+}
+
+.project-profit-bridge::before {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cn-accent), color-mix(in srgb, var(--cn-accent) 30%, transparent) 66%, transparent);
+    content: "";
+}
+
+.project-profit-bridge > header,
+.project-panel > header,
+.project-flows > header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.project-profit-bridge h2,
+.project-panel h2,
+.project-flows h2 {
+    margin: 3px 0 0;
+    color: var(--cn-text);
+    font-size: clamp(1rem, 1.5vw, 1.38rem);
+    letter-spacing: -.025em;
+}
+
+.project-profit-bridge header p {
+    margin: 5px 0 0;
+    color: var(--cn-text-2);
+    font-size: .82rem;
+}
+
+.project-profit-result {
+    display: grid;
+    min-width: 160px;
+    padding-left: 18px;
+    border-left: 2px solid var(--cn-stroke-soft);
+    text-align: right;
+}
+
+.project-profit-result span,
+.project-profit-result small { color: var(--cn-text-2); font-size: .72rem; }
+.project-profit-result strong { font-size: clamp(1.35rem, 2.5vw, 2.1rem); font-variant-numeric: tabular-nums; letter-spacing: -.04em; }
+.project-profit-result.is-positive strong { color: var(--cn-accent); }
+.project-profit-result.is-negative strong { color: var(--cn-danger); }
+
+.project-bridge-track {
+    display: grid;
+    grid-template-columns: minmax(130px, 1fr) auto minmax(130px, 1fr) auto minmax(130px, 1fr) auto minmax(150px, 1.15fr);
+    align-items: stretch;
+    gap: 8px;
+    margin: 26px 0 14px;
+}
+
+.project-bridge-step {
+    position: relative;
+    display: grid;
+    min-height: 104px;
+    align-content: end;
+    padding: 14px;
+    overflow: hidden;
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--cn-card) 92%, var(--cn-canvas));
+}
+
+.project-bridge-step[href] {
+    color: inherit;
+    text-decoration: none;
+    transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.project-bridge-step[href]:hover {
+    border-color: color-mix(in srgb, var(--cn-accent) 55%, var(--cn-stroke));
+    box-shadow: 0 8px 22px color-mix(in srgb, var(--cn-text) 9%, transparent);
+    transform: translateY(-2px);
+}
+
+.project-bridge-step[href]:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--cn-accent) 45%, transparent);
+    outline-offset: 2px;
+}
+
+.project-bridge-open { margin-left: .3rem; color: var(--cn-accent); font-weight: 700; }
+
+.project-bridge-step::before {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--cn-stroke);
+    content: "";
+}
+
+.project-bridge-step.is-revenue::before { background: var(--cn-accent); }
+.project-bridge-step.is-cost::before { background: #c98237; }
+.project-bridge-step.is-result { background: color-mix(in srgb, var(--cn-accent) 7%, var(--cn-card)); }
+.project-bridge-step.is-result::before { background: var(--cn-accent); width: 6px; }
+.project-bridge-step > span { position: absolute; top: 10px; right: 11px; color: var(--cn-text-3, var(--cn-text-2)); font: 600 .65rem/1 monospace; }
+.project-bridge-step strong { font-size: clamp(1rem, 1.6vw, 1.35rem); font-variant-numeric: tabular-nums; letter-spacing: -.025em; }
+.project-bridge-step small { margin-top: 3px; color: var(--cn-text-2); }
+.project-bridge-operator { align-self: center; color: var(--cn-text-2); font-size: 1.25rem; font-weight: 300; }
+
+.project-bridge-below {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    overflow: hidden;
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: 9px;
+    background: var(--cn-stroke-soft);
+}
+
+.project-bridge-below > div { display: grid; padding: 10px 12px; background: var(--cn-card); }
+.project-bridge-below span,
+.project-bridge-below small { color: var(--cn-text-2); font-size: .69rem; }
+.project-bridge-below strong { margin: 2px 0; font-size: .92rem; font-variant-numeric: tabular-nums; }
+
+.project-ledger-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+.project-ledger-table caption { text-align: left; }
+.project-ledger-table th,
+.project-ledger-table td { padding: 9px 11px; border-bottom: 1px solid var(--cn-stroke-soft); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.project-ledger-table th:first-child { text-align: left; }
+.project-ledger-table thead th { color: var(--cn-text-2); font-size: .67rem; letter-spacing: .06em; text-transform: uppercase; }
+.project-ledger-table tbody th { font-weight: 600; }
+.project-ledger-table tbody tr:last-child > * { border-bottom: 0; }
+.project-ledger-table tr.is-total > * { border-top: 2px solid var(--cn-stroke); font-weight: 700; }
+.project-ledger-table tr.is-variance > * { color: var(--cn-text-2); font-size: .72rem; }
+.project-ledger-table tr.is-muted { opacity: .58; }
+.project-ledger-table--compact { margin-top: 16px; }
+.project-plan-coverage { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 9px; color: var(--cn-text-2); font-size: .67rem; }
+.project-table-scroll { overflow-x: auto; }
+
+.project-overview { display: grid; gap: 14px; }
+.project-overview-grid { display: grid; grid-template-columns: minmax(0, .85fr) minmax(330px, 1.15fr); gap: 14px; }
+.project-panel,
+.project-flows { padding: 17px; }
+.project-panel > header > strong,
+.project-flows > header > span { color: var(--cn-text-2); font-size: .78rem; }
+
+.project-work-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-top: 17px; border: 1px solid var(--cn-stroke-soft); border-radius: 9px; overflow: hidden; background: var(--cn-stroke-soft); }
+.project-work-metrics div { display: grid; gap: 2px; padding: 13px 10px; background: var(--cn-card); }
+.project-work-metrics strong { font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+.project-work-metrics span { color: var(--cn-text-2); font-size: .68rem; }
+
+.project-attention ol { display: grid; gap: 1px; margin: 14px 0 0; padding: 0; list-style: none; border: 1px solid var(--cn-stroke-soft); border-radius: 9px; overflow: hidden; background: var(--cn-stroke-soft); }
+.project-attention li { display: grid; grid-template-columns: 5px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px 10px 0; background: var(--cn-card); }
+.project-attention li > span { align-self: stretch; border-radius: 0 3px 3px 0; background: #c98237; }
+.project-attention li.is-critical > span { background: var(--cn-danger); }
+.project-attention p { margin: 2px 0 0; color: var(--cn-text-2); font-size: .72rem; }
+.project-attention a { color: var(--cn-accent); font-size: .73rem; font-weight: 650; text-decoration: none; }
+
+.project-empty { display: grid; gap: 4px; margin: 14px 0 0; padding: 17px; border: 1px dashed var(--cn-stroke); border-radius: 9px; color: var(--cn-text-2); }
+.project-empty strong { color: var(--cn-text); }
+.project-gap { margin-left: 5px; padding: 1px 5px; border-radius: 10px; background: color-mix(in srgb, #c98237 14%, transparent); color: #a45f19; font-size: .58rem; letter-spacing: .04em; text-transform: uppercase; }
+.project-activity-economics .project-table-scroll { margin: 13px -17px -17px; }
+
+.project-flows { display: grid; gap: 12px; }
+
+@media (max-width: 900px) {
+    .project-overview-grid { grid-template-columns: 1fr; }
+    .project-bridge-track { grid-template-columns: 1fr; }
+    .project-bridge-operator { display: none; }
+    .project-bridge-step { min-height: 78px; }
+    .project-bridge-below { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 520px) {
+    .project-profit-bridge > header { align-items: stretch; flex-direction: column; }
+    .project-profit-result { padding: 10px 0 0; border-top: 1px solid var(--cn-stroke-soft); border-left: 0; text-align: left; }
+    .project-bridge-below,
+    .project-work-metrics { grid-template-columns: repeat(2, 1fr); }
+    .project-ledger-table--compact { display: block; overflow-x: auto; }
+}
+
+.project-commercial { display: grid; gap: 14px; }
+.project-commercial-head { padding: 4px 2px; }
+.project-commercial-head h2 { margin: 3px 0; font-size: 1.25rem; }
+.project-commercial-head p { margin: 0; color: var(--cn-text-2); font-size: .8rem; }
+.project-commercial-layout { display: grid; grid-template-columns: minmax(300px, .72fr) minmax(390px, 1.28fr); gap: 14px; align-items: start; }
+.project-commercial-editor,
+.project-commercial-record { border: 1px solid var(--cn-stroke-soft); border-radius: 13px; background: var(--cn-card); }
+.project-commercial-editor > nav { display: grid; grid-template-columns: repeat(3, 1fr); padding: 5px; border-bottom: 1px solid var(--cn-stroke-soft); }
+.project-commercial-editor > nav button { padding: 8px 6px; border: 0; border-radius: 7px; background: transparent; color: var(--cn-text-2); font: inherit; font-size: .72rem; cursor: pointer; }
+.project-commercial-editor > nav button.is-active { background: color-mix(in srgb, var(--cn-accent) 10%, transparent); color: var(--cn-accent); font-weight: 700; }
+.project-commercial-form { display: grid; gap: 11px; padding: 18px; }
+.project-commercial-form h3 { margin: -5px 0 3px; font-size: 1rem; }
+.project-commercial-form > label,
+.project-form-split > label { display: grid; gap: 4px; color: var(--cn-text-2); font-size: .7rem; font-weight: 600; }
+.project-commercial-form input:not([type=checkbox]),
+.project-commercial-form select,
+.project-cycle-control input { min-height: 36px; padding: 6px 9px; border: 1px solid var(--cn-stroke); border-radius: 7px; background: var(--cn-card); color: var(--cn-text); font: inherit; font-size: .8rem; }
+.project-form-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.project-check { display: flex !important; align-items: center; gap: 7px !important; }
+.project-policy-note { margin: 0; padding: 10px; border-left: 3px solid var(--cn-accent); background: color-mix(in srgb, var(--cn-accent) 6%, transparent); color: var(--cn-text-2); font-size: .72rem; }
+.project-commercial-record { display: grid; gap: 0; overflow: hidden; }
+.project-commercial-record-group { padding: 15px; border-bottom: 1px solid var(--cn-stroke-soft); }
+.project-commercial-record-group:last-child { border-bottom: 0; }
+.project-commercial-record-group > header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.project-commercial-record-group > header > strong { color: var(--cn-text-2); font-size: .75rem; }
+.project-commercial-record-group > p { margin: 8px 0 0; color: var(--cn-text-2); font-size: .76rem; }
+.project-commercial-record article { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; padding: 9px 0; border-top: 1px solid var(--cn-stroke-soft); }
+.project-commercial-record article > div { display: grid; }
+.project-commercial-record article span { color: var(--cn-text-2); font-size: .67rem; }
+.project-commercial-record article strong { font-size: .8rem; }
+.project-commercial-values { text-align: right; }
+.project-commercial-record article.project-arrangement { grid-template-columns: minmax(0, 1fr) auto; }
+.project-cycle-control { grid-column: 1 / -1; display: flex !important; flex-direction: row; gap: 7px; }
+.project-cycle { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding: 8px 10px; border: 1px solid var(--cn-stroke-soft); border-radius: 7px; color: inherit; text-decoration: none; }
+.project-cycle small { grid-column: 1 / -1; }
+
+/* S-254 pointer artifacts are created by the collocated JS module and do not
+   receive Blazor's CSS-isolation attribute. Keep only those transient nodes
+   global; the actual timesheet surface remains component-scoped. */
+.tsw-ghost {
+    position: absolute;
+    z-index: 7;
+    left: 4px;
+    right: 4px;
+    min-height: 12px;
+    border: 1px dashed var(--cn-accent);
+    border-radius: 5px;
+    background: color-mix(in srgb, var(--cn-accent) 13%, var(--cn-card));
+    pointer-events: none;
+}
+
+.tsw-ghost::after,
+.tsw-block--drag::after,
+.tsw-block--resize::after {
+    content: attr(data-range);
+    position: absolute;
+    z-index: 10;
+    left: 50%;
+    bottom: calc(100% + 5px);
+    padding: 4px 7px;
+    border-radius: 4px;
+    background: var(--cn-text);
+    color: var(--cn-card);
+    font: 700 11px/1 var(--cn-font);
+    white-space: nowrap;
+    transform: translateX(-50%);
+}
+
+.tsw-block--drag,
+.tsw-block--resize {
+    z-index: 9 !important;
+    box-shadow: var(--cn-shadow) !important;
+}
+
+@media (max-width: 900px) {
+    .project-commercial-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+    .project-commercial-editor > nav { grid-template-columns: 1fr; }
+    .project-form-split { grid-template-columns: 1fr; }
+}
+
+/* ---------------------------------------------------------------------------
+   Party cockpit (S-262): the shared detail-page idiom for customer, vendor
+   and worker — head with kicker, a calm read-only profile column (editing is
+   the dialog) and every linked entity in tabs on one card. */
+.ccd {
+    min-width: 0;
+}
+
+.ccd-kicker {
+    display: block;
+    color: var(--cn-text-2);
+    font: 700 10.5px/1.3 var(--cn-font);
+    letter-spacing: .7px;
+    text-transform: uppercase;
+}
+
+.ccd-sub {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 3px 0 0;
+    color: var(--cn-text-2);
+    font-size: 13px;
+}
+
+.ccd-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+    min-width: 0;
+}
+
+/* One calm read-only profile column — editing is the dialog. */
+.ccd-profile {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+}
+
+.ccd-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    padding: 13px 15px;
+    border-radius: var(--cn-radius);
+    background: var(--cn-card);
+    box-shadow: var(--cn-shadow);
+}
+
+.ccd-card h3 {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0;
+    font: 600 13.5px/1.3 var(--cn-font);
+}
+
+.ccd-card h3 small {
+    color: var(--cn-text-2);
+    font-size: 11.5px;
+    font-weight: 600;
+}
+
+.ccd-kv {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 14px;
+    margin: 0;
+    font-size: 13px;
+}
+
+.ccd-kv dt { color: var(--cn-text-2); font-size: 12px; font-weight: 600; }
+.ccd-kv dd { margin: 0; }
+
+/* Owner note: the invoice badge sits right of the address, like the
+   contact-info rows. */
+.ccd-addr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 7px 0;
+    border-top: 1px solid var(--cn-stroke-soft);
+    font-size: 13px;
+}
+
+.ccd-addr:first-of-type { border-top: 0; padding-top: 2px; }
+.ccd-addr-main { display: grid; gap: 1px; min-width: 0; }
+.ccd-addr b { font-weight: 600; }
+.ccd-addr small { color: var(--cn-text-2); font-size: 11.5px; }
+
+.ccd-ci {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 5px 0;
+    border-top: 1px solid var(--cn-stroke-soft);
+    font-size: 13px;
+}
+
+.ccd-ci:first-of-type { border-top: 0; }
+
+.ccd-ci i {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: 5px;
+    background: var(--cn-ground);
+    color: var(--cn-text-2);
+    font-size: 11px;
+    font-style: normal;
+}
+
+.ccd-ci > span:not(.ccd-ci-badge) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ccd-ci-badge { margin-left: auto; }
+
+/* Contact persons as reachable people. */
+.ccd-person {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+    padding: 7px 0;
+    border: 0;
+    border-top: 1px solid var(--cn-stroke-soft);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.ccd-person:first-of-type { border-top: 0; }
+.ccd-person:hover .ccd-person-name { color: var(--cn-accent-hover); }
+
+.ccd-person-av {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--cn-accent-tint);
+    color: var(--cn-accent-hover);
+    font: 700 10px/1 var(--cn-font);
+}
+
+.ccd-person-main { display: grid; gap: 0; min-width: 0; }
+.ccd-person-name { overflow: hidden; font: 600 13px/1.35 var(--cn-font); text-overflow: ellipsis; white-space: nowrap; }
+.ccd-person-sub { overflow: hidden; color: var(--cn-text-2); font-size: 11.5px; text-overflow: ellipsis; white-space: nowrap; }
+.ccd-person-go { color: var(--cn-text-2); font-size: 14px; }
+
+/* Main column without the tabs card (worker: the cost-rate card). */
+.ccd-main { display: grid; gap: 14px; min-width: 0; align-items: start; }
+
+/* Owner note: the linked tabs live on one white card, like the mockup. */
+.ccd-linked {
+    min-width: 0;
+    padding: 6px 14px 14px;
+    border-radius: var(--cn-radius);
+    background: var(--cn-card);
+    box-shadow: var(--cn-shadow);
+}
+
+.ccd-add {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    margin-left: auto;
+    padding: 0;
+    border: 1px dashed var(--cn-stroke);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--cn-text-2);
+    font: 600 13px/1 var(--cn-font);
+    cursor: pointer;
+}
+
+.ccd-add:hover {
+    border-color: var(--cn-accent);
+    color: var(--cn-accent);
+    background: var(--cn-accent-tint);
+}
+
+@media (max-width: 900px) {
+    .ccd-layout { grid-template-columns: 1fr; }
+}
+
+/* ---------------------------------------------------------------------------
+   CnRichTextBox (S-264): closed = one calm frame; open = the RichTextEditor
+   with a Post/Cancel foot — the DevOps-comment idiom. */
+.cn-rtb { border: 1px solid var(--cn-stroke); border-radius: 8px; background: var(--cn-card); min-width: 0; }
+.cn-rtb--open { border-color: var(--cn-accent); box-shadow: 0 0 0 2px var(--cn-accent-tint); }
+
+.cn-rtb-closed {
+    display: block;
+    width: 100%;
+    padding: 9px 12px;
+    border: 0;
+    background: transparent;
+    color: var(--cn-text-2);
+    font: 400 13px/1.4 var(--cn-font);
+    text-align: left;
+    cursor: text;
+}
+
+
+
+.cn-rtb-foot {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 9px;
+    border-top: 1px solid var(--cn-stroke-soft);
+}
+
+.cn-rtb-foot small { margin-left: auto; color: var(--cn-text-2); font-size: 11px; }
+
+/* ---------------------------------------------------------------------------
+   Row actions reveal on hover everywhere (owner 2026-08-19) — the projects
+   idiom generalized: quiet rows, actions appear on the row you're on.
+   Keyboard focus reveals them too; touch devices keep them visible. */
+.cn-grid-table tbody td .cn-btn,
+.cn-grid-table tbody td .cn-icon-btn {
+    opacity: 0;
+    transition: opacity .12s ease;
+}
+
+.cn-grid-table tbody tr:hover .cn-btn,
+.cn-grid-table tbody tr:hover .cn-icon-btn,
+.cn-grid-table tbody tr:focus-within .cn-btn,
+.cn-grid-table tbody tr:focus-within .cn-icon-btn {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .cn-grid-table tbody td .cn-btn,
+    .cn-grid-table tbody td .cn-icon-btn { opacity: 1; }
+}
+
+/* S-265 (owner 2026-08-20): a photo avatar replaces the tinted human circle
+   on the timeline entirely — without this the 22px ring shows a 1px accent
+   halo around the 20px photo. Global on purpose (the wrapper and the avatar
+   belong to different scoped components); the doubled class outranks the
+   scoped [b-…] attribute selector that ties on specificity otherwise. */
+.pe-ico.pe-ico--human:has(.cn-avatar--photo) { border-color: transparent; background: var(--cn-card); color: transparent; }

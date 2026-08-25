@@ -143,6 +143,11 @@
     /// <summary>Re-fetches the current page (e.g. after an add/remove).</summary>
     public Task ReloadAsync() => LoadPageAsync(_pageIndex);
 
+    /// <summary>Back to page 1 with the search/sort kept — for hosts whose
+    /// scope parameter changed (an embedded grid navigated to a new parent),
+    /// where staying on the old page number would be meaningless.</summary>
+    public Task ResetAsync() => LoadPageAsync(1);
+
     private async Task OnSearchChanged(string? value)
     {
         _search = value;

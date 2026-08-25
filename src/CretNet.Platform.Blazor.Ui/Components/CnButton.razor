@@ -46,9 +46,26 @@
 
     // Title goes through the same busy-label convention as Label
     // ("{0:Editing|Edit}") — icon-only buttons pass CnpLabels values as
-    // tooltips, which would otherwise render the raw template.
-    private string? FormattedTitle => Title is null ? null : Smart.Format(Title, IsLoading);
-    private string? FormattedLabel => Label is null ? null : Smart.Format(Label, IsLoading);
+    // tooltips, which would otherwise render the raw template. Strings with
+    // foreign placeholders (validation messages carry "{PropertyName}") fall
+    // back to the raw text instead of throwing mid-render.
+    private string? FormattedTitle => BusyFormat(Title);
+    private string? FormattedLabel => BusyFormat(Label);
+
+    private string? BusyFormat(string? template)
+    {
+        if (template is null)
+            return null;
+
+        try
+        {
+            return Smart.Format(template, IsLoading);
+        }
+        catch (SmartFormat.Core.Formatting.FormattingException)
+        {
+            return template;
+        }
+    }
     private bool UseLabel => !string.IsNullOrEmpty(Label);
     private bool IconOnly => !UseLabel && ChildContent is null;
 

@@ -1,0 +1,298 @@
+/* ============================================================
+   cn-shell — application shell (S-083, owner-approved mockup).
+   Sidebar (wide/rail/mobile drawer), topbar, settings popover,
+   page scaffolding for the new screen archetypes (S-085).
+   ============================================================ */
+
+.cn-shell {
+    /* Width-trap breakpoint scale (ultrawide pass): one variable drives every
+       page/content-wrapper max-width. Default matches the pre-existing cap;
+       widens in two steps so wide/ultrawide monitors get more usable space
+       while phone/laptop layouts (below 1600px) are untouched. */
+    --cn-page-max: 1240px;
+
+    display: grid;
+    grid-template-columns: 216px 1fr;
+    min-height: 100dvh;
+    background: var(--cn-ground);
+    color: var(--cn-text);
+    font: 14px/1.45 var(--cn-font);
+}
+
+@media (min-width: 1600px) {
+    .cn-shell { --cn-page-max: 1480px; }
+}
+
+@media (min-width: 2000px) {
+    .cn-shell { --cn-page-max: 1720px; }
+}
+
+.cn-shell.rail { grid-template-columns: 62px 1fr; }
+
+/* ---------- sidebar ---------- */
+.cn-sidebar {
+    background: var(--cn-card);
+    border-right: 1px solid var(--cn-stroke-soft);
+    padding: 14px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    z-index: 50;
+}
+
+.cn-brand { display: flex; align-items: center; gap: 8px; padding: 2px 8px 14px; }
+.cn-brand-mark {
+    width: 26px; height: 26px; flex: none;
+    border-radius: 7px;
+    overflow: hidden;
+    display: block;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--cn-stroke) 65%, transparent);
+}
+.cn-brand-mark img { width: 100%; height: 100%; display: block; }
+.cn-brand-name { font: 700 15px var(--cn-font); letter-spacing: .2px; white-space: nowrap; }
+
+.cn-nav-group {
+    margin-top: 10px;
+    padding: 0 8px 4px;
+    font: 700 10.5px var(--cn-font);
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: var(--cn-text-2);
+    white-space: nowrap;
+}
+
+.cn-nav-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 9px;
+    border-radius: 6px;
+    color: var(--cn-text-2);
+    font-weight: 500; font-size: 13px;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    border: none; background: transparent; width: 100%; text-align: left;
+}
+.cn-nav-item:hover { background: var(--cn-accent-tint); color: var(--cn-text); }
+.cn-nav-item.active { background: var(--cn-accent-tint); color: var(--cn-accent); }
+.cn-nav-item .cn-icon { width: 16px; height: 16px; flex: none; }
+.cn-nav-label { overflow: hidden; text-overflow: ellipsis; }
+
+.cn-sidebar-foot { margin-top: auto; padding-top: 8px; }
+
+/* rail variant */
+.rail .cn-brand-name, .rail .cn-nav-group, .rail .cn-nav-label { display: none; }
+.rail .cn-nav-item { justify-content: center; padding: 10px; width: 44px; margin: 0 auto; }
+.rail .cn-sidebar { padding-left: 8px; padding-right: 8px; }
+.rail .cn-brand { justify-content: center; padding-left: 0; padding-right: 0; }
+
+/* ---------- main / topbar ---------- */
+.cn-main { display: flex; flex-direction: column; min-width: 0; }
+
+.cn-topbar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 18px;
+    background: var(--cn-card);
+    border-bottom: 1px solid var(--cn-stroke-soft);
+    position: sticky; top: 0; z-index: 40;
+}
+.cn-topbar .cn-spacer { flex: 1; }
+
+.cn-icon-btn {
+    width: 32px; height: 32px; flex: none;
+    border: none; border-radius: 6px;
+    background: transparent; color: var(--cn-text-2);
+    cursor: pointer;
+    display: grid; place-items: center;
+    position: relative;
+}
+.cn-icon-btn:hover { background: var(--cn-accent-tint); color: var(--cn-text); }
+.cn-icon-btn svg { width: 17px; height: 17px; }
+
+.cn-hamburger { display: none; }
+
+/* S-265 (mock T2): the search pill sits centred between the breadcrumb and
+   the right-hand strip. */
+.cn-topbar-search { flex: 1; max-width: 420px; margin: 0 auto; }
+
+/* Owner 2026-08-20: on wide screens the pill centres on the VIEWPORT, so it
+   never shifts when the sidebar collapses to the rail or the breadcrumb
+   grows. Fixed inside the sticky topbar band; the breadcrumb is capped so
+   it can never run underneath. Below 1180px the in-flow centring above
+   takes over again. */
+@media (min-width: 1180px) {
+    .cn-topbar-search { position: fixed; left: 50vw; top: 10px; transform: translateX(-50%); width: 420px; margin: 0; z-index: 41; }
+    .cn-topbar .cnb { max-width: calc(50vw - 448px); }
+}
+
+.cn-topbar-right { display: flex; align-items: center; gap: 2px; margin-left: auto; flex: none; }
+
+.cn-tb-divider { width: 1px; height: 18px; margin: 0 4px; background: var(--cn-stroke-soft); flex: none; }
+
+.cn-tb-badge {
+    position: absolute; top: 3px; right: 3px;
+    min-width: 14px; height: 14px; padding: 0 3px;
+    border-radius: 7px;
+    background: var(--cn-accent); color: #fff;
+    font: 700 9px/14px var(--cn-font);
+}
+
+.cn-content {
+    padding: 18px;
+    display: flex; flex-direction: column; gap: 14px;
+    max-width: var(--cn-page-max); width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* The transparent click-away layer popover-style widgets share. */
+.cn-settings-overlay { position: fixed; inset: 0; z-index: 55; background: transparent; border: none; padding: 0; cursor: default; }
+
+.cn-set-label {
+    font: 700 11px var(--cn-font);
+    letter-spacing: .6px; text-transform: uppercase;
+    color: var(--cn-text-2);
+    margin: 12px 0 6px;
+}
+.cn-set-label:first-child { margin-top: 0; }
+
+.cn-seg { display: flex; border: 1px solid var(--cn-stroke); border-radius: 7px; overflow: hidden; }
+.cn-seg button {
+    flex: 1; height: 30px;
+    border: none; background: transparent;
+    color: var(--cn-text-2);
+    font: 600 12.5px var(--cn-font);
+    cursor: pointer;
+}
+.cn-seg button.on { background: var(--cn-accent); color: #fff; }
+
+/* ---------- page scaffolding (S-085 archetypes) ---------- */
+/* Pages that render inside a wrapper (CnpLoading) lose the .cn-content flex
+   gap; .cn-page restores the same vertical rhythm. */
+.cn-page { display: flex; flex-direction: column; gap: 14px; }
+
+.cn-page-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.cn-page-title { font: 600 20px var(--cn-font); margin: 0; }
+.cn-page-sub { color: var(--cn-text-2); font-size: 12.5px; }
+
+.cn-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.cn-stat {
+    background: var(--cn-card); border-radius: var(--cn-radius);
+    box-shadow: var(--cn-shadow);
+    padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 2px;
+    min-width: 0;
+}
+.cn-stat .k { font: 600 11px var(--cn-font); letter-spacing: .5px; text-transform: uppercase; color: var(--cn-text-2); }
+.cn-stat .v { font: 600 20px var(--cn-font); font-variant-numeric: tabular-nums; }
+.cn-stat .s { font-size: 11.5px; color: var(--cn-text-2); }
+.cn-stat .v.bad { color: var(--cn-danger); }
+.cn-stat .v.warn { color: var(--cn-warn); }
+.cn-stat--clickable { cursor: pointer; }
+.cn-stat--clickable:hover { box-shadow: var(--cn-shadow), 0 0 0 1px var(--cn-stroke) inset; }
+
+.cn-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+
+.cn-kv { display: grid; grid-template-columns: 130px 1fr; gap: 6px 10px; margin: 0; font-size: 13px; }
+.cn-kv dt { color: var(--cn-text-2); }
+.cn-kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+
+.cn-timeline { display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; }
+.cn-tl { display: flex; gap: 10px; align-items: baseline; }
+.cn-tl .d { color: var(--cn-text-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.cn-addr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.cn-addr {
+    position: relative;
+    border: 1px solid var(--cn-stroke-soft); border-radius: var(--cn-radius);
+    padding: 10px 12px;
+    font-size: 12.5px;
+    display: flex; flex-direction: column; gap: 6px;
+    background: var(--cn-ground);
+}
+.cn-addr-badges { display: flex; gap: 4px; flex-wrap: wrap; }
+.cn-addr .cn-addr-edit { position: absolute; top: 6px; right: 6px; opacity: 0; transition: opacity .12s; }
+.cn-addr:hover .cn-addr-edit { opacity: 1; }
+.cn-addr-add {
+    border: 1.5px dashed var(--cn-stroke); border-radius: var(--cn-radius);
+    background: transparent; color: var(--cn-text-2);
+    font: 600 12.5px var(--cn-font);
+    display: grid; place-items: center;
+    min-height: 74px; cursor: pointer;
+}
+.cn-addr-add:hover { border-color: var(--cn-accent); color: var(--cn-accent); background: var(--cn-accent-tint); }
+
+.cn-resume-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.cn-resume-card {
+    background: var(--cn-card); border-radius: var(--cn-radius); box-shadow: var(--cn-shadow);
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 10px; min-width: 0;
+}
+.cn-resume-ic {
+    width: 34px; height: 34px; flex: none;
+    border-radius: 8px;
+    background: var(--cn-accent-tint); color: var(--cn-accent);
+    display: grid; place-items: center;
+}
+.cn-resume-ic svg { width: 17px; height: 17px; }
+.cn-resume-txt { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+.cn-resume-txt b { font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cn-resume-txt span { font-size: 11.5px; color: var(--cn-text-2); }
+
+.cn-attn { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--cn-stroke-soft); }
+.cn-attn:last-child { border-bottom: none; }
+
+.cn-spark { display: flex; align-items: flex-end; gap: 4px; height: 72px; margin: 4px 0 12px; }
+.cn-spark i { flex: 1; background: var(--cn-accent); opacity: .75; border-radius: 2px 2px 0 0; min-height: 4px; }
+.cn-spark i:last-child { opacity: 1; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+    .cn-shell, .cn-shell.rail { grid-template-columns: 1fr; }
+
+    .cn-sidebar {
+        position: fixed; inset: 0 auto 0 0;
+        width: 246px;
+        transform: translateX(-100%);
+        transition: transform .18s ease;
+        box-shadow: none;
+    }
+    .cn-shell.nav-open .cn-sidebar { transform: none; box-shadow: var(--cn-shadow); }
+    .rail .cn-brand-name, .rail .cn-nav-group, .rail .cn-nav-label { display: revert; }
+    .rail .cn-nav-item { justify-content: flex-start; width: 100%; padding: 7px 9px; }
+
+    .cn-nav-overlay {
+        position: fixed; inset: 0; z-index: 45;
+        background: rgba(0, 0, 0, .32);
+        border: none; padding: 0;
+    }
+
+    .cn-hamburger { display: grid; }
+    .cn-topbar-search { max-width: none; }
+    .cn-stats, .cn-resume-row { grid-template-columns: repeat(2, 1fr); }
+    .cn-two-col { grid-template-columns: 1fr; }
+    .cn-content { padding: 12px; }
+}
+
+@media (max-width: 560px) {
+    .cn-topbar-search { display: none; }
+    .cn-stats, .cn-resume-row { grid-template-columns: 1fr; }
+}
+
+/* Ultrawide (S-085 dashboard cards): auto-fit lets an extra stat/resume card
+   claim a real column on wide screens instead of just stretching the
+   existing 3/4 wider — while today's card counts still render identically
+   to the fixed repeat() above, since auto-fit collapses tracks with no
+   content. */
+@media (min-width: 1600px) {
+    .cn-stats { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .cn-resume-row { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cn-sidebar { transition: none; }
+}

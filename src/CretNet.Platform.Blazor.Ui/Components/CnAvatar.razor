@@ -1,0 +1,78 @@
+@implements IDisposable
+
+@* Lifted from HCMT.WasmApp/Ui (S-265): the avatar circle — photo when the
+   party has one, initials otherwise. One component so the whole app swaps
+   to photos at once. The host coupling (HCMT's AvatarService) is cut into
+   the optional ICnAvatarSource; without a registration every avatar
+   renders initials. *@
+
+@if (_url is not null)
+{
+    <img class="cn-avatar cn-avatar--photo" style="@SizeStyle" src="@_url" alt="" title="@Name" />
+}
+else
+{
+    <span class="cn-avatar" style="@SizeStyle" title="@Name" aria-hidden="true">@InitialsOf(Name)</span>
+}
+
+@code {
+    [Inject] private IServiceProvider ServiceProvider { get; set; } = default!;
+
+    [Parameter] public Guid? PartyId { get; set; }
+    [Parameter] public string? Name { get; set; }
+    [Parameter] public int Size { get; set; } = 30;
+
+    private ICnAvatarSource? _source;
+    private string? _url;
+    private Guid? _loadedParty;
+
+    private string SizeStyle =>
+        $"width:{Size}px;height:{Size}px;font-size:{Math.Max(9, (int)(Size * 0.35))}px";
+
+    protected override void OnInitialized()
+    {
+        _source = (ICnAvatarSource?)ServiceProvider.GetService(typeof(ICnAvatarSource));
+        if (_source is not null)
+            _source.Changed += OnAvatarsChanged;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (PartyId == _loadedParty)
+            return;
+
+        _loadedParty = PartyId;
+        _url = null;
+        if (_source is not null && PartyId is { } partyId)
+        {
+            _url = await _source.GetPartyAvatarUrlAsync(partyId);
+        }
+    }
+
+    private void OnAvatarsChanged()
+    {
+        _ = InvokeAsync(async () =>
+        {
+            if (_source is not null && PartyId is { } partyId)
+                _url = await _source.GetPartyAvatarUrlAsync(partyId);
+            StateHasChanged();
+        });
+    }
+
+    internal static string InitialsOf(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return "?";
+
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return parts.Length == 1
+            ? parts[0][..1].ToUpperInvariant()
+            : string.Concat(parts[0][..1], parts[^1][..1]).ToUpperInvariant();
+    }
+
+    public void Dispose()
+    {
+        if (_source is not null)
+            _source.Changed -= OnAvatarsChanged;
+    }
+}

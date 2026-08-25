@@ -95,7 +95,16 @@ public partial class CnpEntityPicker<TEntity, TItem, TId>
     /// without a registered definition; in that case the page must pass
     /// an explicit <see cref="Label"/>.
     /// </summary>
-    [Inject] private IEntityDefinition<TEntity, TId>? EntityDefinition { get; set; }
+    /// <remarks>
+    /// Resolved by hand instead of <c>[Inject]</c>: Blazor's property
+    /// injection throws for an unregistered service regardless of the
+    /// property's nullability, which would force every consumer to
+    /// register a definition it may not have (WAM dropped its list
+    /// definitions in the Cn migration, M-017).
+    /// </remarks>
+    private IEntityDefinition<TEntity, TId>? EntityDefinition { get; set; }
+
+    [Inject] private IServiceProvider ServiceProvider { get; set; } = default!;
 
     private string? DisplayedLabel => Label ?? EntityDefinition?.Label;
 
@@ -111,6 +120,8 @@ public partial class CnpEntityPicker<TEntity, TItem, TId>
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
+        EntityDefinition = (IEntityDefinition<TEntity, TId>?)ServiceProvider.GetService(typeof(IEntityDefinition<TEntity, TId>));
         await RunSearchAsync(searchTerm: null);
         ResolveSelectionFromItems();
     }

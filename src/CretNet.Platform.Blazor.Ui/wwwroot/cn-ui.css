@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    cn-ui — own component library styles (ADR-011, M-014/S-073).
    Design tokens taken from the owner-approved composer mockup:
    accent #17af3d, 4px grid, compact 28/32px controls, light+dark.
@@ -3117,7 +3117,13 @@ tr:hover .cn-task-more,
     background: var(--cn-accent);
     border-color: var(--cn-accent);
     color: #fff;
-    cursor: default;
+    max-width: 340px;
+}
+
+.cn-timerw-pill--on:hover {
+    background: var(--cn-accent-hover);
+    border-color: var(--cn-accent-hover);
+    color: #fff;
 }
 
 .cn-timerw-dot {
@@ -3142,16 +3148,16 @@ tr:hover .cn-task-more,
     color: inherit;
     font: 600 12.5px var(--cn-font);
     cursor: pointer;
-    max-width: 220px;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     padding: 0;
 }
 
-.cn-timerw-task:hover { text-decoration: underline; }
-
-.cn-timerw-elapsed { font-variant-numeric: tabular-nums; font-weight: 700; }
+/* Time and stop never shrink: a timer you cannot read or stop is worse than
+   one whose name is clipped. */
+.cn-timerw-elapsed { flex: none; font-variant-numeric: tabular-nums; font-weight: 700; }
 
 .cn-timerw-stop {
     background: rgba(255, 255, 255, .18);
@@ -3165,6 +3171,7 @@ tr:hover .cn-task-more,
     color: #fff;
     cursor: pointer;
     padding: 0;
+    flex: none;
 }
 
 .cn-timerw-stop .cn-icon { width: 11px; height: 11px; }
@@ -3197,6 +3204,98 @@ tr:hover .cn-task-more,
     justify-content: flex-end;
     gap: 8px;
 }
+
+/* The running detail. Its own padding, because the clock band spans the full
+   width of the card. */
+.cn-timerw-pop--run { width: 312px; padding: 0; overflow: hidden; gap: 0; }
+
+.cn-run-head {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 11px 14px 0;
+    font: 700 10px/1 var(--cn-font);
+    letter-spacing: .7px;
+    text-transform: uppercase;
+    color: var(--cn-accent);
+}
+
+.cn-run-head .cn-timerw-dot { background: var(--cn-accent); }
+
+.cn-run-since { margin-left: auto; color: var(--cn-text-2); letter-spacing: .3px; }
+
+.cn-run-body { display: flex; flex-direction: column; gap: 9px; padding: 8px 14px 12px; }
+
+.cn-run-task {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font: 600 15px/1.3 var(--cn-font);
+    color: var(--cn-text);
+}
+
+.cn-run-task:hover { color: var(--cn-accent); text-decoration: underline; }
+
+.cn-run-meta { display: flex; flex-direction: column; gap: 5px; }
+
+.cn-run-line {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: 8px;
+    align-items: start;
+    font: 400 12px/1.4 var(--cn-font);
+    color: var(--cn-text-2);
+}
+
+.cn-run-line .cn-icon { width: 13px; height: 13px; margin-top: 1px; }
+.cn-run-line b { color: var(--cn-text); font-weight: 600; }
+
+.cn-run-clock {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 9px 14px;
+    border-top: 1px solid var(--cn-stroke-soft);
+    border-bottom: 1px solid var(--cn-stroke-soft);
+    background: var(--cn-ground);
+}
+
+.cn-run-clock-n {
+    font: 700 24px/1 var(--cn-font);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.01em;
+    color: var(--cn-text);
+}
+
+.cn-run-clock-l {
+    font: 600 10.5px var(--cn-font);
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    color: var(--cn-text-2);
+}
+
+.cn-run-foot { display: flex; gap: 8px; padding: 11px 14px; }
+.cn-run-foot .cn-btn { flex: 1; justify-content: center; }
+
+/* Context strip: what a new entry is about to be booked on. */
+.cn-ctx {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: var(--cn-ground);
+    font: 400 11.5px/1.45 var(--cn-font);
+    color: var(--cn-text-2);
+}
+
+.cn-ctx b { color: var(--cn-text); font-weight: 600; }
+.cn-ctx-ico { flex: none; margin-top: 1px; color: var(--cn-text-2); }
+.cn-ctx-ico .cn-icon { width: 13px; height: 13px; }
 
 /* S-196 catalog source-aware specification refresh dialog. */
 .cn-refresh-source {

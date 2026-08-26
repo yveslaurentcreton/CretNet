@@ -675,9 +675,26 @@ select.cn-input:disabled { cursor: default; }
     align-items: end;
 }
 
+/* Flag emoji do not exist in the system fonts on Windows: Chrome and Edge
+   render a regional-indicator pair as two boxed letters. (Firefox is the
+   exception — it ships Twemoji Mozilla, which is why the same code looks
+   right there and wrong everywhere else.) One woff2 with the flag block and
+   nothing else fixes it on every platform.
+
+   The unicode-range is what makes this cheap: the browser fetches the file
+   only when a character in that block is actually rendered, and every other
+   glyph keeps coming from the normal stack. */
+@font-face {
+    font-family: "Cn Country Flags";
+    src: url("fonts/TwemojiCountryFlags.woff2") format("woff2");
+    unicode-range: U+1F1E6-1F1FF;
+    font-display: swap;
+}
+
 .cn-country-flag {
     flex: none;
     font-size: 15px;
+    font-family: "Cn Country Flags", var(--cn-font);
 }
 
 /* ---------- Party contact information editor ---------- */

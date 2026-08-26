@@ -13,6 +13,7 @@
     --cn-card: #ffffff;
     --cn-text: #1b1b1b;
     --cn-text-2: #5f6360;
+    --cn-text-3: #8c918d;
     --cn-stroke: #d6d6d6;
     --cn-stroke-soft: #e6e6e6;
     --cn-row-hover: #fafcfa;
@@ -60,6 +61,7 @@
         --cn-card: #2b2b2b;
         --cn-text: #f0f0f0;
         --cn-text-2: #a5aaa6;
+        --cn-text-3: #7e837f;
         --cn-stroke: #4a4a4a;
         --cn-stroke-soft: #3d3d3d;
         --cn-row-hover: #2f332f;
@@ -87,6 +89,7 @@
     --cn-card: #2b2b2b;
     --cn-text: #f0f0f0;
     --cn-text-2: #a5aaa6;
+    --cn-text-3: #7e837f;
     --cn-stroke: #4a4a4a;
     --cn-stroke-soft: #3d3d3d;
     --cn-row-hover: #2f332f;
@@ -4874,7 +4877,7 @@ tr:hover .cn-task-more,
 .cn-company-switch-trigger small {
     display: block;
     margin-bottom: 3px;
-    color: var(--cn-text-3, var(--cn-text-2));
+    color: var(--cn-text-3);
     font: 500 9.5px/1 var(--cn-font);
     letter-spacing: .1em;
     text-transform: uppercase;
@@ -4900,6 +4903,9 @@ tr:hover .cn-task-more,
     cursor: default;
 }
 
+/* No min-width: the sidebar clips its overflow, so a menu wider than the
+   trigger loses its right edge — which is exactly how this looked broken.
+   left/right: 0 keeps it the width of the thing it belongs to. */
 .cn-company-switch-menu {
     position: absolute;
     top: calc(100% + 6px);
@@ -4908,7 +4914,6 @@ tr:hover .cn-task-more,
     z-index: 71;
     display: grid;
     gap: 1px;
-    min-width: 210px;
     padding: 6px;
     border: 1px solid var(--cn-stroke-soft);
     border-radius: 10px;
@@ -4945,13 +4950,27 @@ tr:hover .cn-task-more,
 }
 
 /* The identity block: brand and switcher, edged and tinted in the active
-   company's colour. Neutral under "everything" — no company owns that view. */
+   company's colour. Neutral under "everything" — no company owns that view.
+
+   It breaks out of the sidebar's padding on purpose. An accent edge that
+   stops 10px short of the window, with a gap above it, reads as a stray
+   rectangle; flush to the corner it reads as the edge of the room you are
+   standing in. The negative margins have to match .cn-sidebar's padding. */
 .cn-brand-company {
+    margin: -14px -10px 4px;
+    padding: 14px 13px 13px;
     border-left: 3px solid var(--company-accent, transparent);
+    border-bottom: 1px solid var(--cn-stroke-soft);
     background: linear-gradient(to right,
         color-mix(in srgb, var(--company-accent, transparent) 9%, transparent),
         transparent 78%);
 }
 
-.cn-brand-company .cn-brand { padding-left: 10px; }
-.cn-brand-company .cn-company-switch { padding: 0 11px 12px; }
+.cn-brand-company .cn-brand { padding: 0 0 10px; }
+.cn-brand-company .cn-company-switch { padding: 0; }
+
+/* The rail collapses everything to icons, so the block loses its inset and
+   the switcher with it. */
+.rail .cn-brand-company { margin: -14px -8px 4px; padding: 12px 6px; }
+.rail .cn-brand-company .cn-brand { padding: 0; }
+.rail .cn-company-switch { display: none; }

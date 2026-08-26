@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    cn-shell — application shell (S-083, owner-approved mockup).
    Sidebar (wide/rail/mobile drawer), topbar, settings popover,
    page scaffolding for the new screen archetypes (S-085).
@@ -45,7 +45,7 @@
     z-index: 50;
 }
 
-.cn-brand { display: flex; align-items: center; gap: 8px; padding: 2px 8px 14px; }
+.cn-brand { display: flex; align-items: center; gap: 9px; padding: 2px 8px 14px; }
 .cn-brand-mark {
     width: 26px; height: 26px; flex: none;
     border-radius: 7px;
@@ -54,31 +54,46 @@
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--cn-stroke) 65%, transparent);
 }
 .cn-brand-mark img { width: 100%; height: 100%; display: block; }
-.cn-brand-name { font: 700 15px var(--cn-font); letter-spacing: .2px; white-space: nowrap; }
+/* Mock proportions: the wordmark reads as a mark, not a heading — light and
+   generously tracked rather than bold and tight. */
+.cn-brand-name { font: 400 15px/1 var(--cn-font); letter-spacing: .1em; white-space: nowrap; }
 
+/* Mock proportions: smaller and more widely tracked than a label, and a
+   step lighter in colour — a group title should separate, not compete. */
 .cn-nav-group {
-    margin-top: 10px;
-    padding: 0 8px 4px;
-    font: 700 10.5px var(--cn-font);
-    letter-spacing: .8px;
+    margin-top: 12px;
+    padding: 0 8px 5px;
+    font: 600 9.5px/1 var(--cn-font);
+    letter-spacing: .13em;
     text-transform: uppercase;
-    color: var(--cn-text-2);
+    color: var(--cn-text-3, var(--cn-text-2));
     white-space: nowrap;
 }
 
 .cn-nav-item {
     display: flex; align-items: center; gap: 9px;
-    padding: 7px 9px;
-    border-radius: 6px;
+    min-height: 32px;
+    padding: 0 9px;
+    border-radius: 7px;
     color: var(--cn-text-2);
-    font-weight: 500; font-size: 13px;
+    font: 500 13px/1.2 var(--cn-font);
     text-decoration: none;
     white-space: nowrap;
     cursor: pointer;
     border: none; background: transparent; width: 100%; text-align: left;
 }
-.cn-nav-item:hover { background: var(--cn-accent-tint); color: var(--cn-text); }
-.cn-nav-item.active { background: var(--cn-accent-tint); color: var(--cn-accent); }
+
+/* Hover moves the ink, not the ground: a tint on hover competes with the
+   tint that means "you are here". */
+.cn-nav-item:hover { background: var(--cn-row-hover, var(--cn-ground)); color: var(--cn-text); }
+
+/* The active item takes the company's colour along with the identity block —
+   the two things that say where you are, saying it together. */
+.cn-nav-item.active {
+    background: color-mix(in srgb, var(--company-accent, var(--cn-accent)) 10%, transparent);
+    color: var(--company-accent, var(--cn-accent));
+    font-weight: 600;
+}
 .cn-nav-item .cn-icon { width: 16px; height: 16px; flex: none; }
 .cn-nav-label { overflow: hidden; text-overflow: ellipsis; }
 

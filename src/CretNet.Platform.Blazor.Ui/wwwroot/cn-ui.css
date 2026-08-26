@@ -3968,3 +3968,22 @@ tr:hover .cn-task-more,
     .cn-date-presets { flex-direction: row; flex-wrap: wrap; min-width: 0; border-right: 0; border-bottom: 1px solid var(--cn-stroke-soft); }
     .cn-cal-body { flex-direction: column; }
 }
+
+/* Emptying a range means emptying both halves at once — Ctrl+A only ever
+   selects the half the caret sits in, so the pill carries its own clear. */
+.cn-date-clear {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    margin-left: 2px;
+    border: 0;
+    border-radius: var(--cn-radius-s);
+    background: transparent;
+    color: var(--cn-text-2);
+    cursor: pointer;
+}
+
+.cn-date-clear:hover { background: var(--cn-row-hover); color: var(--cn-text); }
+.cn-date-clear .cn-icon { width: 13px; height: 13px; }

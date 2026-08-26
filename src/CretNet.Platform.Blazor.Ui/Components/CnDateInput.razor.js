@@ -3,7 +3,31 @@
 // keeps the caret where the user left it — neither of which Blazor can do,
 // because the DOM value it patches has no notion of a caret.
 
-export { place } from './CnPicker.razor.js';
+/** Lifts the calendar out of its overflow ancestors. Inside a dialog the
+ *  popover is otherwise clipped by the scrolling body, so while it is open it
+ *  is promoted to fixed coordinates taken from the field, flipping above when
+ *  there is more room up there. The picker's own place() is tuned for option
+ *  lists (capped height, scrollbar); a calendar wants neither. */
+export function placePanel(panel, anchor) {
+    if (!panel || !anchor) {
+        return;
+    }
+
+    const field = anchor.getBoundingClientRect();
+    const panelHeight = panel.offsetHeight;
+    const spaceBelow = window.innerHeight - field.bottom - 8;
+    const spaceAbove = field.top - 8;
+    const flip = spaceBelow < panelHeight && spaceAbove > spaceBelow;
+
+    panel.style.position = 'fixed';
+    panel.style.top = flip ? '' : (field.bottom + 6) + 'px';
+    panel.style.bottom = flip ? (window.innerHeight - field.top + 6) + 'px' : '';
+
+    // Keep it on screen when the field sits near the right edge.
+    const width = panel.offsetWidth;
+    const left = Math.max(8, Math.min(field.left, window.innerWidth - width - 8));
+    panel.style.left = left + 'px';
+}
 
 const digitsIn = text => (text.match(/\d/g) || []).length;
 

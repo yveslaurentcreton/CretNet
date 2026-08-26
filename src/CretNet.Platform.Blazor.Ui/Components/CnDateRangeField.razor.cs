@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace CretNet.Platform.Blazor.Ui.Components;
 
 /// <summary>One entry in the quick-pick column of a <see cref="CnDateRangeField"/>.</summary>
 public sealed record CnDateRangePreset(string Label, DateTime From, DateTime To);
 
-public partial class CnDateRangeField
+public partial class CnDateRangeField : IAsyncDisposable
 {
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
+
     [Parameter] public DateTime? From { get; set; }
     [Parameter] public EventCallback<DateTime?> FromChanged { get; set; }
     [Parameter] public DateTime? To { get; set; }
@@ -36,6 +39,69 @@ public partial class CnDateRangeField
     [Parameter] public string PreviousMonthLabel { get; set; } = "Previous month";
     [Parameter] public string NextMonthLabel { get; set; } = "Next month";
     [Parameter] public string DateFormatHint { get; set; } = "dd/mm/yyyy";
+
+
+    private ElementReference _anchorRef;
+    private ElementReference _popRef;
+    private IJSObjectReference? _module;
+
+    // Blur fires before the next focus, so leaving one half for the other
+    // would look like leaving the control. A tick of grace tells the two
+    // apart without needing relatedTarget, which Blazor does not surface.
+    private int _focusDepth;
+
+    private void OnFieldFocused()
+    {
+        _focusDepth++;
+        Open();
+    }
+
+    private async Task OnFieldBlurredAsync()
+    {
+        _focusDepth--;
+        await Task.Delay(120);
+        if (_focusDepth > 0 || !_open)
+            return;
+
+        Close();
+        StateHasChanged();
+    }
+
+    /// <summary>Inside a dialog the popover would be clipped by the scrolling
+    /// body, so while it is open it is promoted to fixed viewport coordinates.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_open)
+            return;
+
+        try
+        {
+            _module ??= await JsRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/CretNet.Platform.Blazor.Ui/Components/CnDateInput.razor.js");
+            await _module.InvokeVoidAsync("placePanel", _popRef, _anchorRef);
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        catch (JSException)
+        {
+            // Placement is a nicety; the popover still renders in place.
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null)
+            return;
+
+        try
+        {
+            await _module.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
 
     private CnDateInput? _fromInput;
     private CnDateInput? _toInput;

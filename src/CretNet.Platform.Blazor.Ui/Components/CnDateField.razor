@@ -10,13 +10,13 @@
     {
         <span class="cn-label">@Label</span>
     }
-    <div class="cn-date-anchor">
+    <div class="cn-date-anchor" @ref="_anchorRef">
         @* Opening on click as well as on focus: after picking, focus stays in
            the field, so a second click would otherwise fire no focus event and
            leave the calendar shut. *@
         <div class="cn-date-shell cn-input @SubtleClass @InvalidClass @(_open ? "cn-date-shell--open" : null) @(Disabled ? "cn-date-shell--disabled" : null)"
-             @onclick="OpenAsync">
-            <svg class="cn-date-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false" @onclick="OpenAsync">
+             @onclick="Open">
+            <svg class="cn-date-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
                 <rect x="2.5" y="3.5" width="11" height="10" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4" />
                 <path d="M2.5 6.5h11M5.5 2.2v2.4M10.5 2.2v2.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
             </svg>
@@ -29,10 +29,18 @@
                          Disabled="Disabled"
                          OnTyping="OnTypingAsync"
                          OnCommitted="OnCommittedAsync"
-                         OnFocused="OpenAsync"
+                         OnFocused="OnFieldFocused"
+                         OnBlurred="OnFieldBlurredAsync"
                          OnEnter="Close"
                          OnEscape="RevertAsync"
                          OnArrowDown="Close" />
+            @if (Value is not null && !ReadOnly && !Disabled)
+            {
+                <button type="button" class="cn-date-clear" title="@ClearLabel" aria-label="@ClearLabel"
+                        @onmousedown:preventDefault @onclick="ClearAsync" @onclick:stopPropagation>
+                    <CnIcon Kind="CnIconKind.Dismiss" />
+                </button>
+            }
         </div>
 
         @if (_open && !ReadOnly && !Disabled)
@@ -40,7 +48,7 @@
             @* Keeping the mouse from moving focus matters: a blur would run the
                field's completion and write the old text back over whatever was
                just clicked. *@
-            <div class="cn-date-pop" role="dialog" @onmousedown:preventDefault aria-label="@Label">
+            <div class="cn-date-pop" role="dialog" @ref="_popRef" @onmousedown:preventDefault aria-label="@Label">
                 <CnCalendarPanel @ref="_calendar"
                                  From="Value"
                                  To="Value"

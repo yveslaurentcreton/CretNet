@@ -35,6 +35,10 @@ public partial class CnDateInput : IAsyncDisposable
     [Parameter] public EventCallback<string> OnOverflow { get; set; }
 
     [Parameter] public EventCallback OnFocused { get; set; }
+
+    /// <summary>Raised after the field lost focus, so the host can decide
+    /// whether the whole control was left (and its popover should close).</summary>
+    [Parameter] public EventCallback OnBlurred { get; set; }
     [Parameter] public EventCallback OnEnter { get; set; }
     [Parameter] public EventCallback OnEscape { get; set; }
     [Parameter] public EventCallback OnArrowDown { get; set; }
@@ -145,7 +149,11 @@ public partial class CnDateInput : IAsyncDisposable
             await OnOverflow.InvokeAsync(overflow);
     }
 
-    private Task OnBlurAsync() => CompleteAsync();
+    private async Task OnBlurAsync()
+    {
+        await CompleteAsync();
+        await OnBlurred.InvokeAsync();
+    }
 
     private async Task OnFocusAsync()
     {

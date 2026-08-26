@@ -104,6 +104,23 @@ The popover keeps exactly the same size at every level, so nothing jumps under
 your cursor. Reopening always starts at the days again — a zoom level is a way
 to navigate, not a state worth remembering.
 
+## Closing and clearing
+
+The calendar closes when focus leaves the control — clicking elsewhere, or
+tabbing past it. Moving between the two halves of a range does not count as
+leaving, which is why the check waits a tick rather than reacting to the bare
+blur (Blazor does not surface `relatedTarget`, so there is no way to ask where
+focus went).
+
+Emptying a range needs its own affordance: `Ctrl+A` only ever selects the half
+the caret sits in, so a pill holding a value shows a small **×** that clears
+both halves at once. The single field has the same button, plus *Clear* in the
+calendar footer.
+
+Inside a dialog the popover would be clipped by the scrolling body, so while it
+is open it is promoted to fixed viewport coordinates and flips above the field
+when there is more room up there.
+
 ## Keyboard
 
 | Key | Does |

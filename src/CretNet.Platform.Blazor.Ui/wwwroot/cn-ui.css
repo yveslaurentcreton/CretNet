@@ -4768,3 +4768,39 @@ tr:hover .cn-task-more,
     .cn-status-picker__readonly { justify-content: center; }
     .cn-status-picker__menu { right: auto; left: 0; }
 }
+
+/* ---------- Company identity bits (M-018) ----------
+   A colour swatch and the palette that picks it. Global rather than scoped
+   because the swatch shows up in a grid cell, a dialog and a page head. */
+
+.cn-company-swatch {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    flex: none;
+    border-radius: 5px;
+    border: 1px solid color-mix(in srgb, var(--cn-text) 12%, transparent);
+}
+
+.cn-company-accents { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+
+.cn-company-accent {
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.cn-company-accent:hover { border-color: var(--cn-stroke); }
+.cn-company-accent.is-on { border-color: var(--cn-text); }
+.cn-company-accent:focus-visible { outline: 2px solid var(--cn-accent); outline-offset: 2px; }
+
+.cn-company-accent-value {
+    padding: 4px 9px;
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: 6px;
+    color: var(--cn-text-2);
+    font-size: 12px;
+}

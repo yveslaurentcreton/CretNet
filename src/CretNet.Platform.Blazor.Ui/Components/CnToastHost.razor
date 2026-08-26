@@ -1,0 +1,49 @@
+@using CretNet.Platform.Blazor.Ui.Toasts
+@implements IDisposable
+
+@* Renders the toast stack. One host per app, in the layout; the position is
+   a parameter because a fixed corner will always collide with something —
+   in WAM it was the running timer.
+
+   The stack grows away from its corner and the newest toast is nearest it,
+   so a burst never asks you to start reading at the far end. Beyond
+   MaxVisible toasts queue rather than drop, and a queued toast does not
+   start its countdown until it is actually on screen. *@
+
+<div class="cn-toast-host cn-toast-host--@Anchor" role="region" aria-label="@AriaLabel">
+    @if (_hidden > 0)
+    {
+        <button type="button" class="cn-toast-more" @onclick="DismissAllAsync">
+            @OverflowLabel(_hidden)
+        </button>
+    }
+
+    @foreach (var item in _visible)
+    {
+        var toast = item;
+        <div class="cn-toast cn-toast--@Tone(toast.Severity)"
+             role="@(toast.Severity == CnToastSeverity.Error ? "alert" : "status")"
+             @key="toast.Id"
+             @onmouseenter="() => Pause(toast.Id)"
+             @onmouseleave="() => Resume(toast.Id)">
+            <span class="cn-toast-rail"></span>
+            <span class="cn-toast-ico"><CnIcon Kind="Icon(toast.Severity)" /></span>
+            <span class="cn-toast-body">
+                <span class="cn-toast-title">@toast.Title</span>
+                @if (!string.IsNullOrWhiteSpace(toast.Message))
+                {
+                    <span class="cn-toast-msg">@toast.Message</span>
+                }
+                @if (toast.ActionLabel is { } label)
+                {
+                    <button type="button" class="cn-toast-act" @onclick="() => InvokeActionAsync(toast)">@label</button>
+                }
+            </span>
+            <button type="button" class="cn-toast-x" title="@DismissLabel" aria-label="@DismissLabel"
+                    @onclick="() => Toasts.Dismiss(toast.Id)">
+                <CnIcon Kind="CnIconKind.Dismiss" />
+            </button>
+            <span class="cn-toast-life" style="@LifeStyle(toast)"></span>
+        </div>
+    }
+</div>

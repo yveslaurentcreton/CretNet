@@ -1,0 +1,44 @@
+@using CretNet.Platform.Blazor.Ui.Notifications
+@implements IDisposable
+
+@* Topbar bell plus the panel it opens — one component to drop in a shell.
+   The badge polls the summary rather than the whole page: counting is cheap,
+   listing is not. *@
+
+<div class="cn-bell-wrap">
+    <button type="button" class="cn-icon-btn cn-bell" title="@Title" aria-label="@Title" @onclick="ToggleAsync">
+        <CnIcon Kind="CnIconKind.Bell" />
+        @if (State.UnreadCount > 0)
+        {
+            <span class="cn-bell-badge">@(State.UnreadCount > 99 ? "99+" : State.UnreadCount.ToString())</span>
+        }
+    </button>
+
+    @if (_open)
+    {
+        <div class="cn-panel-scrim" @onclick="Close"></div>
+        <aside class="cn-panel cn-panel--right">
+            <CnNotificationCenter OnClose="Close"
+                                  OnOpen="OpenAsync"
+                                  Title="@Title"
+                                  MarkAllReadLabel="@MarkAllReadLabel"
+                                  CloseLabel="@CloseLabel"
+                                  AllLabel="@AllLabel"
+                                  UnreadLabel="@UnreadLabel"
+                                  ActionLabel="@ActionLabel"
+                                  ArchivedLabel="@ArchivedLabel"
+                                  NewGroupLabel="@NewGroupLabel"
+                                  EarlierGroupLabel="@EarlierGroupLabel"
+                                  OlderLabel="@OlderLabel"
+                                  LoadingLabel="@LoadingLabel"
+                                  FailedLabel="@FailedLabel"
+                                  RetryLabel="@RetryLabel"
+                                  ActionNeededLabel="@ActionNeededLabel"
+                                  ArchiveLabel="@ArchiveLabel"
+                                  MarkReadLabel="@MarkReadLabel"
+                                  MarkUnreadLabel="@MarkUnreadLabel"
+                                  EmptyLabel="EmptyLabel"
+                                  FormatWhen="FormatWhen" />
+        </aside>
+    }
+</div>

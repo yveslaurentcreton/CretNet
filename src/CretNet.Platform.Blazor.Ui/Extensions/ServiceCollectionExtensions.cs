@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace CretNet.Platform.Blazor.Ui.Extensions;
 
@@ -17,6 +17,12 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<Theme.CnThemeService>();
         services.AddScoped<Dialogs.CnDialogService>();
+        services.AddScoped<Toasts.CnToastService>();
+
+        // The inbox needs a transport the host owns; without one there is
+        // nothing to keep state about, so the state only registers when a
+        // client has been registered before this call.
+        services.AddScoped<Notifications.CnNotificationState>();
         return services;
     }
 }

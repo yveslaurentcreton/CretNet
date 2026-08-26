@@ -1,0 +1,124 @@
+@using CretNet.Platform.Blazor.Ui.Notifications
+@implements IDisposable
+
+@* The inbox. Unread first under NEW, the rest under EARLIER; opening a row
+   reads it and follows its action path; the dot toggles read; the hover
+   button archives.
+
+   The avatar carries the severity rather than a decorative glyph — it is the
+   thing you want to read before the words. *@
+
+<section class="cn-nc" aria-label="@Title">
+    <div class="cn-nc-head">
+        <h4>@Title</h4>
+        @if (State.UnreadCount > 0 && State.Filter != CnNotificationFilter.Archived)
+        {
+            <button type="button" class="cn-nc-allread" @onclick="() => State.MarkAllReadAsync()">@MarkAllReadLabel</button>
+        }
+        <button type="button" class="cn-nc-close" title="@CloseLabel" aria-label="@CloseLabel" @onclick="OnClose">
+            <CnIcon Kind="CnIconKind.Dismiss" />
+        </button>
+    </div>
+
+    <div class="cn-nc-chips" role="tablist">
+        @foreach (var tab in Tabs)
+        {
+            var filter = tab.Filter;
+            <button type="button"
+                    role="tab"
+                    class="cn-nc-chip @(State.Filter == filter ? "on" : null)"
+                    aria-selected="@(State.Filter == filter ? "true" : "false")"
+                    @onclick="() => State.RefreshAsync(filter)">
+                @tab.Label@if (tab.Count > 0) { <b>@tab.Count</b> }
+            </button>
+        }
+    </div>
+
+    <div class="cn-nc-body" aria-live="polite">
+        @if (State.IsLoading)
+        {
+            <p class="cn-nc-empty" role="status">@LoadingLabel</p>
+        }
+        else if (State.Error is { } error)
+        {
+            <div class="cn-nc-empty">
+                <strong>@FailedLabel</strong>
+                <p>@error</p>
+                <button type="button" class="cn-nc-more" @onclick="() => State.RefreshAsync(State.Filter)">@RetryLabel</button>
+            </div>
+        }
+        else if (State.Items.Count == 0)
+        {
+            <div class="cn-nc-empty">
+                <span class="cn-nc-empty-mark"><CnIcon Kind="CnIconKind.CheckCircle" /></span>
+                <strong>@EmptyLabel(State.Filter)</strong>
+            </div>
+        }
+        else
+        {
+            @if (Unread.Count > 0)
+            {
+                <div class="cn-nc-group">@NewGroupLabel <span class="cn-nc-groupn">@Unread.Count</span></div>
+                @foreach (var item in Unread)
+                {
+                    @RenderRow(item)
+                }
+            }
+            @if (Earlier.Count > 0)
+            {
+                <div class="cn-nc-group">@EarlierGroupLabel</div>
+                @foreach (var item in Earlier)
+                {
+                    @RenderRow(item)
+                }
+            }
+            @if (State.NextCursor is not null)
+            {
+                <button type="button" class="cn-nc-more" disabled="@State.IsLoadingMore"
+                        @onclick="() => State.LoadMoreAsync()">
+                    @(State.IsLoadingMore ? LoadingLabel : OlderLabel)
+                </button>
+            }
+        }
+    </div>
+</section>
+
+@* One row, rendered from two places — the two groups are the same list cut
+   in half, not two kinds of thing. *@
+@code {
+    private RenderFragment RenderRow(CnNotificationItem item) =>
+    @<div class="cn-nc-row cn-nc-row--@Tone(item.Severity) @(item.ReadAt is null ? "unread" : null)"
+          role="button" tabindex="0" @onclick="() => OpenAsync(item)">
+        <span class="cn-nc-av"><CnIcon Kind="Icon(item.Severity)" /></span>
+        <span class="cn-nc-copy">
+            <span class="cn-nc-title">@item.Title</span>
+            @if (!string.IsNullOrWhiteSpace(item.Message))
+            {
+                <span class="cn-nc-msg">@item.Message</span>
+            }
+            <span class="cn-nc-meta">
+                <span class="cn-nc-cat">@item.Category</span>
+                <span>@FormatWhen(item.OccurredAt)</span>
+            </span>
+            @if (item.RequiresAction)
+            {
+                <span class="cn-nc-act">@ActionNeededLabel</span>
+            }
+        </span>
+        <span class="cn-nc-side">
+            @if (State.Filter != CnNotificationFilter.Archived)
+            {
+                <button type="button" class="cn-nc-arch" title="@ArchiveLabel" aria-label="@ArchiveLabel"
+                        @onclick="() => State.ArchiveAsync(item)" @onclick:stopPropagation>
+                    <CnIcon Kind="CnIconKind.Archive" />
+                </button>
+                <button type="button"
+                        class="cn-nc-dot @(item.ReadAt is null ? null : "cn-nc-dot--read")"
+                        title="@(item.ReadAt is null ? MarkReadLabel : MarkUnreadLabel)"
+                        aria-label="@(item.ReadAt is null ? MarkReadLabel : MarkUnreadLabel)"
+                        @onclick="() => State.SetReadAsync(item, item.ReadAt is null)" @onclick:stopPropagation>
+                </button>
+            }
+        </span>
+    </div>;
+}

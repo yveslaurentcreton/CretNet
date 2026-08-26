@@ -1,9 +1,10 @@
-namespace CretNet.Platform.Blazor.Ui.Components;
+﻿namespace CretNet.Platform.Blazor.Ui.Components;
 
 /// <summary>Inline SVG icon set for the Cn components (S-073, shell icons S-083).</summary>
 public enum CnIconKind
 {
     Add,
+    Archive,
     ArrowDownload,
     ArrowLeft,
     ArrowRight,
@@ -14,6 +15,7 @@ public enum CnIconKind
     Box,
     Briefcase,
     Calculator,
+    CheckCircle,
     Checkmark,
     Coins,
     Copy,
@@ -23,8 +25,10 @@ public enum CnIconKind
     DocumentAdd,
     DocumentStack,
     Edit,
+    ErrorCircle,
     Folder,
     Home,
+    InfoCircle,
     Menu,
     PanelLeft,
     People,
@@ -37,5 +41,6 @@ public enum CnIconKind
     Stop,
     Subtract,
     SwapArrows,
+    Warning,
     TaskCheck,
 }

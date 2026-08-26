@@ -30,6 +30,7 @@
 
     --cn-danger: #d13438;
     --cn-warn: #b8860b;
+    --cn-info: #3159a7;
     --cn-lane-phys: #00876f;
     --cn-lane-phys-tint: rgba(0, 135, 111, .10);
     --cn-lane-fin: #3159a7;
@@ -64,6 +65,9 @@
         --cn-stroke-soft: #3d3d3d;
         --cn-row-hover: #2f332f;
         --cn-shadow: 0 0 2px rgba(0, 0, 0, .4), 0 2px 6px rgba(0, 0, 0, .35);
+        --cn-danger: #e4696d;
+        --cn-warn: #d6a52a;
+        --cn-info: #7fa1e0;
         --cn-lane-phys: #1aa385;
         --cn-lane-phys-tint: rgba(26, 163, 133, .14);
         --cn-lane-fin: #6b8fd4;
@@ -89,6 +93,9 @@
     --cn-stroke-soft: #3d3d3d;
     --cn-row-hover: #2f332f;
     --cn-shadow: 0 0 2px rgba(0, 0, 0, .4), 0 2px 6px rgba(0, 0, 0, .35);
+    --cn-danger: #e4696d;
+    --cn-warn: #d6a52a;
+    --cn-info: #7fa1e0;
     --cn-lane-phys: #1aa385;
     --cn-lane-phys-tint: rgba(26, 163, 133, .14);
     --cn-lane-fin: #6b8fd4;
@@ -4194,3 +4201,419 @@ tr:hover .cn-task-more,
     padding-top: 10px;
     border-top: 1px solid var(--cn-stroke-soft);
 }
+
+/* ---------- Toasts (S-167) ---------- */
+.cn-toast-host {
+    position: fixed;
+    z-index: 950;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    max-width: min(380px, calc(100vw - 32px));
+    pointer-events: none;
+}
+
+/* The newest toast is always nearest its corner, so a burst never asks you
+   to start reading at the far end. Top-anchored stacks reverse to get that;
+   bottom-anchored ones already grow the right way. */
+.cn-toast-host--topleft { top: 0; left: 0; flex-direction: column-reverse; }
+.cn-toast-host--topcenter { top: 0; left: 50%; transform: translateX(-50%); align-items: center; flex-direction: column-reverse; }
+.cn-toast-host--topright { top: 0; right: 0; align-items: flex-end; flex-direction: column-reverse; }
+.cn-toast-host--bottomleft { bottom: 0; left: 0; }
+.cn-toast-host--bottomcenter { bottom: 0; left: 50%; transform: translateX(-50%); align-items: center; }
+.cn-toast-host--bottomright { bottom: 0; right: 0; align-items: flex-end; }
+
+.cn-toast {
+    pointer-events: auto;
+    position: relative;
+    width: 336px;
+    max-width: 100%;
+    display: grid;
+    grid-template-columns: 3px 20px 1fr auto;
+    gap: 0 10px;
+    align-items: start;
+    padding: 10px 10px 11px 0;
+    border-radius: var(--cn-radius);
+    background: var(--cn-card);
+    box-shadow: var(--cn-shadow), 0 8px 22px rgba(0, 0, 0, .14);
+    overflow: hidden;
+    animation: cn-toast-in .18s ease-out;
+}
+
+@keyframes cn-toast-in { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
+
+.cn-toast-host[class*="bottom"] .cn-toast { animation-name: cn-toast-in-up; }
+@keyframes cn-toast-in-up { from { opacity: 0; transform: translateY(6px) scale(.98); } }
+
+/* The severity lives in a 3px rail and the icon, not in the whole card —
+   otherwise a saved record shouts as loudly as a failure. */
+.cn-toast-rail { grid-row: 1 / span 2; align-self: stretch; background: var(--cn-toast-tone); }
+
+.cn-toast--success { --cn-toast-tone: var(--cn-accent); }
+.cn-toast--error { --cn-toast-tone: var(--cn-danger); }
+.cn-toast--warning { --cn-toast-tone: var(--cn-warn); }
+.cn-toast--info { --cn-toast-tone: var(--cn-info); }
+
+.cn-toast-ico { margin-top: 1px; color: var(--cn-toast-tone); display: grid; place-items: center; }
+.cn-toast-ico .cn-icon { width: 16px; height: 16px; }
+
+.cn-toast-body { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.cn-toast-title { font: 600 13px/1.35 var(--cn-font); color: var(--cn-text); }
+.cn-toast-msg { font: 400 12px/1.45 var(--cn-font); color: var(--cn-text-2); overflow-wrap: anywhere; }
+
+.cn-toast-act {
+    margin-top: 5px;
+    align-self: flex-start;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: 600 12px var(--cn-font);
+    color: var(--cn-accent);
+    cursor: pointer;
+}
+
+.cn-toast-act:hover { text-decoration: underline; }
+
+.cn-toast-x {
+    width: 22px;
+    height: 22px;
+    margin-top: -1px;
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+    background: none;
+    color: var(--cn-text-2);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+}
+
+.cn-toast-x:hover { background: var(--cn-ground); color: var(--cn-text); }
+.cn-toast-x .cn-icon { width: 11px; height: 11px; }
+
+/* The lifetime bar is the only thing saying time is running out, so it
+   pauses with the toast rather than running on underneath a paused card. */
+.cn-toast-life {
+    grid-column: 2 / -1;
+    height: 2.5px;
+    margin: 9px -10px -11px 0;
+    background: var(--cn-toast-tone);
+    opacity: .45;
+    transform-origin: left;
+    animation-name: cn-toast-life;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes cn-toast-life { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+.cn-toast:hover .cn-toast-life { animation-play-state: paused; }
+
+.cn-toast-more {
+    pointer-events: auto;
+    order: -1;
+    align-self: inherit;
+    padding: 5px 12px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--cn-text);
+    color: var(--cn-card);
+    font: 600 11px var(--cn-font);
+    cursor: pointer;
+    box-shadow: var(--cn-shadow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cn-toast { animation: none; }
+}
+
+/* ---------- Notification bell + inbox (S-167) ---------- */
+.cn-bell-wrap { position: relative; display: inline-flex; }
+
+.cn-bell { position: relative; }
+
+.cn-bell-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 4px;
+    border: 1.5px solid var(--cn-card);
+    border-radius: 8px;
+    background: var(--cn-danger);
+    color: #fff;
+    font: 700 9px/13px var(--cn-font);
+    text-align: center;
+}
+
+/* A side panel of its own: the dialog host only does centred dialogs, and a
+   drawer that borrows one ends up fighting its bezel. */
+.cn-panel-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 940;
+    background: rgba(20, 26, 22, .32);
+}
+
+.cn-panel {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 941;
+    width: min(420px, 100vw);
+    display: flex;
+    flex-direction: column;
+    background: var(--cn-card);
+    animation: cn-panel-in .2s ease-out;
+}
+
+.cn-panel--right { right: 0; box-shadow: -6px 0 24px rgba(0, 0, 0, .18); }
+.cn-panel--left { left: 0; box-shadow: 6px 0 24px rgba(0, 0, 0, .18); }
+
+@keyframes cn-panel-in { from { transform: translateX(100%); } }
+.cn-panel--left { animation-name: cn-panel-in-left; }
+@keyframes cn-panel-in-left { from { transform: translateX(-100%); } }
+
+@media (prefers-reduced-motion: reduce) {
+    .cn-panel { animation: none; }
+}
+
+.cn-nc { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+
+.cn-nc-head { display: flex; align-items: center; gap: 8px; padding: 12px 14px 10px; }
+.cn-nc-head h4 { margin: 0; font: 600 15px/1.2 var(--cn-font); }
+
+.cn-nc-allread {
+    margin-left: auto;
+    border: 0;
+    background: none;
+    color: var(--cn-accent-hover);
+    font: 600 12px/1 var(--cn-font);
+    cursor: pointer;
+}
+
+.cn-nc-allread:hover { text-decoration: underline; }
+
+/* Without "mark all read" the close button has to claim the space itself. */
+.cn-nc-head h4 + .cn-nc-close { margin-left: auto; }
+
+.cn-nc-close {
+    display: grid;
+    place-items: center;
+    padding: 3px;
+    border: 0;
+    border-radius: 5px;
+    background: none;
+    color: var(--cn-text-2);
+    cursor: pointer;
+}
+
+.cn-nc-close:hover { background: var(--cn-ground); color: var(--cn-text); }
+.cn-nc-close .cn-icon { width: 12px; height: 12px; }
+
+.cn-nc-chips {
+    display: flex;
+    gap: 6px;
+    padding: 0 14px 10px;
+    border-bottom: 1px solid var(--cn-stroke-soft);
+}
+
+.cn-nc-chip {
+    height: 24px;
+    padding: 0 10px;
+    border: 1px solid var(--cn-stroke);
+    border-radius: 12px;
+    background: none;
+    color: var(--cn-text-2);
+    font: 600 11.5px/1 var(--cn-font);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.cn-nc-chip b { margin-left: 4px; }
+.cn-nc-chip.on { border-color: var(--cn-accent); background: var(--cn-accent-tint); color: var(--cn-accent-hover); }
+
+.cn-nc-body { flex: 1; min-height: 0; overflow-y: auto; padding-bottom: 8px; }
+
+.cn-nc-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px 4px;
+    font: 700 10px/1 var(--cn-font);
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    color: var(--cn-text-2);
+}
+
+.cn-nc-groupn {
+    display: inline-grid;
+    place-items: center;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    background: var(--cn-accent);
+    color: #fff;
+    font: 700 9.5px/1 var(--cn-font);
+    letter-spacing: 0;
+}
+
+.cn-nc-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 30px 1fr auto;
+    gap: 10px;
+    align-items: start;
+    width: 100%;
+    padding: 9px 14px 9px 16px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.cn-nc-row:hover { background: var(--cn-row-hover); }
+.cn-nc-row.unread { background: var(--cn-accent-tint); }
+.cn-nc-row.unread:hover { background: color-mix(in srgb, var(--cn-accent) 13%, transparent); }
+
+.cn-nc-row.unread::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    background: var(--cn-accent);
+}
+
+/* The avatar carries the severity: it is the thing you read before the
+   words, so a decorative glyph there wastes the only pre-attentive slot. */
+.cn-nc-av {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--cn-nc-tone) 12%, transparent);
+    color: var(--cn-nc-tone);
+}
+
+.cn-nc-av .cn-icon { width: 15px; height: 15px; }
+
+.cn-nc-row--success { --cn-nc-tone: var(--cn-accent); }
+.cn-nc-row--error { --cn-nc-tone: var(--cn-danger); }
+.cn-nc-row--warning { --cn-nc-tone: var(--cn-warn); }
+.cn-nc-row--info { --cn-nc-tone: var(--cn-info); }
+
+.cn-nc-copy { display: grid; gap: 2px; min-width: 0; }
+.cn-nc-title { font: 400 13px/1.35 var(--cn-font); color: var(--cn-text); }
+.cn-nc-row.unread .cn-nc-title { font-weight: 600; }
+.cn-nc-msg { font: 400 11.5px/1.35 var(--cn-font); color: var(--cn-text-2); }
+
+.cn-nc-meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 2px;
+    font: 400 11px/1.3 var(--cn-font);
+    color: var(--cn-text-2);
+}
+
+.cn-nc-cat {
+    padding: 1px 6px;
+    border-radius: 8px;
+    background: var(--cn-ground);
+    font: 700 9.5px/1.5 var(--cn-font);
+    letter-spacing: .4px;
+    text-transform: uppercase;
+}
+
+.cn-nc-act {
+    justify-self: start;
+    margin-top: 3px;
+    padding: 2px 7px;
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--cn-warn) 14%, transparent);
+    color: var(--cn-warn);
+    font: 700 10px/1.4 var(--cn-font);
+}
+
+.cn-nc-side { display: flex; align-items: center; gap: 7px; }
+
+.cn-nc-dot {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--cn-accent);
+    cursor: pointer;
+}
+
+.cn-nc-dot:hover { box-shadow: 0 0 0 3px var(--cn-accent-tint); }
+
+/* A read row keeps its toggle, but only once you are looking at that row. */
+.cn-nc-dot--read { background: none; border: 1.5px solid var(--cn-stroke); opacity: 0; }
+.cn-nc-row:hover .cn-nc-dot--read { opacity: 1; }
+.cn-nc-dot--read:hover { border-color: var(--cn-accent); }
+
+.cn-nc-arch {
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+    background: none;
+    color: var(--cn-text-2);
+    cursor: pointer;
+    opacity: 0;
+}
+
+.cn-nc-row:hover .cn-nc-arch { opacity: 1; }
+.cn-nc-arch:hover { background: var(--cn-ground); color: var(--cn-text); }
+.cn-nc-arch .cn-icon { width: 11px; height: 11px; }
+
+.cn-nc-more {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: 0;
+    border-top: 1px solid var(--cn-stroke-soft);
+    background: none;
+    color: var(--cn-text-2);
+    font: 600 12px/1 var(--cn-font);
+    cursor: pointer;
+}
+
+.cn-nc-more:hover { color: var(--cn-accent-hover); background: var(--cn-row-hover); }
+
+.cn-nc-empty {
+    display: grid;
+    gap: 6px;
+    justify-items: center;
+    padding: 34px 16px;
+    text-align: center;
+    color: var(--cn-text-2);
+    font: 400 12.5px/1.4 var(--cn-font);
+}
+
+.cn-nc-empty strong { font: 600 13px/1.3 var(--cn-font); color: var(--cn-text); }
+
+.cn-nc-empty-mark {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--cn-accent-tint);
+    color: var(--cn-accent-hover);
+}
+
+.cn-nc-empty-mark .cn-icon { width: 17px; height: 17px; }

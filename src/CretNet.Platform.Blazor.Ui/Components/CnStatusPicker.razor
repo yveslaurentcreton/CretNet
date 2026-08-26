@@ -1,0 +1,78 @@
+@typeparam TStatus where TStatus : struct, Enum
+
+@* The status of a thing, shown as what it is and changed where it is read.
+   A dialog for one enum was always a detour: the same pill carries the
+   current value and, when the caller allows it, the reachable ones. *@
+
+<div class="cn-status-picker @Class" @onkeydown="HandlePickerKeyDownAsync">
+    @if (CanChange)
+    {
+        <button @ref="_trigger"
+                type="button"
+                class="cn-status-picker__trigger @ToneClass(CurrentOption?.Tone)"
+                aria-label="@AriaLabel"
+                aria-haspopup="menu"
+                aria-expanded="@(_open ? "true" : "false")"
+                aria-controls="@_menuId"
+                disabled="@Loading"
+                @onclick="ToggleAsync">
+            <span class="cn-status-picker__dot" aria-hidden="true"></span>
+            @if (!string.IsNullOrWhiteSpace(Prefix))
+            {
+                <span class="cn-status-picker__prefix">@Prefix</span>
+            }
+            <strong>@CurrentLabel</strong>
+            <span class="cn-status-picker__chevron" aria-hidden="true"></span>
+        </button>
+
+        @if (_open)
+        {
+            <button type="button" class="cn-status-picker__backdrop" tabindex="-1" aria-label="@CloseLabel" @onclick="CloseAsync"></button>
+            <div id="@_menuId" class="cn-status-picker__menu" role="menu" aria-label="@AriaLabel">
+                <div class="cn-status-picker__menu-head">
+                    <span>@MenuLabel</span>
+                    <small>@CurrentLabel</small>
+                </div>
+                @for (var index = 0; index < _items.Count; index++)
+                {
+                    var item = _items[index];
+                    var currentIndex = index;
+                    var isCurrent = EqualityComparer<TStatus>.Default.Equals(item.Option.Value, Value);
+                    <button @ref="item.Button"
+                            type="button"
+                            class="cn-status-picker__option @(isCurrent ? "is-current" : null)"
+                            role="menuitemradio"
+                            aria-checked="@(isCurrent ? "true" : "false")"
+                            aria-disabled="@(item.Option.Disabled || Loading || isCurrent ? "true" : "false")"
+                            disabled="@item.Option.Disabled"
+                            @onkeydown="args => HandleOptionKeyDownAsync(args, currentIndex)"
+                            @onclick="() => SelectAsync(item.Option)">
+                        <span class="cn-status-picker__option-mark @ToneClass(item.Option.Tone)" aria-hidden="true"></span>
+                        <span class="cn-status-picker__option-text">
+                            <strong>@item.Option.Label</strong>
+                            @if (!string.IsNullOrWhiteSpace(item.Option.Description))
+                            {
+                                <small>@item.Option.Description</small>
+                            }
+                        </span>
+                        @if (isCurrent)
+                        {
+                            <CnIcon Kind="CnIconKind.Checkmark" Class="cn-status-picker__option-check" />
+                        }
+                    </button>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <span class="cn-status-picker__readonly @ToneClass(CurrentOption?.Tone)" aria-label="@AriaLabel">
+            <span class="cn-status-picker__dot" aria-hidden="true"></span>
+            @if (!string.IsNullOrWhiteSpace(Prefix))
+            {
+                <span class="cn-status-picker__prefix">@Prefix</span>
+            }
+            <strong>@CurrentLabel</strong>
+        </span>
+    }
+</div>

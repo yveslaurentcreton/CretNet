@@ -18,5 +18,7 @@
       href: cn-date-fields.md
     - name: Picking an entity
       href: cn-entity-picking.md
+    - name: Changing a status
+      href: cn-status-picker.md
     - name: Toasts and notifications
       href: cn-toasts-and-notifications.md

@@ -4617,3 +4617,154 @@ tr:hover .cn-task-more,
 }
 
 .cn-nc-empty-mark .cn-icon { width: 17px; height: 17px; }
+
+/* ---------- CnStatusPicker ----------
+   A pill that reads as a badge and opens as a menu. The tone drives one
+   custom property, so the dot, the frame, the tint and the value all move
+   together instead of being coloured four times. */
+
+.cn-status-picker { position: relative; display: inline-flex; font-family: var(--cn-font); }
+
+.cn-status-picker__trigger,
+.cn-status-picker__readonly {
+    --status-color: var(--cn-text-2);
+    display: inline-flex;
+    min-height: 34px;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 10px;
+    border: 1px solid color-mix(in srgb, var(--status-color) 38%, var(--cn-stroke-soft));
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--status-color) 9%, var(--cn-card));
+    color: var(--cn-text);
+    font: 12px/1 var(--cn-font);
+    white-space: nowrap;
+}
+
+.cn-status-picker__trigger { cursor: pointer; }
+.cn-status-picker__trigger:hover:not(:disabled) { border-color: var(--status-color); }
+.cn-status-picker__trigger:focus-visible { outline: 2px solid var(--cn-accent); outline-offset: 2px; }
+.cn-status-picker__trigger:disabled { cursor: wait; opacity: .65; }
+.cn-status-picker__readonly { cursor: default; }
+
+.cn-status-picker__trigger.is-accent,
+.cn-status-picker__readonly.is-accent,
+.cn-status-picker__option-mark.is-accent { --status-color: var(--cn-accent); }
+.cn-status-picker__trigger.is-warning,
+.cn-status-picker__readonly.is-warning,
+.cn-status-picker__option-mark.is-warning { --status-color: var(--cn-warn); }
+.cn-status-picker__trigger.is-danger,
+.cn-status-picker__readonly.is-danger,
+.cn-status-picker__option-mark.is-danger { --status-color: var(--cn-danger); }
+
+.cn-status-picker__dot {
+    width: 7px;
+    height: 7px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--status-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--status-color) 13%, transparent);
+}
+
+.cn-status-picker__prefix { color: var(--cn-text-2); }
+.cn-status-picker__trigger strong,
+.cn-status-picker__readonly strong { color: var(--status-color); font-weight: 750; }
+
+.cn-status-picker__chevron {
+    width: 6px;
+    height: 6px;
+    margin: -3px 1px 0 2px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg);
+}
+
+.cn-status-picker__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    border: 0;
+    background: transparent;
+    cursor: default;
+}
+
+.cn-status-picker__menu {
+    position: absolute;
+    top: calc(100% + 7px);
+    right: 0;
+    z-index: 71;
+    display: grid;
+    width: min(300px, calc(100vw - 28px));
+    max-height: min(520px, calc(100dvh - 100px));
+    overflow: auto;
+    padding: 6px;
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: 11px;
+    background: var(--cn-card);
+    box-shadow: var(--cn-shadow), 0 16px 38px rgb(0 0 0 / 16%);
+}
+
+.cn-status-picker__menu-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 8px 9px;
+    color: var(--cn-text-2);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+.cn-status-picker__menu-head small {
+    overflow: hidden;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-overflow: ellipsis;
+    text-transform: none;
+    white-space: nowrap;
+}
+
+.cn-status-picker__option {
+    display: grid;
+    grid-template-columns: 8px minmax(0, 1fr) 16px;
+    align-items: center;
+    gap: 10px;
+    min-height: 38px;
+    padding: 7px 9px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--cn-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.cn-status-picker__option:hover:not(:disabled),
+.cn-status-picker__option:focus-visible { background: var(--cn-ground); outline: none; }
+.cn-status-picker__option.is-current { background: var(--cn-accent-tint); cursor: default; }
+.cn-status-picker__option:disabled { cursor: not-allowed; opacity: .45; }
+
+.cn-status-picker__option-text { display: grid; gap: 2px; min-width: 0; }
+.cn-status-picker__option strong { overflow: hidden; font: 650 12.5px/1.2 var(--cn-font); text-overflow: ellipsis; white-space: nowrap; }
+.cn-status-picker__option small { overflow: hidden; color: var(--cn-text-2); font: 11px/1.25 var(--cn-font); text-overflow: ellipsis; white-space: nowrap; }
+.cn-status-picker__option-check { width: 14px; height: 14px; color: var(--cn-accent); }
+
+.cn-status-picker__option-mark {
+    --status-color: var(--cn-text-2);
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--status-color);
+}
+
+@media (max-width: 480px) {
+    .cn-status-picker,
+    .cn-status-picker__trigger,
+    .cn-status-picker__readonly { width: 100%; }
+    .cn-status-picker__trigger,
+    .cn-status-picker__readonly { justify-content: center; }
+    .cn-status-picker__menu { right: auto; left: 0; }
+}

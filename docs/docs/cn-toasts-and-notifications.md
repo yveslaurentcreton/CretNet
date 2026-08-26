@@ -1,4 +1,4 @@
-# Toasts and notifications
+﻿# Toasts and notifications
 
 Two ways of telling someone something, and they are not interchangeable.
 
@@ -62,12 +62,16 @@ sits near where the pointer already is after a save.
 The colour lives in a 3px rail and the icon, never the whole card. A saved
 record and a failed import must not shout equally loudly.
 
+Information deliberately carries no hue. Every blue is somebody's brand
+accent — WAM's is `#3159a7` — and an informational toast that looks like a
+success is worse than one that looks quiet.
+
 | Severity | Token |
 |---|---|
 | Success | `--cn-accent` |
 | Error | `--cn-danger` |
 | Warning | `--cn-warn` |
-| Information | `--cn-info` |
+| Information | `--cn-text-2` — no hue |
 
 ### One action, at most
 

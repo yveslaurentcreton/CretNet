@@ -30,7 +30,6 @@
 
     --cn-danger: #d13438;
     --cn-warn: #b8860b;
-    --cn-info: #3159a7;
     --cn-lane-phys: #00876f;
     --cn-lane-phys-tint: rgba(0, 135, 111, .10);
     --cn-lane-fin: #3159a7;
@@ -67,7 +66,6 @@
         --cn-shadow: 0 0 2px rgba(0, 0, 0, .4), 0 2px 6px rgba(0, 0, 0, .35);
         --cn-danger: #e4696d;
         --cn-warn: #d6a52a;
-        --cn-info: #7fa1e0;
         --cn-lane-phys: #1aa385;
         --cn-lane-phys-tint: rgba(26, 163, 133, .14);
         --cn-lane-fin: #6b8fd4;
@@ -95,7 +93,6 @@
     --cn-shadow: 0 0 2px rgba(0, 0, 0, .4), 0 2px 6px rgba(0, 0, 0, .35);
     --cn-danger: #e4696d;
     --cn-warn: #d6a52a;
-    --cn-info: #7fa1e0;
     --cn-lane-phys: #1aa385;
     --cn-lane-phys-tint: rgba(26, 163, 133, .14);
     --cn-lane-fin: #6b8fd4;
@@ -4253,7 +4250,10 @@ tr:hover .cn-task-more,
 .cn-toast--success { --cn-toast-tone: var(--cn-accent); }
 .cn-toast--error { --cn-toast-tone: var(--cn-danger); }
 .cn-toast--warning { --cn-toast-tone: var(--cn-warn); }
-.cn-toast--info { --cn-toast-tone: var(--cn-info); }
+/* Information carries no hue on purpose: every blue is somebody's brand
+   accent, and an informational toast that looks like a success is worse than
+   one that looks quiet. */
+.cn-toast--info { --cn-toast-tone: var(--cn-text-2); }
 
 .cn-toast-ico { margin-top: 1px; color: var(--cn-toast-tone); display: grid; place-items: center; }
 .cn-toast-ico .cn-icon { width: 16px; height: 16px; }
@@ -4505,7 +4505,7 @@ tr:hover .cn-task-more,
 .cn-nc-row--success { --cn-nc-tone: var(--cn-accent); }
 .cn-nc-row--error { --cn-nc-tone: var(--cn-danger); }
 .cn-nc-row--warning { --cn-nc-tone: var(--cn-warn); }
-.cn-nc-row--info { --cn-nc-tone: var(--cn-info); }
+.cn-nc-row--info { --cn-nc-tone: var(--cn-text-2); }
 
 .cn-nc-copy { display: grid; gap: 2px; min-width: 0; }
 .cn-nc-title { font: 400 13px/1.35 var(--cn-font); color: var(--cn-text); }

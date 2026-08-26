@@ -1,4 +1,4 @@
-namespace CretNet.Platform.Blazor.Ui.Notifications;
+﻿namespace CretNet.Platform.Blazor.Ui.Notifications;
 
 /// <summary>
 /// Event-driven state behind the bell and the inbox: one filter, one page,
@@ -10,11 +10,17 @@ public sealed class CnNotificationState : IDisposable
 {
     private const int PageSize = 30;
 
-    private readonly ICnNotificationClient _client;
+    private readonly ICnNotificationClient? _client;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly CancellationTokenSource _disposing = new();
 
-    public CnNotificationState(ICnNotificationClient client) => _client = client;
+    /// <param name="client">
+    /// Optional on purpose. A shell that renders the bell before its host has
+    /// a transport should show an empty inbox, not take the render tree with
+    /// it — which is exactly what happened in WAM (BUG-014) when the state
+    /// could not be constructed at first paint.
+    /// </param>
+    public CnNotificationState(ICnNotificationClient? client = null) => _client = client;
 
     public event Action? Changed;
 
@@ -30,6 +36,9 @@ public sealed class CnNotificationState : IDisposable
     /// <summary>Just the counts, for the badge. Cheap enough to poll.</summary>
     public async Task RefreshSummaryAsync(CancellationToken cancellationToken = default)
     {
+        if (_client is null)
+            return;
+
         using var linked = Link(cancellationToken);
         var summary = await _client.GetSummaryAsync(linked.Token);
         UnreadCount = summary.UnreadCount;
@@ -41,6 +50,9 @@ public sealed class CnNotificationState : IDisposable
         CnNotificationFilter? filter = null,
         CancellationToken cancellationToken = default)
     {
+        if (_client is null)
+            return;
+
         await _gate.WaitAsync(cancellationToken);
         try
         {
@@ -77,6 +89,9 @@ public sealed class CnNotificationState : IDisposable
 
     public async Task LoadMoreAsync(CancellationToken cancellationToken = default)
     {
+        if (_client is null)
+            return;
+
         if (NextCursor is null || IsLoadingMore)
             return;
 
@@ -109,6 +124,9 @@ public sealed class CnNotificationState : IDisposable
 
     public async Task SetReadAsync(CnNotificationItem item, bool read, CancellationToken cancellationToken = default)
     {
+        if (_client is null)
+            return;
+
         Apply(item.Id, current => current with { ReadAt = read ? DateTimeOffset.UtcNow : null });
         UnreadCount = Math.Max(0, UnreadCount + (read ? -1 : 1));
         Changed?.Invoke();
@@ -119,6 +137,9 @@ public sealed class CnNotificationState : IDisposable
 
     public async Task ArchiveAsync(CnNotificationItem item, CancellationToken cancellationToken = default)
     {
+        if (_client is null)
+            return;
+
         Items = Items.Where(current => current.Id != item.Id).ToList();
         if (item.ReadAt is null)
             UnreadCount = Math.Max(0, UnreadCount - 1);
@@ -132,6 +153,9 @@ public sealed class CnNotificationState : IDisposable
 
     public async Task MarkAllReadAsync(CancellationToken cancellationToken = default)
     {
+        if (_client is null)
+            return;
+
         var now = DateTimeOffset.UtcNow;
         Items = Items.Select(item => item.ReadAt is null ? item with { ReadAt = now } : item).ToList();
         UnreadCount = 0;

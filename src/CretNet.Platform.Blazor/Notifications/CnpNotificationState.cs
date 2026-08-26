@@ -1,14 +1,20 @@
-namespace CretNet.Platform.Blazor.Notifications;
+﻿namespace CretNet.Platform.Blazor.Notifications;
 
 /// <summary>Scoped event-driven state for the notification bell and inbox.</summary>
 public sealed class CnpNotificationState : IDisposable
 {
     private const int PageSize = 30;
-    private readonly ICnpNotificationClient _client;
+    private readonly ICnpNotificationClient? _client;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly CancellationTokenSource _disposeCancellation = new();
 
-    public CnpNotificationState(ICnpNotificationClient client)
+    /// <param name="client">
+    /// Optional on purpose. A host that renders the bell without registering
+    /// a transport used to take the whole render tree down at first paint
+    /// (WAM BUG-014); an empty inbox is a far better answer to "no backend"
+    /// than a white screen.
+    /// </param>
+    public CnpNotificationState(ICnpNotificationClient? client = null)
     {
         _client = client;
     }
@@ -26,6 +32,9 @@ public sealed class CnpNotificationState : IDisposable
 
     public async Task RefreshSummaryAsync(CancellationToken cancellationToken = default)
     {
+        if (_client is null)
+            return;
+
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken,
             _disposeCancellation.Token);
@@ -39,6 +48,9 @@ public sealed class CnpNotificationState : IDisposable
         CnpNotificationFilter? filter = null,
         CancellationToken cancellationToken = default)
     {
+        if (_client is null)
+            return;
+
         await _gate.WaitAsync(cancellationToken);
         try
         {
@@ -75,6 +87,9 @@ public sealed class CnpNotificationState : IDisposable
 
     public async Task LoadMoreAsync(CancellationToken cancellationToken = default)
     {
+        if (_client is null)
+            return;
+
         if (NextCursor is null || IsLoadingMore)
             return;
 
@@ -106,6 +121,9 @@ public sealed class CnpNotificationState : IDisposable
 
     public async Task SetReadAsync(CnpNotificationItem item, bool read, CancellationToken cancellationToken = default)
     {
+        if (_client is null)
+            return;
+
         await ExecuteMutationAsync(async token =>
         {
             await _client.SetReadAsync(item.Id, read, token);
@@ -118,6 +136,9 @@ public sealed class CnpNotificationState : IDisposable
 
     public async Task ArchiveAsync(CnpNotificationItem item, CancellationToken cancellationToken = default)
     {
+        if (_client is null)
+            return;
+
         await ExecuteMutationAsync(async token =>
         {
             await _client.ArchiveAsync(item.Id, token);
@@ -127,6 +148,9 @@ public sealed class CnpNotificationState : IDisposable
 
     public async Task MarkAllReadAsync(CancellationToken cancellationToken = default)
     {
+        if (_client is null)
+            return;
+
         await ExecuteMutationAsync(async token =>
         {
             await _client.MarkAllReadAsync(token);

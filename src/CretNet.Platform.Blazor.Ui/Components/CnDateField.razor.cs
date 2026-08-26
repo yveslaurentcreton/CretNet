@@ -41,7 +41,7 @@ public partial class CnDateField : IAsyncDisposable
 
     private async Task OnFieldBlurredAsync()
     {
-        _focusDepth--;
+        _focusDepth = Math.Max(0, _focusDepth - 1);
         await Task.Delay(120);
         if (_focusDepth > 0 || !_open)
             return;
@@ -152,5 +152,9 @@ public partial class CnDateField : IAsyncDisposable
         _open = false;
         _committed = null;
         await SetValueAsync(null);
+
+        // Clearing is the start of retyping, so the caret belongs in the field.
+        if (_input is not null)
+            await _input.FocusAsync(false);
     }
 }

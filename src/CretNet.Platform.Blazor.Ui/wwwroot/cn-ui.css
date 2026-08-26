@@ -3783,8 +3783,10 @@ tr:hover .cn-task-more,
 .cn-date-icon { width: 15px; height: 15px; flex: none; color: var(--cn-text-2); cursor: pointer; }
 
 .cn-date-input {
-    /* Exactly the width a full date renders at 13px tabular figures. */
-    width: 67px;
+    /* Sized on the placeholder rather than the value: "dd/mm/yyyy" is 73px of
+       proportional letters where "05/08/2026" is 67px of tabular digits, so
+       the hint is what would get clipped. */
+    width: 74px;
     border: 0;
     outline: none;
     padding: 0;
@@ -3987,3 +3989,109 @@ tr:hover .cn-task-more,
 
 .cn-date-clear:hover { background: var(--cn-row-hover); color: var(--cn-text); }
 .cn-date-clear .cn-icon { width: 13px; height: 13px; }
+
+/* ---------- CnTimeField / CnDateTimeField ----------
+   Sized on the placeholder rather than the value: "hh:mm" is proportional
+   letters where "09:30" is tabular digits, so the hint is what would clip. */
+.cn-time-input { width: 42px; }
+.cn-time-input--seconds { width: 58px; }
+
+/* ---------- CnClockPanel ---------- */
+.cn-clock { padding: 12px 14px 14px; width: 268px; }
+
+.cn-clock-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 2px;
+    margin-bottom: 10px;
+}
+
+.cn-clock-part {
+    border: 0;
+    background: transparent;
+    color: var(--cn-text-2);
+    font: 600 26px/1 var(--cn-font);
+    font-variant-numeric: tabular-nums;
+    padding: 2px 4px;
+    border-radius: var(--cn-radius-s);
+    cursor: pointer;
+}
+
+.cn-clock-part:hover { color: var(--cn-text); }
+.cn-clock-part--active { color: var(--cn-accent); }
+
+.cn-clock-colon {
+    font: 600 26px/1 var(--cn-font);
+    color: var(--cn-text-2);
+}
+
+.cn-clock-dial {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: var(--cn-ground);
+    touch-action: none;
+}
+
+.cn-clock-hand {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: 2px;
+    transform-origin: 0 0;
+    background: var(--cn-accent);
+    pointer-events: none;
+}
+
+.cn-clock-hand::after {
+    content: "";
+    position: absolute;
+    right: -3px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cn-accent);
+    transform: translateY(-50%);
+}
+
+.cn-clock-centre {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    margin: -3.5px 0 0 -3.5px;
+    border-radius: 50%;
+    background: var(--cn-accent);
+    pointer-events: none;
+}
+
+.cn-clock-num {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    margin: -16px 0 0 -16px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--cn-text);
+    font: 500 13px/1 var(--cn-font);
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+}
+
+.cn-clock-num--inner { font-size: 12px; color: var(--cn-text-2); }
+.cn-clock-num--sel { background: var(--cn-accent); color: #fff; font-weight: 700; }
+
+.cn-clock-foot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--cn-stroke-soft);
+}

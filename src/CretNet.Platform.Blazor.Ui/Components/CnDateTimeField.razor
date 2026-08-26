@@ -1,0 +1,100 @@
+@* A moment in time: the date field and the time field side by side in one
+   pill. Typing runs straight through — a finished date moves the caret on to
+   the time by itself, and backspacing out of an empty time carries on in the
+   date. The popover follows the same path: pick a day and it turns into the
+   clock, because the time is the half still missing. *@
+
+<div class="cn-field cn-date @Class" style="@Style">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span class="cn-label">@Label</span>
+    }
+    <div class="cn-date-anchor" @ref="_anchorRef">
+        <div class="cn-date-shell cn-input @(_open ? "cn-date-shell--open" : null) @(Disabled ? "cn-date-shell--disabled" : null)"
+             @onclick="OpenCalendar">
+            <svg class="cn-date-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <rect x="2.5" y="3.5" width="11" height="10" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4" />
+                <path d="M2.5 6.5h11M5.5 2.2v2.4M10.5 2.2v2.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+            </svg>
+            <CnDateInput @ref="_dateInput"
+                         Value="DatePart"
+                         ValueChanged="OnDateChangedAsync"
+                         Placeholder="@DateFormatHint"
+                         AriaLabel="@DateLabel"
+                         ReadOnly="ReadOnly"
+                         Disabled="Disabled"
+                         OnTyping="OnDateTypingAsync"
+                         OnFilled="OnDateFilledAsync"
+                         OnFocused="OnDateFocused"
+                         OnBlurred="OnFieldBlurredAsync"
+                         OnEnter="FocusTimeAsync"
+                         OnEscape="RevertAsync" />
+            <CnTimeInput @ref="_timeInput"
+                         Value="TimePart"
+                         ValueChanged="OnTimeChangedAsync"
+                         Seconds="Seconds"
+                         AriaLabel="@TimeLabel"
+                         ReadOnly="ReadOnly"
+                         Disabled="Disabled"
+                         OnFocused="OnTimeFocused"
+                         OnBlurred="OnFieldBlurredAsync"
+                         OnEnter="Close"
+                         OnEscape="RevertAsync"
+                         OnBackspaceAtStart="FocusDateAsync" />
+            @if (Value is not null && !ReadOnly && !Disabled)
+            {
+                <button type="button" class="cn-date-clear" title="@ClearLabel" aria-label="@ClearLabel"
+                        @onmousedown:preventDefault @onclick="ClearAsync" @onclick:stopPropagation>
+                    <CnIcon Kind="CnIconKind.Dismiss" />
+                </button>
+            }
+        </div>
+
+        @if (_open && !ReadOnly && !Disabled)
+        {
+            <div class="cn-date-pop" role="dialog" @ref="_popRef" @onmousedown:preventDefault aria-label="@Label">
+                @if (_showClock)
+                {
+                    <CnClockPanel @ref="_clock"
+                                  Value="TimePart ?? DefaultTime"
+                                  ValueChanged="OnDialledAsync"
+                                  Seconds="Seconds"
+                                  OnDone="OnDialDoneAsync"
+                                  HourHint="@HourHint"
+                                  MinuteHint="@MinuteHint"
+                                  SecondHint="@SecondHint">
+                        <FooterActions>
+                            <button type="button" class="cn-cal-action" @onclick="BackToCalendar">◂ @DateLabel</button>
+                        </FooterActions>
+                    </CnClockPanel>
+                }
+                else
+                {
+                    <CnCalendarPanel @ref="_calendar"
+                                     From="DatePart"
+                                     To="DatePart"
+                                     MonthCount="1"
+                                     MinDate="MinDate"
+                                     MaxDate="MaxDate"
+                                     OnPick="PickDateAsync"
+                                     PreviousLabel="@PreviousMonthLabel"
+                                     NextLabel="@NextMonthLabel">
+                        <Readout>
+                            @if (Value is { } value)
+                            {
+                                <b>@Formatted(value)</b>
+                            }
+                            else
+                            {
+                                <span class="cn-cal-hint">@PickHint</span>
+                            }
+                        </Readout>
+                        <FooterActions>
+                            <button type="button" class="cn-cal-action" @onclick="NowAsync">@NowLabel</button>
+                        </FooterActions>
+                    </CnCalendarPanel>
+                }
+            </div>
+        }
+    </div>
+</div>

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace CretNet.Platform.Blazor.Ui.Components;
@@ -33,10 +33,11 @@ public partial class CnDateField : IAsyncDisposable
     // apart without needing relatedTarget, which Blazor does not surface.
     private int _focusDepth;
 
-    private void OnFieldFocused()
+    private void OnFieldFocused(bool programmatic)
     {
         _focusDepth++;
-        Open();
+        if (!programmatic)
+            Open();
     }
 
     private async Task OnFieldBlurredAsync()

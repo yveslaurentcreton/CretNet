@@ -1,9 +1,9 @@
 # Cn date fields
 
-`CnDateField` and `CnDateRangeField` are the two ways a Cn screen asks for a
-date. They are the same control: a range is simply the single field twice
-inside one pill, with a calendar that paints the band between them. One
-implementation, two shapes — so the typing rules, the keyboard behaviour and
+Four ways a Cn screen asks about time, all built from the same parts: one
+masked input, one calendar, one clock. A range is the date field twice in one
+pill; a date-and-time is the date field beside the time field. One
+implementation, four shapes — so the typing rules, the keyboard behaviour and
 the visual language cannot drift apart.
 
 ```razor
@@ -12,6 +12,12 @@ the visual language cannot drift apart.
 
 @* a period *@
 <CnDateRangeField @bind-From="From" @bind-To="To" Presets="Presets" />
+
+@* a time of day, optionally to the second *@
+<CnTimeField Label="Start" @bind-Value="Start" Seconds />
+
+@* a moment: date and time in one pill *@
+<CnDateTimeField Label="Start" @bind-Value="Start" Seconds />
 ```
 
 ## Why not the native date input
@@ -104,6 +110,47 @@ The popover keeps exactly the same size at every level, so nothing jumps under
 your cursor. Reopening always starts at the days again — a zoom level is a way
 to navigate, not a state worth remembering.
 
+## Times and moments
+
+`CnTimeField` follows the same rules with two segments instead of three, plus
+one that belongs to a clock: **a first digit above 2 cannot start a two-digit
+hour**, so it is the whole hour and the next digit already belongs to the
+minutes. That is what makes `930` read as half past nine.
+
+| You type | You get | Why |
+| :--- | :--- | :--- |
+| `9` | 09:00 | an hour on its own → the top of it |
+| `930` | 09:30 | 9 cannot start a two-digit hour |
+| `1345` | 13:45 | plain hh:mm |
+| `2570` | 23:59 | pulled back to the nearest time that exists |
+| `045` | 04:05 | |
+
+`Seconds` turns the field into hh:mm:ss — mask, completion and the dial all
+follow the flag. The rules live in `CnTimeMask`, covered by `CnTimeMaskTests`.
+
+### The clock dial
+
+The phone idiom: hours on a face with 12 at the top, the inner ring carrying
+00 and 13–23 so a whole day fits without an am/pm switch, then minutes and —
+when asked for — seconds with 00 at the top and 30 at the bottom. Tapping or
+dragging anywhere on the face counts: the angle is the value, the numbers are
+only there to read it by. Each part hands over to the next by itself.
+
+The dial's centre is read once when the popover opens and the angles are
+computed in C#; asking the browser for the rect on every pointer move would
+mean an interop call per pixel of drag.
+
+### CnDateTimeField
+
+Date and time side by side in one pill. Typing runs straight through: a
+finished date moves the caret to the time and turns the popover into the
+clock, and backspacing out of an empty time carries on in the date. Picking a
+day does the same — the time is the half still missing, so the calendar hands
+over rather than closing on a half-finished value.
+
+The value is a single `DateTime?`. A date without a time is held internally
+but not published: half a moment is not a moment.
+
 ## Closing and clearing
 
 The calendar closes when focus leaves the control — clicking elsewhere, or
@@ -188,10 +235,22 @@ in `CnDateMask`.
 | `CnCalendarPanel` | `Components/CnCalendarPanel.razor` | the three zoom levels and the band |
 | `CnDateField` | `Components/CnDateField.razor` | one date: input + calendar |
 | `CnDateRangeField` | `Components/CnDateRangeField.razor` | two inputs in one pill + calendar + presets |
+| `CnTimeMask` | `Components/CnTimeMask.cs` | the time rules, as pure functions |
+| `CnTimeInput` | `Components/CnTimeInput.razor` | one masked time input, no chrome |
+| `CnClockPanel` | `Components/CnClockPanel.razor` | the dial: hours, minutes, seconds |
+| `CnTimeField` | `Components/CnTimeField.razor` | one time: input + dial |
+| `CnDateTimeField` | `Components/CnDateTimeField.razor` | a moment: date + time, calendar handing over to the dial |
 | `CnDateInput.razor.js` | same folder | writes the masked text and puts the caret back; re-exports the popover placement from `CnPicker.razor.js` |
 
-The JavaScript does two things Blazor cannot: set a caret position, and select
-a field's text. Every rule about what the text should *be* stays in C#.
+The JavaScript does three things Blazor cannot: set a caret position, select a
+field's text, and read an element's position on screen. Every rule about what
+the text should *be* stays in C#.
+
+One trap worth knowing: **never wrap these fields in a `<label>` element**.
+A click anywhere inside a label focuses its form control, so clicking the
+calendar or the dial would look to the field like the user clicking into it.
+Use a `<div>` with a `<span class="cn-label">`, which is what the components
+render themselves.
 
 ## Styling
 

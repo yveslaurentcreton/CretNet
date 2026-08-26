@@ -1,0 +1,44 @@
+@using Microsoft.AspNetCore.Components.Web
+
+@* The phone idiom: hours on a face with 12 at the top — the inner ring
+   carries 00 and 13–23, so a whole day fits without an am/pm switch — then
+   minutes and, when asked for, seconds with 00 at the top and 30 at the
+   bottom. Tapping or dragging anywhere on the face counts: the angle is the
+   value, the numbers are only there to read it by. *@
+
+<div class="cn-clock">
+    <div class="cn-clock-head">
+        @foreach (var part in Parts)
+        {
+            var current = part;
+            @if (current != Parts[0])
+            {
+                <span class="cn-clock-colon">:</span>
+            }
+            <button type="button"
+                    class="cn-clock-part @(_step == current ? "cn-clock-part--active" : null)"
+                    @onclick="() => _step = current">@Display(current)</button>
+        }
+    </div>
+
+    <div class="cn-clock-dial" @ref="_dialRef"
+         @onpointerdown="OnPointerDownAsync"
+         @onpointermove="OnPointerMoveAsync"
+         @onpointerup="OnPointerUpAsync">
+        <span class="cn-clock-hand" style="width:@(HandRadius)px; transform: rotate(@(HandAngle)deg);"></span>
+        <span class="cn-clock-centre"></span>
+
+        @foreach (var mark in Marks)
+        {
+            var current = mark;
+            <span class="cn-clock-num @(current.Inner ? "cn-clock-num--inner" : null) @(current.Value == Current ? "cn-clock-num--sel" : null)"
+                  style="left:@(Left(current))px; top:@(Top(current))px;">@current.Label</span>
+        }
+    </div>
+
+    <div class="cn-clock-foot">
+        <span class="cn-cal-hint">@StepHint</span>
+        <span class="cn-cal-foot-spacer"></span>
+        @FooterActions
+    </div>
+</div>

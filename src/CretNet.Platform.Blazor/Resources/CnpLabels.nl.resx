@@ -237,4 +237,22 @@
     <data name="UnlinkEntity" xml:space="preserve">
         <value>{Entity} loskoppelen</value>
     </data>
+  <data name="SelectEntity" xml:space="preserve">
+    <value>{Entity} selecteren…</value>
+  </data>
+  <data name="SearchEntity" xml:space="preserve">
+    <value>{Entity} zoeken…</value>
+  </data>
+  <data name="NewEntity" xml:space="preserve">
+    <value>Nieuwe {Entity.ToLower}…</value>
+  </data>
+  <data name="NothingFound" xml:space="preserve">
+    <value>Niets gevonden</value>
+  </data>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>Vorige pagina</value>
+  </data>
+  <data name="NextPage" xml:space="preserve">
+    <value>Volgende pagina</value>
+  </data>
 </root>

@@ -1,4 +1,4 @@
-- name: Introduction
+﻿- name: Introduction
   href: introduction.md
 - name: Getting Started
   href: getting-started.md
@@ -16,3 +16,5 @@
   items:
     - name: Date fields
       href: cn-date-fields.md
+    - name: Picking an entity
+      href: cn-entity-picking.md

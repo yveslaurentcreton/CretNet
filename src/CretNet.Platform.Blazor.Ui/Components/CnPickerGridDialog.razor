@@ -1,0 +1,29 @@
+@typeparam TRow
+@using CretNet.Platform.Blazor.Ui.Dialogs
+
+@* The advanced-search half of CnPicker: a real CnDataGrid — server search,
+   sortable columns, paging — inside a dialog. Generic over the row type, so
+   an entity hands in its own Provider and its own column declarations and
+   gets a picker dialog for free. Clicking a row closes the dialog with it.
+
+   Hosts open it through CnDialogService.ShowAsync<CnPickerGridDialog<TRow>,
+   TRow>(...); CnPicker's AdvancedSearch callback is where the returned row
+   becomes the selection. *@
+
+<div class="cn-dialog-body cn-picker-griddialog">
+    <CnDataGrid TItem="TRow"
+                Provider="Provider"
+                OnRowClick="OnRowClicked"
+                SearchPlaceholder="@SearchPlaceholder"
+                PreviousPageTitle="@PreviousPageTitle"
+                NextPageTitle="@NextPageTitle"
+                EmptyText="@EmptyText"
+                PageSize="PageSize">
+        <ChildContent>
+            @Columns
+        </ChildContent>
+        <FilterContent>
+            @FilterContent
+        </FilterContent>
+    </CnDataGrid>
+</div>

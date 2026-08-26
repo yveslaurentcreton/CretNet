@@ -234,4 +234,22 @@
     <data name="UnlinkEntity" xml:space="preserve">
         <value>Unlink {Entity.ToLower}</value>
     </data>
+  <data name="SelectEntity" xml:space="preserve">
+    <value>Select {Entity.ToLower}…</value>
+  </data>
+  <data name="SearchEntity" xml:space="preserve">
+    <value>Search {Entity.ToLower}…</value>
+  </data>
+  <data name="NewEntity" xml:space="preserve">
+    <value>New {Entity.ToLower}…</value>
+  </data>
+  <data name="NothingFound" xml:space="preserve">
+    <value>Nothing found</value>
+  </data>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>Previous page</value>
+  </data>
+  <data name="NextPage" xml:space="preserve">
+    <value>Next page</value>
+  </data>
 </root>

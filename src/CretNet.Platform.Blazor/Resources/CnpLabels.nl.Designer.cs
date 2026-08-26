@@ -715,5 +715,59 @@ namespace CretNet.Platform.Blazor.Resources {
                 return ResourceManager.GetString("Yes", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {Entity} selecteren….
+        /// </summary>
+        public static string SelectEntity {
+            get {
+                return ResourceManager.GetString("SelectEntity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {Entity} zoeken….
+        /// </summary>
+        public static string SearchEntity {
+            get {
+                return ResourceManager.GetString("SearchEntity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nieuwe {Entity.ToLower}….
+        /// </summary>
+        public static string NewEntity {
+            get {
+                return ResourceManager.GetString("NewEntity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Niets gevonden.
+        /// </summary>
+        public static string NothingFound {
+            get {
+                return ResourceManager.GetString("NothingFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Vorige pagina.
+        /// </summary>
+        public static string PreviousPage {
+            get {
+                return ResourceManager.GetString("PreviousPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Volgende pagina.
+        /// </summary>
+        public static string NextPage {
+            get {
+                return ResourceManager.GetString("NextPage", resourceCulture);
+            }
+        }
     }
 }

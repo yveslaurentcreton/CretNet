@@ -1,48 +1,48 @@
 @using System.Globalization
 @* A row per span over a shared date axis, with up to two figure columns.
-   Styled by .cn-tl in cn-ui.css. *@
+   Styled by .cn-gantt in cn-ui.css. *@
 
-<div class="cn-tl @(ShowSecondValue ? null : "cn-tl--novalue2") @Class">
-    <div class="cn-tl-h">@LabelHeader</div>
-    <div class="cn-tl-h">
-        <div class="cn-tl-axis">
+<div class="cn-gantt @(ShowSecondValue ? null : "cn-gantt--novalue2") @Class">
+    <div class="cn-gantt-h">@LabelHeader</div>
+    <div class="cn-gantt-h">
+        <div class="cn-gantt-axis">
             @foreach (var tick in Ticks)
             {
-                <span class="cn-tl-mo" style="left: @Css(tick.Percentage)%">@tick.Label</span>
+                <span class="cn-gantt-mo" style="left: @Css(tick.Percentage)%">@tick.Label</span>
             }
         </div>
     </div>
-    <div class="cn-tl-h cn-tl-h--r">@ValueHeader</div>
+    <div class="cn-gantt-h cn-gantt-h--r">@ValueHeader</div>
     @if (ShowSecondValue)
     {
-        <div class="cn-tl-h cn-tl-h--r">@SecondValueHeader</div>
+        <div class="cn-gantt-h cn-gantt-h--r">@SecondValueHeader</div>
     }
 
     @foreach (var row in Rows)
     {
-        <div class="cn-tl-name @ToneClass(row.Tone)">
+        <div class="cn-gantt-name @ToneClass(row.Tone)">
             <span>@row.Label</span>
             @if (!string.IsNullOrWhiteSpace(row.Note))
             {
-                <span class="cn-tl-note">@row.Note</span>
+                <span class="cn-gantt-note">@row.Note</span>
             }
         </div>
 
-        <div class="cn-tl-track">
+        <div class="cn-gantt-track">
             @if (Span(row) is { } span)
             {
-                <span class="cn-tl-bar @ToneClass(row.Tone)"
+                <span class="cn-gantt-bar @ToneClass(row.Tone)"
                       style="left: @Css(span.Left)%; width: @Css(span.Width)%">
                     <i style="width: @Css(Math.Clamp(row.Fill, 0d, 1d) * 100d)%"></i>
                 </span>
             }
             @if (TodayPercentage is { } today)
             {
-                <span class="cn-tl-today" style="left: @Css(today)%"></span>
+                <span class="cn-gantt-today" style="left: @Css(today)%"></span>
             }
         </div>
 
-        <div class="cn-tl-n @ToneClass(row.ValueTone)">
+        <div class="cn-gantt-n @ToneClass(row.ValueTone)">
             <span>@(row.Value ?? EmptyText)</span>
             @if (!string.IsNullOrWhiteSpace(row.ValueNote))
             {
@@ -52,7 +52,7 @@
 
         @if (ShowSecondValue)
         {
-            <div class="cn-tl-n">
+            <div class="cn-gantt-n">
                 <span>@(row.SecondValue ?? EmptyText)</span>
                 @if (!string.IsNullOrWhiteSpace(row.SecondValueNote))
                 {

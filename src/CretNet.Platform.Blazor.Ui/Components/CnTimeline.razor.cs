@@ -121,9 +121,9 @@ public partial class CnTimeline
 
     private static string? ToneClass(CnTimelineTone tone) => tone switch
     {
-        CnTimelineTone.Over => "cn-tl--over",
-        CnTimelineTone.Pending => "cn-tl--pending",
-        CnTimelineTone.Muted => "cn-tl--muted",
+        CnTimelineTone.Over => "cn-gantt--over",
+        CnTimelineTone.Pending => "cn-gantt--pending",
+        CnTimelineTone.Muted => "cn-gantt--muted",
         _ => null,
     };
 

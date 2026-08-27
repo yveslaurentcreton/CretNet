@@ -1,11 +1,14 @@
-// Theme + accent runtime for the Cn design system (lifted from HCMT S-083).
+﻿// Theme + accent runtime for the Cn design system (lifted from HCMT S-083).
 // Hosts inline a minimal copy of this logic in index.html so the first paint
 // already has the right theme; this file is the API CnThemeService drives
 // afterwards.
 window.cnTheme = (function () {
     const THEME_KEY = 'cn-theme';    // 'light' | 'dark' | 'system'
     const ACCENT_KEY = 'cn-accent';  // '#rrggbb'
-    const DEFAULT_ACCENT = '#17af3d';
+    // Only a last resort for a malformed value. What a host opens in when
+    // nothing is stored is the host's business, and arrives as an argument to
+    // load() — assuming it here is how a blue app opened green.
+    const FALLBACK_ACCENT = '#17af3d';
 
     function shade(hex, factor) {
         const n = parseInt(hex.slice(1), 16);
@@ -16,7 +19,7 @@ window.cnTheme = (function () {
     }
 
     function applyAccent(accent) {
-        if (!/^#[0-9a-fA-F]{6}$/.test(accent)) accent = DEFAULT_ACCENT;
+        if (!/^#[0-9a-fA-F]{6}$/.test(accent)) accent = FALLBACK_ACCENT;
         const root = document.documentElement.style;
         root.setProperty('--cn-accent', accent);
         root.setProperty('--cn-accent-hover', shade(accent, 0.78));
@@ -39,9 +42,9 @@ window.cnTheme = (function () {
     }
 
     return {
-        load: function () {
+        load: function (defaultAccent) {
             const mode = localStorage.getItem(THEME_KEY) || 'system';
-            const accent = localStorage.getItem(ACCENT_KEY) || DEFAULT_ACCENT;
+            const accent = localStorage.getItem(ACCENT_KEY) || defaultAccent || FALLBACK_ACCENT;
             applyMode(mode);
             applyAccent(accent);
             return { mode: mode, accent: accent };

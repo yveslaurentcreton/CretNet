@@ -47,7 +47,9 @@ public class CnThemeService
 
     public async Task InitializeAsync()
     {
-        var stored = await _jsRuntime.InvokeAsync<StoredTheme>("cnTheme.load");
+        // The script paints before this returns, so it needs the host's accent
+        // rather than falling back to one of its own.
+        var stored = await _jsRuntime.InvokeAsync<StoredTheme>("cnTheme.load", _fallbackAccent);
         Mode = Enum.TryParse<CnThemeMode>(stored.Mode, true, out var mode) ? mode : CnThemeMode.System;
         Accent = stored.Accent ?? _fallbackAccent;
         Changed?.Invoke();

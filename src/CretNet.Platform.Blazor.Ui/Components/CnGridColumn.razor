@@ -1,4 +1,5 @@
 ﻿@typeparam TItem
+@implements IDisposable
 
 @* Renders nothing itself: the column registers with the owning CnDataGrid,
    which renders header and cells. *@
@@ -24,4 +25,7 @@
     [Parameter] public int Order { get; set; }
 
     protected override void OnInitialized() => Grid.AddColumn(this);
+
+    /// <summary>A conditional column has to leave when its condition does.</summary>
+    public void Dispose() => Grid.RemoveColumn(this);
 }

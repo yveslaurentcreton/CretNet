@@ -1,4 +1,5 @@
 ﻿@typeparam TItem
+@implements IDisposable
 
 @* Own data grid (ADR-011, S-080): a light render layer over a server-side
    provider callback — search (debounced), allow-listed sort, paging. Columns
@@ -142,6 +143,31 @@
     {
         _columns.Add(column);
         StateHasChanged();
+    }
+
+    /// <summary>
+    /// A column whose <c>@if</c> turned false is disposed by the renderer,
+    /// and without this it stayed in the header forever — then registered a
+    /// second time when the condition came back, so toggling twice left two
+    /// of the same column standing.
+    /// </summary>
+    internal void RemoveColumn(CnGridColumn<TItem> column)
+    {
+        if (!_columns.Remove(column) || _disposed)
+            return;
+
+        StateHasChanged();
+    }
+
+    private bool _disposed;
+
+    public void Dispose()
+    {
+        // Columns dispose alongside the grid; from that moment their removals
+        // must not ask a component that is going away to render again.
+        _disposed = true;
+        _searchDebounce?.Cancel();
+        _searchDebounce?.Dispose();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

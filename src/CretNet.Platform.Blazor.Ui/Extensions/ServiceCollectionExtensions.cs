@@ -13,9 +13,14 @@ public static class ServiceCollectionExtensions
     /// (theme service, dialog service, …). The call site is stable from day
     /// one so consumers wire it once and never chase this signature.
     /// </remarks>
-    public static IServiceCollection AddCretNetBlazorUi(this IServiceCollection services)
+    /// <param name="accent">
+    /// This host's accent, used until the user picks one. Omit it and every
+    /// first visit opens in HCMT's brand green, which is only right for HCMT.
+    /// </param>
+    public static IServiceCollection AddCretNetBlazorUi(this IServiceCollection services, string? accent = null)
     {
-        services.AddScoped<Theme.CnThemeService>();
+        services.AddScoped(provider => new Theme.CnThemeService(
+            provider.GetRequiredService<Microsoft.JSInterop.IJSRuntime>(), accent));
         services.AddScoped<Dialogs.CnDialogService>();
         services.AddScoped<Toasts.CnToastService>();
 

@@ -1,4 +1,4 @@
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 
 namespace CretNet.Platform.Blazor.Ui.Theme;
 
@@ -19,17 +19,29 @@ public enum CnThemeMode
 /// </summary>
 public class CnThemeService
 {
+    /// <summary>
+    /// The accent a host gets when it does not name one. HCMT's brand green,
+    /// because that is where this component came from — every other host is
+    /// expected to say what its own accent is.
+    /// </summary>
     public const string DefaultAccent = "#17af3d";
 
     private readonly IJSRuntime _jsRuntime;
+    private readonly string _fallbackAccent;
 
-    public CnThemeService(IJSRuntime jsRuntime)
+    /// <param name="fallbackAccent">
+    /// This host's accent, used until the user picks one. Without it a host
+    /// with a blue brand would open green on every first visit.
+    /// </param>
+    public CnThemeService(IJSRuntime jsRuntime, string? fallbackAccent = null)
     {
         _jsRuntime = jsRuntime;
+        _fallbackAccent = string.IsNullOrWhiteSpace(fallbackAccent) ? DefaultAccent : fallbackAccent;
+        Accent = _fallbackAccent;
     }
 
     public CnThemeMode Mode { get; private set; } = CnThemeMode.System;
-    public string Accent { get; private set; } = DefaultAccent;
+    public string Accent { get; private set; }
 
     public event Action? Changed;
 
@@ -37,7 +49,7 @@ public class CnThemeService
     {
         var stored = await _jsRuntime.InvokeAsync<StoredTheme>("cnTheme.load");
         Mode = Enum.TryParse<CnThemeMode>(stored.Mode, true, out var mode) ? mode : CnThemeMode.System;
-        Accent = stored.Accent ?? DefaultAccent;
+        Accent = stored.Accent ?? _fallbackAccent;
         Changed?.Invoke();
     }
 

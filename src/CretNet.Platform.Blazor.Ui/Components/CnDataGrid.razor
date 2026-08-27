@@ -1,4 +1,4 @@
-@typeparam TItem
+﻿@typeparam TItem
 
 @* Own data grid (ADR-011, S-080): a light render layer over a server-side
    provider callback — search (debounced), allow-listed sort, paging. Columns
@@ -23,7 +23,7 @@
         <table class="cn-grid-table">
             <thead>
                 <tr>
-                    @foreach (var column in _columns)
+                    @foreach (var column in OrderedColumns)
                     {
                         var current = column;
                         <th class="@AlignClass(current)" style="@(current.Width is null ? null : $"width: {current.Width}")">
@@ -56,7 +56,7 @@
                     var row = item;
                     <tr class="@(OnRowClick.HasDelegate ? "cn-grid-row--clickable" : null) @RowClass?.Invoke(row)"
                         @onclick="() => OnRowClick.InvokeAsync(row)">
-                        @foreach (var column in _columns)
+                        @foreach (var column in OrderedColumns)
                         {
                             <td class="@AlignClass(column)">
                                 @if (column.CellTemplate is not null)
@@ -116,6 +116,16 @@
     [Parameter] public string? Class { get; set; }
 
     private readonly List<CnGridColumn<TItem>> _columns = [];
+
+    /// <summary>
+    /// Registration order is not markup order once a grid mixes its own
+    /// columns with a child component's: the child cannot register its
+    /// columns until it renders, a pass after the grid declared its own, so
+    /// a trailing action column would jump to the front. Order fixes that
+    /// where it matters; OrderBy is stable, so everything else keeps the
+    /// order it registered in.
+    /// </summary>
+    private IEnumerable<CnGridColumn<TItem>> OrderedColumns => _columns.OrderBy(column => column.Order);
     private List<TItem> _items = [];
     private string? _search;
     private string? _sortField;

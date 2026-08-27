@@ -1,4 +1,4 @@
-@typeparam TItem
+﻿@typeparam TItem
 
 @* Renders nothing itself: the column registers with the owning CnDataGrid,
    which renders header and cells. *@
@@ -13,6 +13,15 @@
     [Parameter] public RenderFragment<TItem>? CellTemplate { get; set; }
     [Parameter] public CnGridAlign Align { get; set; } = CnGridAlign.Left;
     [Parameter] public string? Width { get; set; }
+
+    /// <summary>
+    /// Where this column sits, lower first. Only needed when a grid mixes
+    /// columns it declares itself with columns that come from a child
+    /// component: the child's columns cannot register until it renders, which
+    /// is a pass later, so markup order stops being registration order.
+    /// Within one Order value the markup order still decides.
+    /// </summary>
+    [Parameter] public int Order { get; set; }
 
     protected override void OnInitialized() => Grid.AddColumn(this);
 }

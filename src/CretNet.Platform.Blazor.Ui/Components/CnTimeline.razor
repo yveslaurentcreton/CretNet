@@ -1,0 +1,64 @@
+@using System.Globalization
+@* A row per span over a shared date axis, with up to two figure columns.
+   Styled by .cn-tl in cn-ui.css. *@
+
+<div class="cn-tl @(ShowSecondValue ? null : "cn-tl--novalue2") @Class">
+    <div class="cn-tl-h">@LabelHeader</div>
+    <div class="cn-tl-h">
+        <div class="cn-tl-axis">
+            @foreach (var tick in Ticks)
+            {
+                <span class="cn-tl-mo" style="left: @Css(tick.Percentage)%">@tick.Label</span>
+            }
+        </div>
+    </div>
+    <div class="cn-tl-h cn-tl-h--r">@ValueHeader</div>
+    @if (ShowSecondValue)
+    {
+        <div class="cn-tl-h cn-tl-h--r">@SecondValueHeader</div>
+    }
+
+    @foreach (var row in Rows)
+    {
+        <div class="cn-tl-name @ToneClass(row.Tone)">
+            <span>@row.Label</span>
+            @if (!string.IsNullOrWhiteSpace(row.Note))
+            {
+                <span class="cn-tl-note">@row.Note</span>
+            }
+        </div>
+
+        <div class="cn-tl-track">
+            @if (Span(row) is { } span)
+            {
+                <span class="cn-tl-bar @ToneClass(row.Tone)"
+                      style="left: @Css(span.Left)%; width: @Css(span.Width)%">
+                    <i style="width: @Css(Math.Clamp(row.Fill, 0d, 1d) * 100d)%"></i>
+                </span>
+            }
+            @if (TodayPercentage is { } today)
+            {
+                <span class="cn-tl-today" style="left: @Css(today)%"></span>
+            }
+        </div>
+
+        <div class="cn-tl-n @ToneClass(row.ValueTone)">
+            <span>@(row.Value ?? EmptyText)</span>
+            @if (!string.IsNullOrWhiteSpace(row.ValueNote))
+            {
+                <small>@row.ValueNote</small>
+            }
+        </div>
+
+        @if (ShowSecondValue)
+        {
+            <div class="cn-tl-n">
+                <span>@(row.SecondValue ?? EmptyText)</span>
+                @if (!string.IsNullOrWhiteSpace(row.SecondValueNote))
+                {
+                    <small>@row.SecondValueNote</small>
+                }
+            </div>
+        }
+    }
+</div>

@@ -1,0 +1,19 @@
+@using System.Globalization
+@* Consumption against a budget: how much is used, and how far past it.
+   Styled by .cn-bar in cn-ui.css. *@
+
+<div class="cn-bar @SizeClass @Class"
+     style="--cn-bar-pct: @Css(Percentage)"
+     role="progressbar"
+     aria-valuenow="@((int)Math.Round(Percentage))"
+     aria-valuemin="0"
+     aria-valuemax="100"
+     aria-label="@AriaLabel"
+     title="@Title">
+    <span class="cn-bar-fill"></span>
+    @if (Percentage > 100d)
+    {
+        <span class="cn-bar-over"></span>
+    }
+    <span class="cn-bar-mark"></span>
+</div>

@@ -255,7 +255,9 @@ export function attachBoard(root, dotNetRef, columnSelector, itemSelector) {
         state.drag = {
             item, column, rect,
             placeholder: null,
-            target: null,
+            cache: null,
+            lastColumn: null,
+            lastIndex: -1,
             startX: event.clientX,
             startY: event.clientY,
             pointerId: event.pointerId,
@@ -298,31 +300,65 @@ export function attachBoard(root, dotNetRef, columnSelector, itemSelector) {
         drag.item.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(1.5deg)';
 
         // The column under the pointer: elementFromPoint sees through the
-        // lifted card because it takes no pointer events.
+        // lifted card because it takes no pointer events. Over the gap
+        // between columns nothing changes.
         const under = document.elementFromPoint(event.clientX, event.clientY);
         const column = under ? under.closest(columnSelector) : null;
         if (!column || !root.contains(column))
             return;
 
-        const cards = cardsOf(column).filter(el => el !== drag.item);
-        let index = cards.findIndex(el => {
-            const r = el.getBoundingClientRect();
-            return event.clientY < r.top + r.height / 2;
-        });
+        // Card midpoints are measured once per column visit and again after
+        // the placeholder moved — not on every pointer event. A column can
+        // hold a couple of hundred cards, and measuring them all sixty times
+        // a second is the hiccup that showed on crossing into a column.
+        if (!drag.cache || drag.cache.column !== column) {
+            drag.cache = measure(column, drag.item);
+            columns().forEach(c => c.classList.toggle('cn-sort-over', c === column));
+        }
+
+        const cards = drag.cache.cards;
+        let index = cards.findIndex(c => event.clientY < c.mid);
         if (index < 0)
             index = cards.length;
-        const before = cards[index] ?? null;
-
-        const already = drag.placeholder.parentElement === column
-            && (before ? drag.placeholder.nextElementSibling === before : cardsOf(column).every(el => el.compareDocumentPosition(drag.placeholder) & Node.DOCUMENT_POSITION_FOLLOWING));
-        columns().forEach(c => c.classList.toggle('cn-sort-over', c === column));
-        if (already)
+        if (column === drag.lastColumn && index === drag.lastIndex)
             return;
 
-        const resting = columns().flatMap(cardsOf).filter(el => el !== drag.item);
-        const snap = snapshot(resting);
-        column.insertBefore(drag.placeholder, before);
-        glide(snap, resting);
+        // Only the cards that actually shift glide: those from the
+        // placeholder's old spot onward and from its new spot onward.
+        const from = drag.placeholder.parentElement;
+        const moving = [];
+        if (from && from !== column)
+            moving.push(...cardsFrom(from, drag.placeholder, drag.item));
+        moving.push(...cards.slice(Math.min(index, drag.lastColumn === column ? drag.lastIndex : index)).map(c => c.el));
+
+        const snap = snapshot(moving);
+        column.insertBefore(drag.placeholder, cards[index]?.el ?? null);
+        glide(snap, moving);
+
+        drag.lastColumn = column;
+        drag.lastIndex = index;
+        drag.cache = measure(column, drag.item);
+    };
+
+    const measure = (column, lifted) => ({
+        column,
+        cards: cardsOf(column).filter(el => el !== lifted).map(el => {
+            const r = el.getBoundingClientRect();
+            return { el, mid: r.top + r.height / 2 };
+        }),
+    });
+
+    // The cards of a column from the placeholder onward — the ones that
+    // slide up when it leaves.
+    const cardsFrom = (column, placeholder, lifted) => {
+        const result = [];
+        let seen = false;
+        for (const el of column.children) {
+            if (el === placeholder) { seen = true; continue; }
+            if (seen && el !== lifted && el.matches(itemSelector))
+                result.push(el);
+        }
+        return result;
     };
 
     const finish = (event, commit) => {

@@ -28,6 +28,13 @@ public partial class CnDialogFooter
     /// <summary>Absent, the middle button is not rendered at all.</summary>
     [Parameter] public EventCallback OnSaveAndOpen { get; set; }
 
+    /// <summary>
+    /// Hides the middle button while the callback stays wired — for a dialog
+    /// that creates and edits with the same markup and only offers "open"
+    /// on create.
+    /// </summary>
+    [Parameter] public bool ShowSaveAndOpen { get; set; } = true;
+
     [Parameter] public bool CanSave { get; set; } = true;
     [Parameter] public bool Saving { get; set; }
 

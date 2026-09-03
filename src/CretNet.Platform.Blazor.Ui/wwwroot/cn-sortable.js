@@ -12,6 +12,16 @@
 // cell widths are frozen before the row is lifted, so it keeps its shape
 // once it no longer sits in the table.
 
+// A FLIP glide costs a compositing layer per item for the length of the
+// transition. A column can hold a couple of hundred cards and the viewport
+// shows a dozen: the rest jump to their new place unseen, and the frame
+// stays under budget. The slack keeps an item glide-worthy just outside
+// the edge, where the tail of the motion is still visible.
+const SLACK = 160;
+const inView = rect =>
+    rect.bottom >= -SLACK && rect.top <= window.innerHeight + SLACK &&
+    rect.right >= -SLACK && rect.left <= window.innerWidth + SLACK;
+
 export function attach(container, dotNetRef, itemSelector, handleSelector) {
     if (!container)
         return;
@@ -73,7 +83,7 @@ export function attach(container, dotNetRef, itemSelector, handleSelector) {
                 continue;
             const now = el.getBoundingClientRect();
             const dy = prev.top - now.top;
-            if (!dy)
+            if (!dy || (!inView(prev) && !inView(now)))
                 continue;
             el.style.transition = 'none';
             el.style.transform = 'translateY(' + dy + 'px)';
@@ -228,7 +238,7 @@ export function attachBoard(root, dotNetRef, columnSelector, itemSelector) {
             const now = el.getBoundingClientRect();
             const dx = prev.left - now.left;
             const dy = prev.top - now.top;
-            if (!dx && !dy)
+            if ((!dx && !dy) || (!inView(prev) && !inView(now)))
                 continue;
             el.style.transition = 'none';
             el.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';

@@ -1009,11 +1009,15 @@ select.cn-input:disabled { cursor: default; }
     border-radius: var(--cn-radius-s);
     background: var(--cn-accent-tint);
 }
-/* A table row cannot draw its own border; its one cell draws it. */
+/* A table row cannot draw its own border, and in a collapsed table the
+   solid bottom border of the row above would win from a dashed top
+   border. An outline sits outside that resolution, so the cell draws one. */
 tr.cn-sort-placeholder { border: 0; background: transparent; }
 tr.cn-sort-placeholder > td {
     padding: 0;
-    border: 1px dashed var(--cn-accent);
+    border: 0;
+    outline: 1px dashed var(--cn-accent);
+    outline-offset: -1px;
     border-radius: var(--cn-radius-s);
     background: var(--cn-accent-tint);
 }

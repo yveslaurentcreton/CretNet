@@ -59,6 +59,37 @@ public sealed class CnSortable : IAsyncDisposable
     [JSInvokable]
     public Task OnSortableMoved(int from, int to) => _onMoved(from, to);
 
+    private Func<string, string, string?, Task>? _onDropped;
+    private bool _isBoard;
+
+    /// <summary>
+    /// A board: columns a card may cross between. The drop arrives as
+    /// "this card, into that column, after that card" — ids and keys are
+    /// the <c>data-sort-id</c> of cards and the <c>data-sort-key</c> of
+    /// columns, so the host decides what they mean.
+    /// </summary>
+    public static async Task<CnSortable> AttachBoardAsync(
+        IJSRuntime jsRuntime,
+        ElementReference root,
+        Func<string, string, string?, Task> onDropped,
+        string columnSelector,
+        string itemSelector = ".cn-sort-item")
+    {
+        var sortable = new CnSortable(root, (_, _) => Task.CompletedTask)
+        {
+            _onDropped = onDropped,
+            _isBoard = true,
+        };
+        sortable._module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", ModulePath);
+        sortable._self = DotNetObjectReference.Create(sortable);
+        await sortable._module.InvokeVoidAsync("attachBoard", root, sortable._self, columnSelector, itemSelector);
+        return sortable;
+    }
+
+    [JSInvokable]
+    public Task OnSortableDropped(string itemId, string columnKey, string? afterItemId) =>
+        _onDropped?.Invoke(itemId, columnKey, afterItemId) ?? Task.CompletedTask;
+
     /// <summary>
     /// The list as it reads after a drop: the item at <paramref name="from"/>
     /// taken out and put back at <paramref name="to"/>, counted in the list
@@ -82,7 +113,7 @@ public sealed class CnSortable : IAsyncDisposable
         {
             if (_module is not null)
             {
-                await _module.InvokeVoidAsync("detach", _container);
+                await _module.InvokeVoidAsync(_isBoard ? "detachBoard" : "detach", _container);
                 await _module.DisposeAsync();
             }
         }

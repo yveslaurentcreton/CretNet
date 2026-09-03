@@ -71,6 +71,22 @@
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Activates a tab from code — a hint on one tab that points at another,
+    /// a deep link. Out-of-range is ignored rather than thrown: the host
+    /// counts tabs it may not render (an admin-only one, say), and a stale
+    /// index is not worth a crash. Raises <see cref="ActiveIndexChanged"/>
+    /// exactly as a click does.
+    /// </summary>
+    public async Task ActivateAsync(int index)
+    {
+        if (index < 0 || index >= _tabs.Count)
+            return;
+
+        await Activate(_tabs[index]);
+        StateHasChanged();
+    }
+
     private async Task Activate(CnTab tab)
     {
         if (_active == tab)

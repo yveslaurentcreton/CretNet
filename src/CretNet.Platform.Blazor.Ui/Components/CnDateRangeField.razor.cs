@@ -21,6 +21,12 @@ public partial class CnDateRangeField : IAsyncDisposable
     [Parameter] public bool ReadOnly { get; set; }
     [Parameter] public bool Disabled { get; set; }
 
+    /// <summary>Borderless until hover or focus — the in-grid variant, the
+    /// same switch the single-date fields have.</summary>
+    [Parameter] public bool Subtle { get; set; }
+
+    private string? SubtleClass => Subtle ? "cn-input--subtle" : null;
+
     [Parameter] public int MonthCount { get; set; } = 2;
     [Parameter] public DateTime? MinDate { get; set; }
     [Parameter] public DateTime? MaxDate { get; set; }

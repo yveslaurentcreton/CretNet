@@ -12,7 +12,7 @@
         @* Opening on click as well as on focus: after picking, focus stays in
            the field, so a second click would otherwise fire no focus event and
            leave the calendar shut. *@
-        <div class="cn-date-shell cn-input cn-date-shell--range @(_open ? "cn-date-shell--open" : null) @(Disabled ? "cn-date-shell--disabled" : null)"
+        <div class="cn-date-shell cn-input cn-date-shell--range @SubtleClass @(_open ? "cn-date-shell--open" : null) @(Disabled ? "cn-date-shell--disabled" : null)"
              @onclick="Open">
             <svg class="cn-date-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
                 <rect x="2.5" y="3.5" width="11" height="10" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4" />

@@ -1,8 +1,8 @@
 @inherits CnInputBase<decimal?>
 
-@* A number with an optional unit inside the field. Commits on change, not
-   on input: a number input re-rendered on every keystroke loses the comma
-   the user just typed, because the browser reports "12," as no value. *@
+@* A number with an optional unit inside the field. A text input, not a
+   number input: no spinners, and it reads a Belgian comma the way the
+   currency field does. Commits on change. *@
 
 <label class="cn-field @Class" style="@Style">
     @if (!string.IsNullOrEmpty(Label))
@@ -10,13 +10,10 @@
         <span class="cn-label">@Label</span>
     }
     <span class="cn-money">
-        <input type="number"
+        <input type="text"
                inputmode="decimal"
                class="cn-input cn-input--right @UnitClass @SubtleClass @InvalidClass"
                value="@Text"
-               step="@Step"
-               min="@Min"
-               max="@Max"
                placeholder="@Placeholder"
                readonly="@ReadOnly"
                disabled="@Disabled"

@@ -1,0 +1,35 @@
+@inherits CnInputBase<decimal?>
+
+@* A number with an optional unit inside the field. Commits on change, not
+   on input: a number input re-rendered on every keystroke loses the comma
+   the user just typed, because the browser reports "12," as no value. *@
+
+<label class="cn-field @Class" style="@Style">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span class="cn-label">@Label</span>
+    }
+    <span class="cn-money">
+        <input type="number"
+               inputmode="decimal"
+               class="cn-input cn-input--right @UnitClass @SubtleClass @InvalidClass"
+               value="@Text"
+               step="@Step"
+               min="@Min"
+               max="@Max"
+               placeholder="@Placeholder"
+               readonly="@ReadOnly"
+               disabled="@Disabled"
+               aria-label="@(Label ?? AriaLabel)"
+               @onchange="OnChangeAsync"
+               @attributes="AdditionalAttributes" />
+        @if (!string.IsNullOrEmpty(Unit))
+        {
+            <span class="cn-money-unit" aria-hidden="true">@Unit</span>
+        }
+    </span>
+    @foreach (var message in ValidationMessages)
+    {
+        <span class="cn-field-error">@message</span>
+    }
+</label>

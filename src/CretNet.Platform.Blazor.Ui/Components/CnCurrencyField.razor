@@ -1,0 +1,33 @@
+@inherits CnInputBase<decimal?>
+
+@* A money amount: a text field with the sign inside it and no spinners.
+   Commits on change (blur or Enter) and reformats to the current culture;
+   comma and dot decimals are both read — see CnAmountParser. *@
+
+<label class="cn-field @Class" style="@Style">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span class="cn-label">@Label</span>
+    }
+    <span class="cn-money">
+        <span class="cn-money-sign" aria-hidden="true">@Sign</span>
+        <input type="text"
+               inputmode="decimal"
+               class="cn-input cn-input--right cn-money-input @UnitClass @SubtleClass @InvalidClass"
+               value="@Text"
+               placeholder="@Placeholder"
+               readonly="@ReadOnly"
+               disabled="@Disabled"
+               aria-label="@(Label ?? AriaLabel)"
+               @onchange="OnChangeAsync"
+               @attributes="AdditionalAttributes" />
+        @if (!string.IsNullOrEmpty(Unit))
+        {
+            <span class="cn-money-unit" aria-hidden="true">@Unit</span>
+        }
+    </span>
+    @foreach (var message in ValidationMessages)
+    {
+        <span class="cn-field-error">@message</span>
+    }
+</label>

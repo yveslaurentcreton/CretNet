@@ -1,0 +1,14 @@
+@* The one footer every create/edit dialog shares: cancel on the left of the
+   primary pair, "Save & open" between them only when the opener has
+   somewhere to go. Styled by .cn-dialog-footer in cn-ui.css. *@
+
+<div class="cn-dialog-footer @Class">
+    <CnButton Label="@CancelLabel" OnClick="OnCancel" Disabled="Saving" />
+    @if (OnSaveAndOpen.HasDelegate)
+    {
+        <CnButton Label="@SaveAndOpenLabel" OnClick="OnSaveAndOpen"
+                  Disabled="@(!CanSave || Saving)" />
+    }
+    <CnButton Label="@SaveLabel" Role="CnButtonRole.Accent" OnClick="OnSave"
+              Loading="Saving" Disabled="@(!CanSave || Saving)" />
+</div>

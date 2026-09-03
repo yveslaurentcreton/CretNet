@@ -1,0 +1,20 @@
+@* A thin indeterminate bar while a screen fetches, then the content. The
+   bar is the whole signal: a page on its way is not an event, and nothing
+   should pull the eye to it. *@
+
+@if (IsLoading)
+{
+    <div class="cn-loading" role="progressbar" aria-busy="true" aria-label="@AriaLabel">
+        <span class="cn-loading-bar"></span>
+    </div>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    [Parameter, EditorRequired] public bool IsLoading { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string AriaLabel { get; set; } = "Loading";
+}

@@ -23,6 +23,7 @@ public static class ServiceCollectionExtensions
             provider.GetRequiredService<Microsoft.JSInterop.IJSRuntime>(), accent));
         services.AddScoped<Dialogs.CnDialogService>();
         services.AddScoped<Toasts.CnToastService>();
+        services.AddScoped<Navigation.CnBreadcrumbService>();
 
         // The inbox needs a transport the host owns; without one there is
         // nothing to keep state about, so the state only registers when a

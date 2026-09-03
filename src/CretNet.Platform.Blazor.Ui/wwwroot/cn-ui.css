@@ -5162,3 +5162,30 @@ tr:hover .cn-task-more,
 .rail .cn-brand-company { margin: -14px -8px 4px; padding: 12px 6px; }
 .rail .cn-brand-company .cn-brand { padding: 0; }
 .rail .cn-company-switch { display: none; }
+
+/* Loading (CnLoading): a thin indeterminate bar, the accent sliding across
+   its own tint. Three pixels tall so a screen that is on its way does not
+   jump when it arrives. */
+.cn-loading {
+    position: relative;
+    height: 3px;
+    margin: 4px 0;
+    overflow: hidden;
+    border-radius: 2px;
+    background: var(--cn-accent-tint);
+}
+.cn-loading-bar {
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: 36%;
+    border-radius: 2px;
+    background: var(--cn-accent);
+    animation: cn-loading-slide 1.2s ease-in-out infinite;
+}
+@keyframes cn-loading-slide {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(280%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .cn-loading-bar { animation: none; width: 100%; opacity: .5; }
+}

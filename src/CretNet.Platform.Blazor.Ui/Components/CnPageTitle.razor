@@ -1,0 +1,50 @@
+@using CretNet.Platform.Blazor.Ui.Navigation
+@inject CnBreadcrumbService Breadcrumbs
+@inject NavigationManager Navigation
+
+@* The name of the place: the document title, the trail the shell
+   breadcrumb renders, and — unless the page draws its own head — the
+   heading. A main page starts a fresh trail; a detail page extends it. *@
+
+<PageTitle>@Title</PageTitle>
+
+@if (!Hide)
+{
+    <h1 class="cn-page-title">@Title</h1>
+}
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+
+    /// <summary>A top-level page: the trail starts over here.</summary>
+    [Parameter] public bool IsMain { get; set; }
+
+    /// <summary>No heading — the page composes its own head and only wants
+    /// the document title and the crumb.</summary>
+    [Parameter] public bool Hide { get; set; }
+
+    private string? _fed;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && IsMain)
+            Breadcrumbs.Clear();
+
+        // The crumb follows the title: a rename lands in the trail on the
+        // next render, at the same place.
+        if (string.IsNullOrWhiteSpace(Title) || Title == _fed)
+            return;
+
+        _fed = Title;
+        Breadcrumbs.Set(new CnBreadcrumbItem(Title, CurrentPath()));
+    }
+
+    private string CurrentPath()
+    {
+        var relative = Navigation.ToBaseRelativePath(Navigation.Uri);
+        var cut = relative.IndexOfAny(['?', '#']);
+        if (cut >= 0)
+            relative = relative[..cut];
+        return "/" + relative.Trim('/');
+    }
+}

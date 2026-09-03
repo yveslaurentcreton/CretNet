@@ -988,21 +988,35 @@ select.cn-input:disabled { cursor: default; }
 
 .cn-line-drop-above > td { border-top: 2px solid var(--cn-accent); }
 
-/* Sortable (cn-sortable.js): the lifted item follows the pointer, the rest
-   slide out of its way. Rows and list items alike; a <tr> can be
-   transformed and positioned in every browser this runs in. */
-.cn-sort-item { transition: transform .16s ease; }
+/* Sortable (cn-sortable.js): the lifted item comes out of the flow and
+   follows the pointer, a dashed placeholder keeps its place, the rest
+   glide to make room. Rows and list items alike. */
+.cn-sort-item { transition: transform .18s ease; }
 .cn-sort-active .cn-sort-item { user-select: none; }
 .cn-sort-active .cn-drag-handle { cursor: grabbing; }
 .cn-sort-lifting {
-    position: relative;
-    z-index: 3;
     transition: none;
+    border-radius: var(--cn-radius-s);
     outline: 1px solid var(--cn-accent);
-    box-shadow: var(--cn-shadow);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .14), 0 12px 28px rgba(0, 0, 0, .18);
+    opacity: .97;
 }
 .cn-sort-lifting,
 .cn-sort-lifting > td { background: var(--cn-card); }
+.cn-sort-placeholder {
+    box-sizing: border-box;
+    border: 1px dashed var(--cn-accent);
+    border-radius: var(--cn-radius-s);
+    background: var(--cn-accent-tint);
+}
+/* A table row cannot draw its own border; its one cell draws it. */
+tr.cn-sort-placeholder { border: 0; background: transparent; }
+tr.cn-sort-placeholder > td {
+    padding: 0;
+    border: 1px dashed var(--cn-accent);
+    border-radius: var(--cn-radius-s);
+    background: var(--cn-accent-tint);
+}
 
 @media (prefers-reduced-motion: reduce) {
     .cn-sort-item { transition: none; }

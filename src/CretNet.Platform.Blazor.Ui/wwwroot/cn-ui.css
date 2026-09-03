@@ -988,6 +988,26 @@ select.cn-input:disabled { cursor: default; }
 
 .cn-line-drop-above > td { border-top: 2px solid var(--cn-accent); }
 
+/* Sortable (cn-sortable.js): the lifted item follows the pointer, the rest
+   slide out of its way. Rows and list items alike; a <tr> can be
+   transformed and positioned in every browser this runs in. */
+.cn-sort-item { transition: transform .16s ease; }
+.cn-sort-active .cn-sort-item { user-select: none; }
+.cn-sort-active .cn-drag-handle { cursor: grabbing; }
+.cn-sort-lifting {
+    position: relative;
+    z-index: 3;
+    transition: none;
+    outline: 1px solid var(--cn-accent);
+    box-shadow: var(--cn-shadow);
+}
+.cn-sort-lifting,
+.cn-sort-lifting > td { background: var(--cn-card); }
+
+@media (prefers-reduced-motion: reduce) {
+    .cn-sort-item { transition: none; }
+}
+
 .cn-line-sub {
     font-size: 11.5px;
     color: var(--cn-text-2);

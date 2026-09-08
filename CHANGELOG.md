@@ -1,3 +1,10 @@
+# [0.10.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.9.0...v0.10.0) (2026-09-08)
+
+
+### Features
+
+* **ui:** complete shared controls and preserve host behavior ([32bfdf9](https://github.com/yveslaurentcreton/CretNet/commit/32bfdf9bb1b2af859c5af8de0aaad74d0fb85f3e))
+
 # [0.9.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.8.0...v0.9.0) (2026-09-03)
 
 

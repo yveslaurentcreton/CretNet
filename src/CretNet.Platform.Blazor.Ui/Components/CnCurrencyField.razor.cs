@@ -22,6 +22,9 @@ public partial class CnCurrencyField
 
     [Parameter] public int Decimals { get; set; } = 2;
 
+    /// <summary>How ambiguous separators are interpreted; independent of currency and display precision.</summary>
+    [Parameter] public CnNumberParsingMode ParsingMode { get; set; } = CnNumberParsingMode.Flexible;
+
     private string Sign => CnAmountParser.SignFor(Currency);
 
     private string? UnitClass => string.IsNullOrEmpty(Unit) ? null : "cn-money-input--unit";
@@ -32,5 +35,5 @@ public partial class CnCurrencyField
             : string.Empty;
 
     private Task OnChangeAsync(ChangeEventArgs args) =>
-        SetValueAsync(CnAmountParser.Parse(args.Value?.ToString()));
+        SetValueAsync(CnAmountParser.Parse(args.Value?.ToString(), ParsingMode));
 }

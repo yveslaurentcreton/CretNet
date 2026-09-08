@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace CretNet.Platform.Blazor.Ui.Components;
@@ -12,12 +12,14 @@ public partial class CnTimeField : IAsyncDisposable
 
     [Parameter] public string? AriaLabel { get; set; }
 
-    // Chrome strings as parameters with English defaults.
-    [Parameter] public string NowLabel { get; set; } = "Now";
-    [Parameter] public string ClearLabel { get; set; } = "Clear";
-    [Parameter] public string HourHint { get; set; } = "Pick the hour";
-    [Parameter] public string MinuteHint { get; set; } = "Pick the minutes";
-    [Parameter] public string SecondHint { get; set; } = "Pick the seconds";
+    // Resource-backed defaults; hosts may override wording.
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string NowLabel { get => field ?? CnLabels.Now; set; } = null!;
+    [Parameter] public string ClearLabel { get => field ?? CnLabels.Clear; set; } = null!;
+    [Parameter] public string HourHint { get => field ?? CnLabels.PickTheHour; set; } = null!;
+    [Parameter] public string MinuteHint { get => field ?? CnLabels.PickTheMinutes; set; } = null!;
+    [Parameter] public string SecondHint { get => field ?? CnLabels.PickTheSeconds; set; } = null!;
+    #pragma warning restore BL0007
 
     /// <summary>Where the dial starts when the field is still empty.</summary>
     [Parameter] public TimeOnly DefaultTime { get; set; } = new(9, 0);

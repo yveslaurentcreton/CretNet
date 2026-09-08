@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
@@ -51,6 +51,7 @@ public partial class CnTimeInput : IAsyncDisposable
     private string _text = string.Empty;
     private TimeOnly? _pushed;
     private bool _programmaticFocus;
+    private bool _disposed;
 
     protected override void OnParametersSet()
     {
@@ -66,13 +67,15 @@ public partial class CnTimeInput : IAsyncDisposable
 
     public async Task FocusAsync(bool selectAll)
     {
+        if (_disposed)
+            return;
+
         _programmaticFocus = true;
         try
         {
-            await Element.FocusAsync();
             var module = await ModuleAsync();
-            if (selectAll)
-                await module.InvokeVoidAsync("selectAll", Element);
+            if (!_disposed)
+                await module.InvokeVoidAsync("focus", Element, selectAll);
         }
         catch (JSDisconnectedException)
         {
@@ -165,6 +168,7 @@ public partial class CnTimeInput : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        _disposed = true;
         if (_module is null)
             return;
 

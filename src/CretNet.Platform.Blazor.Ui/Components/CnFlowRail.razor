@@ -1,0 +1,50 @@
+@* Document-lifecycle flow rail (S-093/M-018, REQ-004 #7): order/quote status plus the
+   delivery/billing chain as a row of clickable steps. Mirrors the approved docflow mockup's
+   .flow-rail / .flow-step markup — dot shows a checkmark once done, otherwise the 1-based
+   step index; the current step is accent-highlighted and never clickable. *@
+
+<div class="cn-flowrail @Class">
+    @for (var i = 0; i < Steps.Count; i++)
+    {
+        var step = Steps[i];
+        var index = i;
+        @if (index > 0)
+        {
+            <span class="cn-flowrail-arrow">→</span>
+        }
+        <button type="button"
+                class="cn-flowrail-step @StateClass(step.State)"
+                disabled="@(step.OnClick is null)"
+                @onclick="() => step.OnClick?.Invoke()">
+            <span class="cn-flowrail-dot">
+                @if (step.State == CnFlowState.Done)
+                {
+                    <CnIcon Kind="CnIconKind.Checkmark" />
+                }
+                else
+                {
+                    @(index + 1)
+                }
+            </span>
+            <span class="cn-flowrail-text">
+                <b>@step.Label</b>
+                @if (!string.IsNullOrEmpty(step.Detail))
+                {
+                    <small>@step.Detail</small>
+                }
+            </span>
+        </button>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public List<CnFlowStep> Steps { get; set; } = [];
+    [Parameter] public string? Class { get; set; }
+
+    private static string StateClass(CnFlowState state) => state switch
+    {
+        CnFlowState.Done => "cn-flowrail-step--done",
+        CnFlowState.Current => "cn-flowrail-step--current",
+        _ => "cn-flowrail-step--pending",
+    };
+}

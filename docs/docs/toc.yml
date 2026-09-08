@@ -1,4 +1,4 @@
-﻿- name: Introduction
+- name: Introduction
   href: introduction.md
 - name: Getting Started
   href: getting-started.md
@@ -22,3 +22,6 @@
       href: cn-status-picker.md
     - name: Toasts and notifications
       href: cn-toasts-and-notifications.md
+
+- name: Shared UI contract
+  href: cn-ui-contract.md

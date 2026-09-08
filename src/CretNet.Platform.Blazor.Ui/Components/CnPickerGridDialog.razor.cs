@@ -20,12 +20,13 @@ public partial class CnPickerGridDialog<TRow>
 
     [Parameter] public int PageSize { get; set; } = 10;
 
-    // Chrome strings as parameters with English defaults — the RCL carries no
-    // resource dependency; hosts localise by passing their own labels.
-    [Parameter] public string SearchPlaceholder { get; set; } = "Search";
-    [Parameter] public string PreviousPageTitle { get; set; } = "Move left";
-    [Parameter] public string NextPageTitle { get; set; } = "Move right";
-    [Parameter] public string EmptyText { get; set; } = "Nothing found";
+    // Resource-backed defaults; hosts may override wording with their own resources.
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string SearchPlaceholder { get => field ?? CnLabels.Search; set; } = null!;
+    [Parameter] public string PreviousPageTitle { get => field ?? CnLabels.MoveLeft; set; } = null!;
+    [Parameter] public string NextPageTitle { get => field ?? CnLabels.MoveRight; set; } = null!;
+    [Parameter] public string EmptyText { get => field ?? CnLabels.NothingFound; set; } = null!;
+    #pragma warning restore BL0007
 
     private void OnRowClicked(TRow row) => Dialog.Close(row);
 }

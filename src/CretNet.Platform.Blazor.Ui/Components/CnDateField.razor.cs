@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace CretNet.Platform.Blazor.Ui.Components;
@@ -12,16 +12,19 @@ public partial class CnDateField : IAsyncDisposable
     [Parameter] public DateTime? MinDate { get; set; }
     [Parameter] public DateTime? MaxDate { get; set; }
 
-    // Chrome strings as parameters with English defaults: the library carries
-    // no resources of its own, hosts pass their own words.
-    [Parameter] public string TodayLabel { get; set; } = "Today";
-    [Parameter] public string ClearLabel { get; set; } = "Clear";
-    [Parameter] public string PickHint { get; set; } = "Pick a day";
-    [Parameter] public string PreviousMonthLabel { get; set; } = "Previous month";
-    [Parameter] public string NextMonthLabel { get; set; } = "Next month";
+    // CretNet resources supply control chrome; hosts can override for their context.
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string TodayLabel { get => field ?? CnLabels.Today; set; } = null!;
+    [Parameter] public string ClearLabel { get => field ?? CnLabels.Clear; set; } = null!;
+    [Parameter] public string PickHint { get => field ?? CnLabels.PickADay; set; } = null!;
+    [Parameter] public string PreviousMonthLabel { get => field ?? CnLabels.PreviousMonth; set; } = null!;
+    [Parameter] public string NextMonthLabel { get => field ?? CnLabels.NextMonth; set; } = null!;
+    #pragma warning restore BL0007
 
     /// <summary>Placeholder shape of the expected input, e.g. dd/mm/yyyy.</summary>
-    [Parameter] public string DateFormatHint { get; set; } = "dd/mm/yyyy";
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string DateFormatHint { get => field ?? CnLabels.DateFormatHint; set; } = null!;
+    #pragma warning restore BL0007
 
 
     private ElementReference _anchorRef;

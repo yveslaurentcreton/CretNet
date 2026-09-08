@@ -5,7 +5,7 @@ namespace CretNet.Platform.Blazor.Ui.Dialogs;
 public static class CnDialogServiceExtensions
 {
     /// <summary>Yes/No confirmation on the Cn dialog stack; false on cancel.
-    /// Pass localized yes/no labels; the defaults are English.</summary>
+    /// Optional yes/no labels override the CretNet resources.</summary>
     public static Task<bool> ConfirmAsync(this CnDialogService service, string title, string message, string? yesLabel = null, string? noLabel = null)
     {
         var parameters = new Dictionary<string, object> { [nameof(CnConfirmDialog.Message)] = message };

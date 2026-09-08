@@ -1,0 +1,12 @@
+@* List-page info-tile strip (owner-approved shell mock): reuses the .cn-stats/.cn-stat
+   classes already shipped for the home dashboard (Core/Pages/Index.razor) so every list
+   page gets the identical 4→2→1 responsive tile row. *@
+<div class="cn-stats @Class" style="@Style">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
+}

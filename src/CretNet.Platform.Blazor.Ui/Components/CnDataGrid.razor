@@ -1,4 +1,4 @@
-﻿@typeparam TItem
+@typeparam TItem
 @implements IDisposable
 
 @* Own data grid (ADR-011, S-080): a light render layer over a server-side
@@ -71,6 +71,12 @@
                             </td>
                         }
                     </tr>
+                    @if (RowDetail is not null && RowExpanded?.Invoke(row) == true)
+                    {
+                        <tr class="cn-grid-row-detail">
+                            <td colspan="@Math.Max(1, _columns.Count)">@RowDetail(row)</td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>
@@ -95,10 +101,12 @@
     // component cannot depend on its host's resource class (the lift's one
     // real HCMT coupling). Defaults match the HCMT originals; hosts pass
     // localized strings when they care.
-    [Parameter] public string SearchPlaceholder { get; set; } = "Search";
-    [Parameter] public string PreviousPageTitle { get; set; } = "Move left";
-    [Parameter] public string NextPageTitle { get; set; } = "Move right";
-    [Parameter] public string EmptyText { get; set; } = "Nothing found";
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string SearchPlaceholder { get => field ?? CnLabels.Search; set; } = null!;
+    [Parameter] public string PreviousPageTitle { get => field ?? CnLabels.MoveLeft; set; } = null!;
+    [Parameter] public string NextPageTitle { get => field ?? CnLabels.MoveRight; set; } = null!;
+    [Parameter] public string EmptyText { get => field ?? CnLabels.NothingFound; set; } = null!;
+    #pragma warning restore BL0007
 
     [Parameter, EditorRequired] public Func<CnGridRequest, Task<CnGridPage<TItem>>> Provider { get; set; } = default!;
     [Parameter] public RenderFragment? ChildContent { get; set; }
@@ -111,6 +119,10 @@
     /// <summary>S-263: optional per-row class — hosts dim done rows with
     /// "cn-grid-row--done" instead of filtering them away.</summary>
     [Parameter] public Func<TItem, string?>? RowClass { get; set; }
+    /// <summary>Optional expanded detail; the host owns which rows are open.</summary>
+    [Parameter] public RenderFragment<TItem>? RowDetail { get; set; }
+    [Parameter] public Func<TItem, bool>? RowExpanded { get; set; }
+
     [Parameter] public EventCallback<TItem> OnRowClick { get; set; }
     [Parameter] public bool ShowSearch { get; set; } = true;
     [Parameter] public int PageSize { get; set; } = 20;

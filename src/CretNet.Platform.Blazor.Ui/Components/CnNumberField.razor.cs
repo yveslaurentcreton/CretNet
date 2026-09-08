@@ -28,20 +28,34 @@ public partial class CnNumberField
     /// rounds.</summary>
     [Parameter] public int MaxDecimals { get; set; } = 2;
 
+    /// <summary>How ambiguous separators are interpreted, independently of display precision.</summary>
+    [Parameter] public CnNumberParsingMode ParsingMode { get; set; } = CnNumberParsingMode.Flexible;
+
     [Parameter] public string? Placeholder { get; set; }
 
     [Parameter] public string? AriaLabel { get; set; }
 
     private string? UnitClass => string.IsNullOrEmpty(Unit) ? null : "cn-money-input--unit";
 
-    private string Text =>
-        Value is { } number
-            ? number.ToString("#,##0." + new string('#', Math.Max(0, MaxDecimals)), CultureInfo.CurrentCulture)
-            : string.Empty;
+    private string Text
+    {
+        get
+        {
+            if (Value is not { } number)
+                return string.Empty;
+
+            // A grouped integer (1.234) would read back as a fraction in Decimal
+            // mode. Keep its editable representation ungrouped in that mode.
+            var format = ParsingMode == CnNumberParsingMode.Decimal ? "0" : "#,##0";
+            if (MaxDecimals > 0)
+                format += "." + new string('#', Math.Min(28, MaxDecimals));
+            return number.ToString(format, CultureInfo.CurrentCulture);
+        }
+    }
 
     private Task OnChangeAsync(ChangeEventArgs args)
     {
-        var value = CnAmountParser.Parse(args.Value?.ToString());
+        var value = CnAmountParser.Parse(args.Value?.ToString(), ParsingMode);
 
         if (value is { } number)
         {

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="AngleSharp" />
+    <PackageReference Include="bunit" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+    <Using Include="Xunit" />
+    <ProjectReference Include="../CretNet.Platform.Blazor.Ui/CretNet.Platform.Blazor.Ui.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="../CretNet.Platform.Blazor.Ui/wwwroot/cn-ui.css" Link="cn-ui.css" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../CretNet.Platform.Blazor.Ui/wwwroot/cn-shell.css" Link="cn-shell.css" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

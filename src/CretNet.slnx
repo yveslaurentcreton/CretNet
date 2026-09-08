@@ -1,5 +1,9 @@
 <Solution>
+  <Folder Name="/Samples/">
+    <Project Path="CretNet.Platform.Blazor.Ui.Sample/CretNet.Platform.Blazor.Ui.Sample.csproj" />
+  </Folder>
   <Folder Name="/Tests/">
+    <Project Path="CretNet.Tests.Component/CretNet.Tests.Component.csproj" />
     <Project Path="CretNet.Tests/CretNet.Tests.csproj" />
   </Folder>
   <Project Path="CretNet.Blazor/CretNet.Blazor.csproj" />

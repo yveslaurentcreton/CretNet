@@ -1,0 +1,32 @@
+@using Microsoft.AspNetCore.Components.Web
+<div class="cn-stat @(OnClick.HasDelegate ? "cn-stat--clickable" : null) @Class" style="@Style" @onclick="HandleClick">
+    <span class="k">@Label</span>
+    <span class="v @IntentClass">@Value</span>
+    @if (Sub is not null)
+    {
+        <span class="s">@Sub</span>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = default!;
+    [Parameter, EditorRequired] public string Value { get; set; } = default!;
+    [Parameter] public string? Sub { get; set; }
+    [Parameter] public CnStatIntent Intent { get; set; } = CnStatIntent.Default;
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
+
+    private string? IntentClass => Intent switch
+    {
+        CnStatIntent.Danger => "bad",
+        CnStatIntent.Warn => "warn",
+        _ => null,
+    };
+
+    private async Task HandleClick(MouseEventArgs args)
+    {
+        if (OnClick.HasDelegate)
+            await OnClick.InvokeAsync(args);
+    }
+}

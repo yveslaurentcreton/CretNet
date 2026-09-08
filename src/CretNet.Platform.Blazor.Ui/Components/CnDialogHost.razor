@@ -25,7 +25,9 @@
 }
 
 @code {
-    [Parameter] public string CancelTitle { get; set; } = "Cancel";
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string CancelTitle { get => field ?? CnLabels.Cancel; set; } = null!;
+    #pragma warning restore BL0007
 
     protected override void OnInitialized() => DialogService.Changed += OnChanged;
 

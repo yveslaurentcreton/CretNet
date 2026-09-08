@@ -1,0 +1,21 @@
+@using CretNet.Platform.Blazor.Ui.Components
+
+<button id="expand" @onclick="() => _expanded = !_expanded">Expand</button>
+<button id="column" @onclick="() => _extraColumn = !_extraColumn">Column</button>
+<CnDataGrid TItem="string" Provider="Fetch" ShowSearch="false" RowExpanded="_ => _expanded">
+    <ChildContent>
+        <CnGridColumn TItem="string" Title="Name" Value="row => row" />
+        @if (_extraColumn)
+        {
+            <CnGridColumn TItem="string" Title="Extra" Value="row => row.Length" />
+        }
+    </ChildContent>
+    <RowDetail Context="row"><span>Units of @row</span></RowDetail>
+</CnDataGrid>
+
+@code {
+    private bool _expanded;
+    private bool _extraColumn;
+    private static Task<CnGridPage<string>> Fetch(CnGridRequest _) =>
+        Task.FromResult(new CnGridPage<string>(["Stock"], 1));
+}

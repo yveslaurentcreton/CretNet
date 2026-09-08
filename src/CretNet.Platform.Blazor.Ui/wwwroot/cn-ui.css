@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    cn-ui — own component library styles (ADR-011, M-014/S-073).
    Design tokens taken from the owner-approved composer mockup:
    accent #17af3d, 4px grid, compact 28/32px controls, light+dark.
@@ -638,7 +638,7 @@ select.cn-input:disabled { cursor: default; }
     width: 100%;
     display: flex;
     flex-direction: column;
-    max-height: min(85vh, 760px);
+    max-height: min(88dvh, 880px);
 }
 
 .cn-dialog-header {
@@ -3112,7 +3112,7 @@ tr.cn-sort-placeholder > td {
    cn-grid-scroll wrapper); the day header sticks to the top and covers
    blocks scrolling underneath it, dragged blocks included. The initial
    scroll position is set by TimesheetPage.razor.js. */
-.cn-ts-cal-scroll { max-height: min(70vh, 900px); min-height: 320px; overflow: auto; }
+.cn-ts-cal-scroll { height: min(72dvh, 900px); min-height: 320px; max-height: 88dvh; overflow: auto; resize: vertical; }
 
 .cn-ts-cal-head { position: sticky; top: 0; z-index: 35; background: var(--cn-card); }
 
@@ -4074,17 +4074,17 @@ tr:hover .cn-task-more,
 .pe-ico.pe-ico--human:has(.cn-avatar--photo) { border-color: transparent; background: var(--cn-card); color: transparent; }
 
 /* ---------- CnDateField / CnDateRangeField ----------
-   One pill holding one date, or two with a dash between them. The inputs are
+   One field holding one date, or two with a dash between them. The inputs are
    sized to exactly what a full date renders so no slack piles up on one side
    of the dash. The calendar underneath paints a range band across the days
    and zooms out to months and years. */
 .cn-date-anchor { position: relative; }
 
 .cn-date-shell {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 8px;
-    width: auto;
+    width: 100%;
     padding: 0 10px;
 }
 
@@ -4290,7 +4290,7 @@ tr:hover .cn-task-more,
     flex: none;
     display: grid;
     place-items: center;
-    margin-left: 2px;
+    margin-left: auto;
     border: 0;
     border-radius: var(--cn-radius-s);
     background: transparent;
@@ -4671,8 +4671,9 @@ tr:hover .cn-task-more,
 
 .cn-nc-row {
     position: relative;
+    box-sizing: border-box;
     display: grid;
-    grid-template-columns: 30px 1fr auto;
+    grid-template-columns: 30px minmax(0, 1fr) auto;
     gap: 10px;
     align-items: start;
     width: 100%;
@@ -5189,3 +5190,7 @@ tr:hover .cn-task-more,
 @media (prefers-reduced-motion: reduce) {
     .cn-loading-bar { animation: none; width: 100%; opacity: .5; }
 }
+
+/* Expanded grid details; hosts supply row content and expansion state. */
+.cn-grid-table tr.cn-grid-row-detail > td { background: var(--cn-accent-tint); padding: 4px 12px 14px 36px; border-bottom: 1px solid var(--cn-stroke-soft); }
+.cn-grid-table tr.cn-grid-row--open td { background: var(--cn-accent-tint); border-bottom-color: transparent; }

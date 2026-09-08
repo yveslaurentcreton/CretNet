@@ -1,0 +1,246 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data xml:space="preserve" name="Action">
+    <value>Action</value>
+  </data>
+  <data xml:space="preserve" name="ActionNeeded">
+    <value>Action needed</value>
+  </data>
+  <data xml:space="preserve" name="AdvancedSearch">
+    <value>Advanced search…</value>
+  </data>
+  <data xml:space="preserve" name="All">
+    <value>All</value>
+  </data>
+  <data xml:space="preserve" name="Amount">
+    <value>Amount</value>
+  </data>
+  <data xml:space="preserve" name="Archive">
+    <value>Archive</value>
+  </data>
+  <data xml:space="preserve" name="Bold">
+    <value>Bold</value>
+  </data>
+  <data xml:space="preserve" name="Breadcrumb">
+    <value>Breadcrumb</value>
+  </data>
+  <data xml:space="preserve" name="BulletList">
+    <value>Bulleted list</value>
+  </data>
+  <data xml:space="preserve" name="Cancel">
+    <value>Cancel</value>
+  </data>
+  <data xml:space="preserve" name="ChangeStatus">
+    <value>Change status</value>
+  </data>
+  <data xml:space="preserve" name="Clear">
+    <value>Clear</value>
+  </data>
+  <data xml:space="preserve" name="ClearFormatting">
+    <value>Clear formatting</value>
+  </data>
+  <data xml:space="preserve" name="Close">
+    <value>Close</value>
+  </data>
+  <data xml:space="preserve" name="CouldNotLoadNotifications">
+    <value>Could not load notifications</value>
+  </data>
+  <data xml:space="preserve" name="CtrlEnterToPost">
+    <value>Ctrl+Enter to post</value>
+  </data>
+  <data xml:space="preserve" name="Date">
+    <value>Date</value>
+  </data>
+  <data xml:space="preserve" name="DateFormatHint">
+    <value>dd/mm/yyyy</value>
+  </data>
+  <data xml:space="preserve" name="Day">
+    <value>day</value>
+  </data>
+  <data xml:space="preserve" name="Days">
+    <value>days</value>
+  </data>
+  <data xml:space="preserve" name="DaysAgo">
+    <value>{0} days ago</value>
+  </data>
+  <data xml:space="preserve" name="Dismiss">
+    <value>Dismiss</value>
+  </data>
+  <data xml:space="preserve" name="Earlier">
+    <value>Earlier</value>
+  </data>
+  <data xml:space="preserve" name="Ellipsis">
+    <value>…</value>
+  </data>
+  <data xml:space="preserve" name="EmptyValue">
+    <value>—</value>
+  </data>
+  <data xml:space="preserve" name="From">
+    <value>From</value>
+  </data>
+  <data xml:space="preserve" name="HoursAgo">
+    <value>{0} h ago</value>
+  </data>
+  <data xml:space="preserve" name="Italic">
+    <value>Italic</value>
+  </data>
+  <data xml:space="preserve" name="Item">
+    <value>Item</value>
+  </data>
+  <data xml:space="preserve" name="JustNow">
+    <value>just now</value>
+  </data>
+  <data xml:space="preserve" name="Loading">
+    <value>Loading</value>
+  </data>
+  <data xml:space="preserve" name="MarkAllRead">
+    <value>Mark all read</value>
+  </data>
+  <data xml:space="preserve" name="MarkRead">
+    <value>Mark read</value>
+  </data>
+  <data xml:space="preserve" name="MarkUnread">
+    <value>Mark unread</value>
+  </data>
+  <data xml:space="preserve" name="MinutesAgo">
+    <value>{0} min ago</value>
+  </data>
+  <data xml:space="preserve" name="MoreToasts">
+    <value>+{0} more · dismiss all</value>
+  </data>
+  <data xml:space="preserve" name="MoveLeft">
+    <value>Move left</value>
+  </data>
+  <data xml:space="preserve" name="MoveRight">
+    <value>Move right</value>
+  </data>
+  <data xml:space="preserve" name="New">
+    <value>New</value>
+  </data>
+  <data xml:space="preserve" name="NewItem">
+    <value>New…</value>
+  </data>
+  <data xml:space="preserve" name="Next">
+    <value>Next</value>
+  </data>
+  <data xml:space="preserve" name="NextMonth">
+    <value>Next month</value>
+  </data>
+  <data xml:space="preserve" name="No">
+    <value>No</value>
+  </data>
+  <data xml:space="preserve" name="NoOpenActions">
+    <value>No open actions</value>
+  </data>
+  <data xml:space="preserve" name="NothingArchived">
+    <value>Nothing archived</value>
+  </data>
+  <data xml:space="preserve" name="NothingFound">
+    <value>Nothing found</value>
+  </data>
+  <data xml:space="preserve" name="Notifications">
+    <value>Notifications</value>
+  </data>
+  <data xml:space="preserve" name="Now">
+    <value>Now</value>
+  </data>
+  <data xml:space="preserve" name="NumberedList">
+    <value>Numbered list</value>
+  </data>
+  <data xml:space="preserve" name="OlderNotifications">
+    <value>Older notifications</value>
+  </data>
+  <data xml:space="preserve" name="PickADay">
+    <value>Pick a day</value>
+  </data>
+  <data xml:space="preserve" name="PickAFirstDay">
+    <value>Pick a first day</value>
+  </data>
+  <data xml:space="preserve" name="PickTheHour">
+    <value>Pick the hour</value>
+  </data>
+  <data xml:space="preserve" name="PickTheLastDay">
+    <value>(pick the last day)</value>
+  </data>
+  <data xml:space="preserve" name="PickTheMinutes">
+    <value>Pick the minutes</value>
+  </data>
+  <data xml:space="preserve" name="PickTheSeconds">
+    <value>Pick the seconds</value>
+  </data>
+  <data xml:space="preserve" name="Previous">
+    <value>Previous</value>
+  </data>
+  <data xml:space="preserve" name="PreviousMonth">
+    <value>Previous month</value>
+  </data>
+  <data xml:space="preserve" name="Progress">
+    <value>Progress</value>
+  </data>
+  <data xml:space="preserve" name="Recent">
+    <value>Recent</value>
+  </data>
+  <data xml:space="preserve" name="Save">
+    <value>Save</value>
+  </data>
+  <data xml:space="preserve" name="SaveOpen">
+    <value>Save &amp; open</value>
+  </data>
+  <data xml:space="preserve" name="Search">
+    <value>Search</value>
+  </data>
+  <data xml:space="preserve" name="Select">
+    <value>Select…</value>
+  </data>
+  <data xml:space="preserve" name="Status">
+    <value>Status</value>
+  </data>
+  <data xml:space="preserve" name="Subtitle">
+    <value>Subtitle</value>
+  </data>
+  <data xml:space="preserve" name="SubtitleShort">
+    <value>Heading</value>
+  </data>
+  <data xml:space="preserve" name="Time">
+    <value>Time</value>
+  </data>
+  <data xml:space="preserve" name="To">
+    <value>To</value>
+  </data>
+  <data xml:space="preserve" name="Today">
+    <value>Today</value>
+  </data>
+  <data xml:space="preserve" name="TryAgain">
+    <value>Try again</value>
+  </data>
+  <data xml:space="preserve" name="Underline">
+    <value>Underline</value>
+  </data>
+  <data xml:space="preserve" name="Unread">
+    <value>Unread</value>
+  </data>
+  <data xml:space="preserve" name="Value">
+    <value>Value</value>
+  </data>
+  <data xml:space="preserve" name="Yes">
+    <value>Yes</value>
+  </data>
+  <data xml:space="preserve" name="Yesterday">
+    <value>yesterday</value>
+  </data>
+  <data xml:space="preserve" name="YouAreAllCaughtUp">
+    <value>You are all caught up</value>
+  </data>
+</root>

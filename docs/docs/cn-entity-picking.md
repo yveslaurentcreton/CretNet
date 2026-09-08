@@ -86,8 +86,8 @@ line in one file.
 
 ## Localisation
 
-Every string these components render is a parameter with an English default,
-because the RCL carries no resource dependency. Hosts pass their own:
+Control chrome uses CretNet-owned English/Dutch resources. Hosts can override
+labels for a specific context; business labels remain host-owned:
 
 | Component | Parameters |
 |---|---|

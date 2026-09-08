@@ -1,4 +1,4 @@
-﻿# Toasts and notifications
+# Toasts and notifications
 
 Two ways of telling someone something, and they are not interchangeable.
 
@@ -125,8 +125,8 @@ Beyond that: category, severity, type, title, message, action path, subject,
 
 ## Localisation
 
-Every string both components render is a parameter with an English default —
-the RCL carries no resource dependency. `CnNotificationBell` passes its labels
+Control chrome uses CretNet-owned English/Dutch resources with optional host
+parameter overrides. `CnNotificationBell` passes its labels
 straight through to the panel, so a host localises in one place.
 
 Two of them are functions rather than strings, because they are decisions and

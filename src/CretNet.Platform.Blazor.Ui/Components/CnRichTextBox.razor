@@ -1,0 +1,74 @@
+
+@* S-264 (owner 2026-08-19): the DevOps-comment idiom. Closed it is one calm
+   frame; click it and the full rich-text editor unfolds with Post/Cancel and
+   Ctrl+Enter. The engine is the existing RichTextEditor — one editor in the
+   whole system. *@
+<div class="cn-rtb @(_open ? "cn-rtb--open" : null) @Class" @onkeydown="HandleKeyDown">
+    @if (!_open)
+    {
+        @* A text-field affordance: text cursor, focusable, opens with the
+           caret already inside (owner 2026-08-19). *@
+        <div class="cn-rtb-closed" role="textbox" tabindex="0" @onclick="OpenAsync" @onfocus="OpenAsync">@Placeholder</div>
+    }
+    else
+    {
+        <CnRichTextEditor @bind-Value="_draft" AutoFocus />
+        <div class="cn-rtb-foot">
+            <CnButton Role="CnButtonRole.Accent" Label="@PostLabel" Loading="Posting" Disabled="@(Posting || string.IsNullOrWhiteSpace(PlainText))" OnClick="PostAsync" />
+            <CnButton Label="@CnLabels.Cancel" Disabled="Posting" OnClick="Cancel" />
+            <small>@CnLabels.CtrlEnterToPost</small>
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>Shown in the closed frame and as the expand affordance.</summary>
+    [Parameter, EditorRequired] public string Placeholder { get; set; } = string.Empty;
+
+    /// <summary>Label of the accent action (e.g. "Plaats").</summary>
+    [Parameter, EditorRequired] public string PostLabel { get; set; } = string.Empty;
+
+    /// <summary>Receives the HTML body; the host clears/awaits persistence.</summary>
+    [Parameter] public EventCallback<string> Posted { get; set; }
+
+    /// <summary>The host flips this while persisting.</summary>
+    [Parameter] public bool Posting { get; set; }
+
+    [Parameter] public string? Class { get; set; }
+
+    private bool _open;
+    private string? _draft;
+
+    private string PlainText => System.Text.RegularExpressions.Regex
+        .Replace(_draft ?? string.Empty, "<[^>]+>", " ")
+        .Replace("&nbsp;", " ")
+        .Trim();
+
+    private Task OpenAsync()
+    {
+        _open = true;
+        return Task.CompletedTask;
+    }
+
+    private void Cancel()
+    {
+        _open = false;
+        _draft = null;
+    }
+
+    private async Task PostAsync()
+    {
+        if (Posting || string.IsNullOrWhiteSpace(PlainText))
+            return;
+        var body = _draft!;
+        await Posted.InvokeAsync(body);
+        _open = false;
+        _draft = null;
+    }
+
+    private async Task HandleKeyDown(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs args)
+    {
+        if (_open && args.CtrlKey && args.Key == "Enter")
+            await PostAsync();
+    }
+}

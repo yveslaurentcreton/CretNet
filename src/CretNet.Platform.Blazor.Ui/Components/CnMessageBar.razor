@@ -1,0 +1,23 @@
+@if (!string.IsNullOrEmpty(Message) || ChildContent is not null)
+{
+    <div class="cn-messagebar cn-messagebar--@Intent.ToString().ToLowerInvariant() @Class" style="@Style" role="alert">
+        <span class="cn-messagebar-text">@Message@ChildContent</span>
+        @if (MessageChanged.HasDelegate)
+        {
+            <CnButton Role="CnButtonRole.Subtle" Icon="CnIconKind.Dismiss" Title="@CnLabels.Cancel" OnClick="Dismiss"/>
+        }
+    </div>
+}
+
+@code {
+    // Two usages: a dismissable bound error bar (Message + MessageChanged,
+    // the composer pattern) or a static informational bar (ChildContent).
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public EventCallback<string?> MessageChanged { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public CnMessageIntent Intent { get; set; } = CnMessageIntent.Danger;
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
+
+    private Task Dismiss() => MessageChanged.InvokeAsync(null);
+}

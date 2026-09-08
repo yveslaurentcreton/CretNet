@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace CretNet.Platform.Blazor.Ui.Components;
@@ -25,18 +25,20 @@ public partial class CnDateTimeField : IAsyncDisposable
     /// <summary>Time used when a date is picked before any time was given.</summary>
     [Parameter] public TimeOnly DefaultTime { get; set; } = new(9, 0);
 
-    // Chrome strings as parameters with English defaults.
-    [Parameter] public string DateLabel { get; set; } = "Date";
-    [Parameter] public string TimeLabel { get; set; } = "Time";
-    [Parameter] public string NowLabel { get; set; } = "Now";
-    [Parameter] public string ClearLabel { get; set; } = "Clear";
-    [Parameter] public string PickHint { get; set; } = "Pick a day";
-    [Parameter] public string HourHint { get; set; } = "Pick the hour";
-    [Parameter] public string MinuteHint { get; set; } = "Pick the minutes";
-    [Parameter] public string SecondHint { get; set; } = "Pick the seconds";
-    [Parameter] public string PreviousMonthLabel { get; set; } = "Previous month";
-    [Parameter] public string NextMonthLabel { get; set; } = "Next month";
-    [Parameter] public string DateFormatHint { get; set; } = "dd/mm/yyyy";
+    // Resource-backed defaults; hosts may override wording.
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string DateLabel { get => field ?? CnLabels.Date; set; } = null!;
+    [Parameter] public string TimeLabel { get => field ?? CnLabels.Time; set; } = null!;
+    [Parameter] public string NowLabel { get => field ?? CnLabels.Now; set; } = null!;
+    [Parameter] public string ClearLabel { get => field ?? CnLabels.Clear; set; } = null!;
+    [Parameter] public string PickHint { get => field ?? CnLabels.PickADay; set; } = null!;
+    [Parameter] public string HourHint { get => field ?? CnLabels.PickTheHour; set; } = null!;
+    [Parameter] public string MinuteHint { get => field ?? CnLabels.PickTheMinutes; set; } = null!;
+    [Parameter] public string SecondHint { get => field ?? CnLabels.PickTheSeconds; set; } = null!;
+    [Parameter] public string PreviousMonthLabel { get => field ?? CnLabels.PreviousMonth; set; } = null!;
+    [Parameter] public string NextMonthLabel { get => field ?? CnLabels.NextMonth; set; } = null!;
+    [Parameter] public string DateFormatHint { get => field ?? CnLabels.DateFormatHint; set; } = null!;
+    #pragma warning restore BL0007
 
     private ElementReference _anchorRef;
     private ElementReference _popRef;

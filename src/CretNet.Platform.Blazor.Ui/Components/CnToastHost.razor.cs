@@ -12,15 +12,16 @@ public partial class CnToastHost : IDisposable
     /// <summary>How many toasts are on screen at once. The rest queue.</summary>
     [Parameter] public int MaxVisible { get; set; } = 3;
 
-    // Chrome strings as parameters with English defaults — the RCL carries no
-    // resource dependency; hosts localise by passing their own labels.
-    [Parameter] public string AriaLabel { get; set; } = "Notifications";
-    [Parameter] public string DismissLabel { get; set; } = "Dismiss";
+    // Resource-backed defaults; hosts may override wording with their own resources.
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string AriaLabel { get => field ?? CnLabels.Notifications; set; } = null!;
+    [Parameter] public string DismissLabel { get => field ?? CnLabels.Dismiss; set; } = null!;
+    #pragma warning restore BL0007
 
     /// <summary>Label for the overflow pill, given the number queued behind
     /// the cap. Default reads "+2 waiting · dismiss all".</summary>
     [Parameter] public Func<int, string> OverflowLabel { get; set; } =
-        count => $"+{count} waiting · dismiss all";
+        count => CnLabels.Format(CnLabels.MoreToasts, count);
 
     private readonly Dictionary<Guid, Lifetime> _lifetimes = [];
     private List<CnToastItem> _visible = [];

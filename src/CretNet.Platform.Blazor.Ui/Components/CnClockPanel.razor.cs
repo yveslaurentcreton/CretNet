@@ -30,9 +30,11 @@ public partial class CnClockPanel : IAsyncDisposable
 
     [Parameter] public RenderFragment? FooterActions { get; set; }
 
-    [Parameter] public string HourHint { get; set; } = "Pick the hour";
-    [Parameter] public string MinuteHint { get; set; } = "Pick the minutes";
-    [Parameter] public string SecondHint { get; set; } = "Pick the seconds";
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string HourHint { get => field ?? CnLabels.PickTheHour; set; } = null!;
+    [Parameter] public string MinuteHint { get => field ?? CnLabels.PickTheMinutes; set; } = null!;
+    [Parameter] public string SecondHint { get => field ?? CnLabels.PickTheSeconds; set; } = null!;
+    #pragma warning restore BL0007
 
     private ElementReference _dialRef;
     private IJSObjectReference? _module;

@@ -1,0 +1,33 @@
+<div class="cn-card @Class" style="@Style">
+    @if (Title is not null || CardHeaderContent is not null || CardHeaderActions is not null)
+    {
+        <div class="cn-card-header">
+            @if (Title is not null)
+            {
+                <h2 class="cn-card-title">@Title</h2>
+            }
+            @CardHeaderContent
+            <span class="cn-card-spacer"></span>
+            @if (Hint is not null)
+            {
+                <span class="cn-card-hint">@Hint</span>
+            }
+            @CardHeaderActions
+        </div>
+    }
+    <div class="cn-card-content">
+        @CardContent
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Hint { get; set; }
+    [Parameter] public RenderFragment? CardHeaderContent { get; set; }
+    [Parameter] public RenderFragment? CardHeaderActions { get; set; }
+    [Parameter] public RenderFragment? CardContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public string? Style { get; set; }
+}

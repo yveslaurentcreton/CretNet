@@ -32,9 +32,11 @@ public partial class CnProgressBar
 
     [Parameter] public bool Large { get; set; }
 
-    /// <summary>Screen-reader label. English default, per the coupling-cut
+    /// <summary>Screen-reader label. Resource-backed default, per the ownership
     /// rule — the consuming application supplies its own wording.</summary>
-    [Parameter] public string AriaLabel { get; set; } = "Progress";
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string AriaLabel { get => field ?? CnLabels.Progress; set; } = null!;
+    #pragma warning restore BL0007
 
     [Parameter] public string? Title { get; set; }
     [Parameter] public string? Class { get; set; }

@@ -1,0 +1,34 @@
+@using System.Globalization
+@inherits CnInputBase<decimal?>
+
+@* Percentage entry mirrors CnCurrencyField: a locale-aware text input avoids
+   the browser's clunky number spinners while keeping the unit visible. *@
+
+<label class="cn-field @Class" style="@Style">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span class="cn-label">@Label</span>
+    }
+    <span class="cn-percent">
+        <input type="text"
+               inputmode="decimal"
+               class="cn-input cn-input--right cn-percent-input @SubtleClass @InvalidClass"
+               value="@(Value?.ToString("0.##", CultureInfo.CurrentCulture))"
+               readonly="@ReadOnly"
+               disabled="@Disabled"
+               @onchange="OnChange"
+               @attributes="AdditionalAttributes" />
+        <span class="cn-percent-sign">%</span>
+    </span>
+    @foreach (var message in ValidationMessages)
+    {
+        <span class="cn-field-error">@message</span>
+    }
+</label>
+
+@code {
+    [Parameter] public CnNumberParsingMode ParsingMode { get; set; } = CnNumberParsingMode.Decimal;
+
+    private Task OnChange(ChangeEventArgs e) => SetValueAsync(
+        CnAmountParser.Parse(e.Value?.ToString()?.Replace("%", string.Empty), ParsingMode));
+}

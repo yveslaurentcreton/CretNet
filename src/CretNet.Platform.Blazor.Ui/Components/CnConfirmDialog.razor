@@ -15,6 +15,8 @@
 @code {
     [CascadingParameter] public CnDialogInstance Dialog { get; set; } = default!;
     [Parameter] public string Message { get; set; } = string.Empty;
-    [Parameter] public string YesLabel { get; set; } = "Yes";
-    [Parameter] public string NoLabel { get; set; } = "No";
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string YesLabel { get => field ?? CnLabels.Yes; set; } = null!;
+    [Parameter] public string NoLabel { get => field ?? CnLabels.No; set; } = null!;
+    #pragma warning restore BL0007
 }

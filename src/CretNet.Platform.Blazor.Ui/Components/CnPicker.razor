@@ -19,11 +19,11 @@
     }
     <div class="cn-picker-field">
         <div @ref="_anchorRef" class="cn-picker-inputwrap cn-input @SubtleClass @InvalidClass @(_open ? "cn-picker-inputwrap--open" : null) @(Disabled ? "cn-picker-inputwrap--disabled" : null) @(ReadOnly ? "cn-picker-inputwrap--readonly" : null)">
-            <input id="@_inputId"
+            <input @ref="_inputRef" id="@_inputId"
                    type="text"
                    class="cn-picker-input"
                    value="@_text"
-                   placeholder="@(Placeholder ?? "Select…")"
+                   placeholder="@(Placeholder ?? CnLabels.Select)"
                    readonly="@ReadOnly"
                    disabled="@Disabled"
                    autocomplete="off"
@@ -36,21 +36,20 @@
                    @onclick="OnFocusAsync"
                    @onblur="OnBlurAsync"
                    @onkeydown="OnKeyDownAsync"
-                   @onkeydown:preventDefault="SuppressDefault"
                    @attributes="AdditionalAttributes" />
             @if (!ReadOnly && !Disabled)
             {
                 <div class="cn-picker-actions">
                     @if (Value is not null)
                     {
-                        <button type="button" class="cn-picker-btn" tabindex="-1" title="Clear"
+                        <button type="button" class="cn-picker-btn" tabindex="-1" title="@CnLabels.Clear"
                                 @onmousedown:preventDefault @onclick="ClearAsync">
                             <CnIcon Kind="CnIconKind.Dismiss"/>
                         </button>
                     }
                     @if (AdvancedSearch is not null)
                     {
-                        <button type="button" class="cn-picker-btn" tabindex="-1" title="Search"
+                        <button type="button" class="cn-picker-btn" tabindex="-1" title="@CnLabels.Search"
                                 @onmousedown:preventDefault @onclick="OpenAdvancedAsync">
                             <CnIcon Kind="CnIconKind.Search"/>
                         </button>
@@ -167,17 +166,19 @@
     /// </summary>
     [Parameter] public Func<Task<CnPickerItem?>>? OnAdd { get; set; }
 
-    // Chrome strings as parameters with English defaults — the RCL carries
-    // no resource dependency; hosts localise by passing their own labels.
-    [Parameter] public string AddLabel { get; set; } = "New…";
-    [Parameter] public string NothingFoundLabel { get; set; } = "Nothing found";
-    [Parameter] public string RecentGroupLabel { get; set; } = "Recent";
-    [Parameter] public string AllGroupLabel { get; set; } = "All";
-    [Parameter] public string AdvancedSearchLabel { get; set; } = "Advanced search…";
+    // CretNet resources supply control chrome; hosts can override for their context.
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string AddLabel { get => field ?? CnLabels.NewItem; set; } = null!;
+    [Parameter] public string NothingFoundLabel { get => field ?? CnLabels.NothingFound; set; } = null!;
+    [Parameter] public string RecentGroupLabel { get => field ?? CnLabels.Recent; set; } = null!;
+    [Parameter] public string AllGroupLabel { get => field ?? CnLabels.All; set; } = null!;
+    [Parameter] public string AdvancedSearchLabel { get => field ?? CnLabels.AdvancedSearch; set; } = null!;
+    #pragma warning restore BL0007
 
     private const int MaxResults = 15;
     private readonly string _inputId = $"cn-picker-{Guid.NewGuid():N}";
 
+    private ElementReference _inputRef;
     private ElementReference _anchorRef;
     private ElementReference _dropdownRef;
     private IJSObjectReference? _module;
@@ -188,13 +189,15 @@
     // ancestors (dialog bodies scroll) can never clip it — see CnPicker.razor.js.
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!_open)
+        if (!firstRender && !_open)
             return;
 
         try
         {
             _module ??= await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/CretNet.Platform.Blazor.Ui/Components/CnPicker.razor.js");
-            await _module.InvokeVoidAsync("place", _dropdownRef, _anchorRef);
+            await _module.InvokeVoidAsync("connect", _inputRef);
+            if (_open)
+                await _module.InvokeVoidAsync("place", _dropdownRef, _anchorRef);
         }
         catch (JSDisconnectedException)
         {
@@ -204,7 +207,7 @@
         {
             // Never let a placement failure break the picker itself — the dropdown
             // falls back to its absolute CSS position. Log so it is diagnosable.
-            Console.Error.WriteLine($"CnPicker dropdown placement failed: {jsException.Message}");
+            Console.Error.WriteLine($"CnPicker browser initialization failed: {jsException.Message}");
         }
     }
 
@@ -214,6 +217,7 @@
         {
             try
             {
+                await _module.InvokeVoidAsync("disconnect", _inputRef);
                 await _module.DisposeAsync();
             }
             catch (JSDisconnectedException)
@@ -230,11 +234,6 @@
     private Guid? _lastResolvedValue;
     private List<CnPickerItem> _results = [];
     private CancellationTokenSource? _searchDebounce;
-
-    // Prevent the browser default only while a highlighted option is armed, so
-    // Enter selects (and never submits an enclosing EditForm) and the arrow keys
-    // don't move the caret. When nothing is highlighted the input types freely.
-    private bool SuppressDefault => _open && _activeIndex >= 0;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -339,8 +338,7 @@
                 await CloseAndRevertAsync();
                 break;
             default:
-                // Any other key is normal typing: disarm so SuppressDefault
-                // stops blocking character input on the next render.
+                // Typing starts a new search; it must not select a stale option.
                 _activeIndex = -1;
                 break;
         }

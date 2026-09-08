@@ -26,8 +26,10 @@ public partial class CnCalendarPanel
     [Parameter] public RenderFragment? Readout { get; set; }
     [Parameter] public RenderFragment? FooterActions { get; set; }
 
-    [Parameter] public string PreviousLabel { get; set; } = "Previous";
-    [Parameter] public string NextLabel { get; set; } = "Next";
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string PreviousLabel { get => field ?? CnLabels.Previous; set; } = null!;
+    [Parameter] public string NextLabel { get => field ?? CnLabels.Next; set; } = null!;
+    #pragma warning restore BL0007
 
     private Level _level = Level.Days;
     private DateTime _view = new(DateTime.Today.Year, DateTime.Today.Month, 1);

@@ -1,0 +1,92 @@
+@inject CnThemeService Theme
+@inject CnDialogService Dialogs
+@inject CretNet.Platform.Blazor.Ui.Toasts.CnToastService Toasts
+
+<main style="max-width:1000px;margin:auto;padding:24px;display:grid;gap:16px">
+    <header style="display:flex;align-items:center;gap:16px">
+        <CnAvatar Name="CretNet" Size="40" />
+        <h1 style="margin:0;font-size:22px">CretNet · Cn</h1>
+        <span style="flex:1"></span>
+        <CnNotificationBell PollInterval="TimeSpan.Zero" OnOpen="item => Toasts.Information(item.Title, item.Message)" />
+        <CnSelect TValue="CnThemeMode" Options="Enum.GetValues<CnThemeMode>()" Value="Theme.Mode"
+                  ValueChanged="mode => Theme.SetModeAsync(mode)" />
+        <a data-enhance-nav="false" href="/culture/nl-BE">NL</a>
+        <a data-enhance-nav="false" href="/culture/en-GB">EN</a>
+    </header>
+    <CnCard Title="@CnLabels.Value">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+            <div>
+                <CnCurrencyField Label="@CnLabels.Amount" @bind-Value="_amount" />
+                <output id="amount">@(_amount?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "null")</output>
+            </div>
+            <div>
+                <CnNumberField Label="@CnLabels.Value" ParsingMode="CnNumberParsingMode.Decimal" MaxDecimals="4" @bind-Value="_quantity" />
+                <output id="quantity">@(_quantity?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "null")</output>
+            </div>
+            <CnPercentField Label="%" @bind-Value="_percent" />
+            <div>
+                <CnDateField Label="@CnLabels.Date" @bind-Value="_date" />
+                <output id="date">@(_date?.ToString("yyyy-MM-dd") ?? "null")</output>
+            </div>
+            <CnTimeField Label="@CnLabels.Time" @bind-Value="_time" />
+            <CnPicker Label="@CnLabels.Item" Provider="FindItems" @bind-Value="_item" />
+            <CnDateTimeField Label="@($"{CnLabels.Date} / {CnLabels.Time}")" @bind-Value="_moment" />
+            <CnDateRangeField Label="@($"{CnLabels.From} / {CnLabels.To}")" @bind-From="_from" @bind-To="_to" />
+        </div>
+        <div class="sample-widths" style="display:flex;flex-wrap:wrap;gap:16px;margin-top:16px">
+            <CnDateField Label="240px" Style="width:240px;max-width:100%" @bind-Value="_date" />
+            <CnTimeField Label="fit-content" Style="width:fit-content" @bind-Value="_time" />
+        </div>
+    </CnCard>
+    <CnCard Title="@CnLabels.Search">
+        <CnButton Label="@CnLabels.Item" OnClick="() => _expanded = !_expanded" />
+        <CnDataGrid TItem="string" Provider="GridItems" RowExpanded="_ => _expanded">
+            <ChildContent>
+                <CnGridColumn TItem="string" Title="@CnLabels.Item" Value="x => x" />
+            </ChildContent>
+            <RowDetail Context="row"><CnBadge Accent>@row · A-001</CnBadge></RowDetail>
+        </CnDataGrid>
+    </CnCard>
+    <CnCard Title="@CnLabels.New">
+        <CnRichTextBox Placeholder="@CnLabels.NewItem" PostLabel="@CnLabels.Save" Posted="body => _posted = body" />
+        <CnMessageBar Message="@_posted" MessageChanged="message => _posted = message" Intent="CnMessageIntent.Info" />
+        <CnButton Label="@CnLabels.Save" OnClick="Confirm" />
+    </CnCard>
+    <CnDialogHost />
+    <CnToastHost />
+</main>
+
+@code {
+    private decimal? _amount;
+    private decimal? _quantity;
+    private decimal? _percent;
+    private DateTime? _date;
+    private TimeOnly? _time;
+    private DateTime? _moment;
+    private DateTime? _from;
+    private DateTime? _to;
+    private Guid? _item;
+    private bool _expanded;
+    private string? _posted;
+    private static readonly Guid ItemId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+    private static Task<IReadOnlyList<CnPickerItem>> FindItems(string? search) =>
+        Task.FromResult<IReadOnlyList<CnPickerItem>>(string.IsNullOrEmpty(search) || "CretNet".Contains(search, StringComparison.OrdinalIgnoreCase)
+            ? [new CnPickerItem(ItemId, "CretNet")] : []);
+    private static Task<CnGridPage<string>> GridItems(CnGridRequest request) =>
+        Task.FromResult(new CnGridPage<string>(["CretNet"], 1));
+    private async Task Confirm()
+    {
+        if (await Dialogs.ConfirmAsync(CnLabels.Save, CnLabels.Amount))
+            Toasts.Success(CnLabels.Save);
+        else
+            Toasts.Information(CnLabels.Cancel);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Theme.InitializeAsync();
+            StateHasChanged();
+        }
+    }
+}

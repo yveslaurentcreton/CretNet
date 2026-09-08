@@ -16,5 +16,7 @@ else
 @code {
     [Parameter, EditorRequired] public bool IsLoading { get; set; }
     [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
-    [Parameter] public string AriaLabel { get; set; } = "Loading";
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string AriaLabel { get => field ?? CnLabels.Loading; set; } = null!;
+    #pragma warning restore BL0007
 }

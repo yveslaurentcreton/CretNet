@@ -1,0 +1,17 @@
+.cn-percent {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.cn-percent-input {
+    padding-right: 34px;
+}
+
+.cn-percent-sign {
+    position: absolute;
+    right: 11px;
+    color: var(--cn-text-muted);
+    pointer-events: none;
+    font: 600 13px/1 var(--cn-font);
+}

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
@@ -61,6 +61,7 @@ public partial class CnDateInput : IAsyncDisposable
     private string _text = string.Empty;
     private DateTime? _pushed;
     private bool _suppressFocusCallback;
+    private bool _disposed;
 
     protected override void OnParametersSet()
     {
@@ -80,15 +81,15 @@ public partial class CnDateInput : IAsyncDisposable
     /// makes typing replace what is there.</summary>
     public async Task FocusAsync(bool selectAll)
     {
+        if (_disposed)
+            return;
+
         _suppressFocusCallback = true;
         try
         {
-            await Element.FocusAsync();
-            if (selectAll)
-            {
-                var module = await ModuleAsync();
-                await module.InvokeVoidAsync("selectAll", Element);
-            }
+            var module = await ModuleAsync();
+            if (!_disposed)
+                await module.InvokeVoidAsync("focus", Element, selectAll);
         }
         catch (JSDisconnectedException)
         {
@@ -209,6 +210,7 @@ public partial class CnDateInput : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        _disposed = true;
         if (_module is null)
             return;
 

@@ -27,9 +27,11 @@ public partial class CnStatusPicker<TStatus> where TStatus : struct, Enum
     /// <summary>Optional word before the value, e.g. "Status".</summary>
     [Parameter] public string? Prefix { get; set; }
 
-    [Parameter] public string AriaLabel { get; set; } = "Status";
-    [Parameter] public string MenuLabel { get; set; } = "Change status";
-    [Parameter] public string CloseLabel { get; set; } = "Close";
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string AriaLabel { get => field ?? CnLabels.Status; set; } = null!;
+    [Parameter] public string MenuLabel { get => field ?? CnLabels.ChangeStatus; set; } = null!;
+    [Parameter] public string CloseLabel { get => field ?? CnLabels.Close; set; } = null!;
+    #pragma warning restore BL0007
     [Parameter] public string? Class { get; set; }
 
     private readonly string _menuId = $"cn-status-{Guid.NewGuid():N}";

@@ -2,15 +2,35 @@ name: NuGet Package CI/CD
 
 on:
   push:
-    branches: 
+    branches:
       - main
-      - develop/*
-      - feature/*
-      - bugfix/*
-      - hotfix/*
+  # Temporary during HCMT adoption: feature validation is explicitly requested.
+  workflow_dispatch:
+
+concurrency:
+  group: cretnet-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
+  validate-feature:
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: ./src/global.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+      - run: dotnet build ./src/ --configuration Release
+      - run: dotnet test ./src/ --configuration Release --no-build
+      - run: node --test tests/ui/*.test.mjs
+
   cicd:
+    if: github.ref == 'refs/heads/main'
     name: CI/CD
     runs-on: ubuntu-latest
     permissions:
@@ -26,10 +46,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: "lts/*"
-
-    - name: Prepare prerelease semantic
-      if: github.ref != 'refs/heads/main'
-      run: mv .releaserc.prerelease.yaml .releaserc.yaml
 
     - name: Semantic Release
       uses: cycjimmy/semantic-release-action@v4
@@ -67,6 +83,10 @@ jobs:
     - name: Test
       if: steps.semantic.outputs.new_release_published == 'true'
       run: dotnet test ./src/ --configuration Release
+
+    - name: Test browser helpers
+      if: steps.semantic.outputs.new_release_published == 'true'
+      run: node --test tests/ui/*.test.mjs
 
     - name: Create NuGet packages
       if: steps.semantic.outputs.new_release_published == 'true'

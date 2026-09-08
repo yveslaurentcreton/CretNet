@@ -1,0 +1,246 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data xml:space="preserve" name="Action">
+    <value>Actie</value>
+  </data>
+  <data xml:space="preserve" name="ActionNeeded">
+    <value>Actie nodig</value>
+  </data>
+  <data xml:space="preserve" name="AdvancedSearch">
+    <value>Uitgebreid zoeken…</value>
+  </data>
+  <data xml:space="preserve" name="All">
+    <value>Alles</value>
+  </data>
+  <data xml:space="preserve" name="Amount">
+    <value>Bedrag</value>
+  </data>
+  <data xml:space="preserve" name="Archive">
+    <value>Archief</value>
+  </data>
+  <data xml:space="preserve" name="Bold">
+    <value>Vet</value>
+  </data>
+  <data xml:space="preserve" name="Breadcrumb">
+    <value>Kruimelpad</value>
+  </data>
+  <data xml:space="preserve" name="BulletList">
+    <value>Opsomming</value>
+  </data>
+  <data xml:space="preserve" name="Cancel">
+    <value>Annuleren</value>
+  </data>
+  <data xml:space="preserve" name="ChangeStatus">
+    <value>Status wijzigen</value>
+  </data>
+  <data xml:space="preserve" name="Clear">
+    <value>Wissen</value>
+  </data>
+  <data xml:space="preserve" name="ClearFormatting">
+    <value>Opmaak wissen</value>
+  </data>
+  <data xml:space="preserve" name="Close">
+    <value>Sluiten</value>
+  </data>
+  <data xml:space="preserve" name="CouldNotLoadNotifications">
+    <value>Meldingen konden niet worden geladen</value>
+  </data>
+  <data xml:space="preserve" name="CtrlEnterToPost">
+    <value>Ctrl+Enter om te plaatsen</value>
+  </data>
+  <data xml:space="preserve" name="Date">
+    <value>Datum</value>
+  </data>
+  <data xml:space="preserve" name="DateFormatHint">
+    <value>dd/mm/yyyy</value>
+  </data>
+  <data xml:space="preserve" name="Day">
+    <value>dag</value>
+  </data>
+  <data xml:space="preserve" name="Days">
+    <value>dagen</value>
+  </data>
+  <data xml:space="preserve" name="DaysAgo">
+    <value>{0} dagen geleden</value>
+  </data>
+  <data xml:space="preserve" name="Dismiss">
+    <value>Sluiten</value>
+  </data>
+  <data xml:space="preserve" name="Earlier">
+    <value>Eerder</value>
+  </data>
+  <data xml:space="preserve" name="Ellipsis">
+    <value>…</value>
+  </data>
+  <data xml:space="preserve" name="EmptyValue">
+    <value>—</value>
+  </data>
+  <data xml:space="preserve" name="From">
+    <value>Van</value>
+  </data>
+  <data xml:space="preserve" name="HoursAgo">
+    <value>{0} u geleden</value>
+  </data>
+  <data xml:space="preserve" name="Italic">
+    <value>Cursief</value>
+  </data>
+  <data xml:space="preserve" name="Item">
+    <value>Item</value>
+  </data>
+  <data xml:space="preserve" name="JustNow">
+    <value>zojuist</value>
+  </data>
+  <data xml:space="preserve" name="Loading">
+    <value>Laden</value>
+  </data>
+  <data xml:space="preserve" name="MarkAllRead">
+    <value>Alles gelezen</value>
+  </data>
+  <data xml:space="preserve" name="MarkRead">
+    <value>Markeren als gelezen</value>
+  </data>
+  <data xml:space="preserve" name="MarkUnread">
+    <value>Markeren als ongelezen</value>
+  </data>
+  <data xml:space="preserve" name="MinutesAgo">
+    <value>{0} min geleden</value>
+  </data>
+  <data xml:space="preserve" name="MoreToasts">
+    <value>+{0} meer · alles sluiten</value>
+  </data>
+  <data xml:space="preserve" name="MoveLeft">
+    <value>Vorige pagina</value>
+  </data>
+  <data xml:space="preserve" name="MoveRight">
+    <value>Volgende pagina</value>
+  </data>
+  <data xml:space="preserve" name="New">
+    <value>Nieuw</value>
+  </data>
+  <data xml:space="preserve" name="NewItem">
+    <value>Nieuw…</value>
+  </data>
+  <data xml:space="preserve" name="Next">
+    <value>Volgende</value>
+  </data>
+  <data xml:space="preserve" name="NextMonth">
+    <value>Volgende maand</value>
+  </data>
+  <data xml:space="preserve" name="No">
+    <value>Nee</value>
+  </data>
+  <data xml:space="preserve" name="NoOpenActions">
+    <value>Geen open acties</value>
+  </data>
+  <data xml:space="preserve" name="NothingArchived">
+    <value>Niets gearchiveerd</value>
+  </data>
+  <data xml:space="preserve" name="NothingFound">
+    <value>Niets gevonden</value>
+  </data>
+  <data xml:space="preserve" name="Notifications">
+    <value>Meldingen</value>
+  </data>
+  <data xml:space="preserve" name="Now">
+    <value>Nu</value>
+  </data>
+  <data xml:space="preserve" name="NumberedList">
+    <value>Genummerde lijst</value>
+  </data>
+  <data xml:space="preserve" name="OlderNotifications">
+    <value>Oudere meldingen</value>
+  </data>
+  <data xml:space="preserve" name="PickADay">
+    <value>Kies een dag</value>
+  </data>
+  <data xml:space="preserve" name="PickAFirstDay">
+    <value>Kies de eerste dag</value>
+  </data>
+  <data xml:space="preserve" name="PickTheHour">
+    <value>Kies het uur</value>
+  </data>
+  <data xml:space="preserve" name="PickTheLastDay">
+    <value>(kies de laatste dag)</value>
+  </data>
+  <data xml:space="preserve" name="PickTheMinutes">
+    <value>Kies de minuten</value>
+  </data>
+  <data xml:space="preserve" name="PickTheSeconds">
+    <value>Kies de seconden</value>
+  </data>
+  <data xml:space="preserve" name="Previous">
+    <value>Vorige</value>
+  </data>
+  <data xml:space="preserve" name="PreviousMonth">
+    <value>Vorige maand</value>
+  </data>
+  <data xml:space="preserve" name="Progress">
+    <value>Voortgang</value>
+  </data>
+  <data xml:space="preserve" name="Recent">
+    <value>Recent</value>
+  </data>
+  <data xml:space="preserve" name="Save">
+    <value>Opslaan</value>
+  </data>
+  <data xml:space="preserve" name="SaveOpen">
+    <value>Opslaan en openen</value>
+  </data>
+  <data xml:space="preserve" name="Search">
+    <value>Zoeken</value>
+  </data>
+  <data xml:space="preserve" name="Select">
+    <value>Selecteren…</value>
+  </data>
+  <data xml:space="preserve" name="Status">
+    <value>Status</value>
+  </data>
+  <data xml:space="preserve" name="Subtitle">
+    <value>Tussentitel</value>
+  </data>
+  <data xml:space="preserve" name="SubtitleShort">
+    <value>Kop</value>
+  </data>
+  <data xml:space="preserve" name="Time">
+    <value>Tijd</value>
+  </data>
+  <data xml:space="preserve" name="To">
+    <value>Tot</value>
+  </data>
+  <data xml:space="preserve" name="Today">
+    <value>Vandaag</value>
+  </data>
+  <data xml:space="preserve" name="TryAgain">
+    <value>Opnieuw proberen</value>
+  </data>
+  <data xml:space="preserve" name="Underline">
+    <value>Onderstrepen</value>
+  </data>
+  <data xml:space="preserve" name="Unread">
+    <value>Ongelezen</value>
+  </data>
+  <data xml:space="preserve" name="Value">
+    <value>Waarde</value>
+  </data>
+  <data xml:space="preserve" name="Yes">
+    <value>Ja</value>
+  </data>
+  <data xml:space="preserve" name="Yesterday">
+    <value>gisteren</value>
+  </data>
+  <data xml:space="preserve" name="YouAreAllCaughtUp">
+    <value>Je bent helemaal bij</value>
+  </data>
+</root>

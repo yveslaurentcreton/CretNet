@@ -40,11 +40,13 @@ public partial class CnTimeline
     /// values. Used where the figures are for some readers only.</summary>
     [Parameter] public bool ShowSecondValue { get; set; } = true;
 
-    // Chrome strings: English defaults, overridden by the consumer.
-    [Parameter] public string LabelHeader { get; set; } = "Item";
-    [Parameter] public string ValueHeader { get; set; } = "Value";
-    [Parameter] public string SecondValueHeader { get; set; } = "Amount";
-    [Parameter] public string EmptyText { get; set; } = "—";
+    // Resource-backed chrome strings, optionally overridden by the consumer.
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string LabelHeader { get => field ?? CnLabels.Item; set; } = null!;
+    [Parameter] public string ValueHeader { get => field ?? CnLabels.Value; set; } = null!;
+    [Parameter] public string SecondValueHeader { get => field ?? CnLabels.Amount; set; } = null!;
+    [Parameter] public string EmptyText { get => field ?? CnLabels.EmptyValue; set; } = null!;
+    #pragma warning restore BL0007
 
     /// <summary>Month abbreviations, left to right. Supplying them keeps the
     /// component out of the business of guessing a culture.</summary>

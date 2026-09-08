@@ -47,7 +47,9 @@
     /// <summary>Ancestor levels shown before collapsing behind "…".</summary>
     [Parameter] public int MaxAncestors { get; set; } = 2;
 
-    [Parameter] public string AriaLabel { get; set; } = "Breadcrumb";
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string AriaLabel { get => field ?? CnLabels.Breadcrumb; set; } = null!;
+    #pragma warning restore BL0007
 
     private bool _moreOpen;
 

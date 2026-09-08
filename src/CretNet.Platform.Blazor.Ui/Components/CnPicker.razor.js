@@ -1,3 +1,30 @@
+const keyboardHandlers = new WeakMap();
+
+// Cancel native defaults at the input before Blazor's delegated handler can
+// close/rerender the popup. A render-based flag is both too late for fast keys
+// and too broad: it also suppresses typing after an option was highlighted.
+export function connect(input) {
+    if (!input || keyboardHandlers.has(input)) return;
+    const handler = event => {
+        if (input.disabled || input.readOnly || event.isComposing) return;
+        const open = input.getAttribute('aria-expanded') === 'true';
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp' ||
+            (open && (event.key === 'Enter' || event.key === 'Escape'))) {
+            event.preventDefault();
+        }
+        // Keep bubbling: Blazor still owns selection and dismissal.
+    };
+    keyboardHandlers.set(input, handler);
+    input.addEventListener('keydown', handler);
+}
+
+export function disconnect(input) {
+    const handler = input && keyboardHandlers.get(input);
+    if (!handler) return;
+    input.removeEventListener('keydown', handler);
+    keyboardHandlers.delete(input);
+}
+
 // CnPicker dropdown placement: the dropdown is absolutely positioned inside the
 // field by default, which gets clipped by any overflow ancestor (dialog bodies
 // use overflow-y: auto). While open we promote it to position: fixed at the

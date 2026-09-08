@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../CretNet.Platform.Blazor.Ui/CretNet.Platform.Blazor.Ui.csproj" />
+  </ItemGroup>
+</Project>

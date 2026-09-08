@@ -16,7 +16,7 @@ namespace CretNet.Platform.Blazor.Ui.Components;
 public static class CnAmountParser
 {
     /// <summary>The parsed amount, or null for blank or unreadable input.</summary>
-    public static decimal? Parse(string? raw)
+    public static decimal? Parse(string? raw, CnNumberParsingMode mode = CnNumberParsingMode.Flexible)
     {
         if (string.IsNullOrWhiteSpace(raw))
             return null;
@@ -27,7 +27,12 @@ public static class CnAmountParser
             .Replace("£", string.Empty)
             .Replace(" ", string.Empty)
             .Replace(" ", string.Empty)
+            .Replace("\u202f", string.Empty)
             .Trim();
+
+        if (mode == CnNumberParsingMode.Culture)
+            return decimal.TryParse(text, NumberStyles.Number, CultureInfo.CurrentCulture, out var localized)
+                ? localized : null;
 
         var lastComma = text.LastIndexOf(',');
         var lastDot = text.LastIndexOf('.');
@@ -40,12 +45,18 @@ public static class CnAmountParser
         }
         else if (lastComma >= 0)
         {
+            if (mode == CnNumberParsingMode.Decimal && text.Count(c => c == ',') > 1)
+                return null;
             text = text.Count(c => c == ',') == 1
                 ? text.Replace(',', '.')
                 : text.Replace(",", string.Empty);
         }
         else if (lastDot >= 0)
         {
+            if (mode == CnNumberParsingMode.Decimal)
+                return decimal.TryParse(text, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint,
+                    CultureInfo.InvariantCulture, out var number) ? number : null;
+
             var digitsAfter = text.Length - lastDot - 1;
             if (text.Count(c => c == '.') > 1 || digitsAfter == 3)
                 text = text.Replace(".", string.Empty);

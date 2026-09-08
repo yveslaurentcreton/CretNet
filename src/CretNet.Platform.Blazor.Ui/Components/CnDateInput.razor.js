@@ -13,15 +13,21 @@ export function placePanel(panel, anchor) {
         return;
     }
 
+    // Changing from absolute to fixed can change the panel's available width
+    // and therefore its height. Measure after that layout change, otherwise a
+    // calendar near the bottom of a filter/dialog can spill below the viewport.
+    panel.style.position = 'fixed';
+    panel.style.top = 'auto';
+    panel.style.bottom = 'auto';
+    panel.style.left = '0px';
+
     const field = anchor.getBoundingClientRect();
     const panelHeight = panel.offsetHeight;
     const spaceBelow = window.innerHeight - field.bottom - 8;
     const spaceAbove = field.top - 8;
     const flip = spaceBelow < panelHeight && spaceAbove > spaceBelow;
 
-    panel.style.position = 'fixed';
-    panel.style.top = flip ? '' : (field.bottom + 6) + 'px';
-    panel.style.bottom = flip ? (window.innerHeight - field.top + 6) + 'px' : '';
+    panel.style.top = (flip ? Math.max(8, field.top - panelHeight - 6) : field.bottom + 6) + 'px';
 
     // Keep it on screen when the field sits near the right edge.
     const width = panel.offsetWidth;
@@ -68,6 +74,14 @@ export function setText(input, text) {
 
 export function selectAll(input) {
     input?.select?.();
+}
+
+/** A host may close the filter/dialog while ValueChanged is still awaiting its
+ *  query. Restoring focus afterwards must tolerate the input being removed. */
+export function focus(input, selectText) {
+    if (!input?.isConnected) return;
+    input.focus();
+    if (selectText) input.select();
 }
 
 /** Digits that ran past the end of this field, so the caller can hand them to

@@ -25,6 +25,7 @@ else
     private ICnAvatarSource? _source;
     private string? _url;
     private Guid? _loadedParty;
+    private int _loadVersion;
 
     private string SizeStyle =>
         $"width:{Size}px;height:{Size}px;font-size:{Math.Max(9, (int)(Size * 0.35))}px";
@@ -42,21 +43,29 @@ else
             return;
 
         _loadedParty = PartyId;
-        _url = null;
-        if (_source is not null && PartyId is { } partyId)
-        {
-            _url = await _source.GetPartyAvatarUrlAsync(partyId);
-        }
+        await RefreshAsync();
     }
 
     private void OnAvatarsChanged()
     {
         _ = InvokeAsync(async () =>
         {
-            if (_source is not null && PartyId is { } partyId)
-                _url = await _source.GetPartyAvatarUrlAsync(partyId);
+            await RefreshAsync();
             StateHasChanged();
         });
+    }
+
+    private async Task RefreshAsync()
+    {
+        var version = ++_loadVersion;
+        _url = null;
+        if (_source is not null && PartyId is { } partyId)
+        {
+            var url = await _source.GetPartyAvatarUrlAsync(partyId);
+            // An old lookup must not replace a newly saved photo or another party.
+            if (version == _loadVersion)
+                _url = url;
+        }
     }
 
     internal static string InitialsOf(string? name)
@@ -72,6 +81,7 @@ else
 
     public void Dispose()
     {
+        _loadVersion++;
         if (_source is not null)
             _source.Changed -= OnAvatarsChanged;
     }

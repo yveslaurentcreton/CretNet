@@ -15,7 +15,7 @@ namespace CretNet.Platform.Blazor.Ui.Components;
 /// difference.
 /// </para>
 /// <para>
-/// Labels follow the coupling-cut rule: English defaults, overridden by the
+/// Labels default to CretNet resources and may be overridden by the
 /// consuming application. They go through <see cref="CnButton"/>'s busy
 /// convention, so <c>{0:Saving|Save}</c> works here as anywhere.
 /// </para>
@@ -38,8 +38,10 @@ public partial class CnDialogFooter
     [Parameter] public bool CanSave { get; set; } = true;
     [Parameter] public bool Saving { get; set; }
 
-    [Parameter] public string SaveLabel { get; set; } = "{0:Saving|Save}";
-    [Parameter] public string SaveAndOpenLabel { get; set; } = "Save & open";
-    [Parameter] public string CancelLabel { get; set; } = "Cancel";
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string SaveLabel { get => field ?? CnLabels.Save; set; } = null!;
+    [Parameter] public string SaveAndOpenLabel { get => field ?? CnLabels.SaveOpen; set; } = null!;
+    [Parameter] public string CancelLabel { get => field ?? CnLabels.Cancel; set; } = null!;
+    #pragma warning restore BL0007
     [Parameter] public string? Class { get; set; }
 }

@@ -1,13 +1,82 @@
-﻿<svg class="cn-icon @Class" style="@Style" viewBox="0 0 16 16" aria-hidden="true" focusable="false">@Content</svg>
+<svg class="cn-icon @AppearanceClass @ToneClass @Class" data-icon-role="@EffectiveRole.ToString().ToLowerInvariant()" style="@Style" viewBox="@(EffectiveAppearance.Style == CnIconStyle.Outline ? "0 0 16 16" : "0 0 48 48")" aria-hidden="true" focusable="false">@Content</svg>
 
 @code {
     [Parameter, EditorRequired] public CnIconKind Kind { get; set; }
     [Parameter] public string? Class { get; set; }
     [Parameter] public string? Style { get; set; }
 
-    private MarkupString Content => new(Kind switch
+    [Parameter] public CnIconAppearance? Appearance { get; set; }
+    /// <summary>Defaults to Action; entity/navigation composition chooses Entity explicitly.</summary>
+    [Parameter] public CnIconRole? Role { get; set; }
+    [CascadingParameter] private CnIconAppearance? InheritedAppearance { get; set; }
+    [CascadingParameter] private CnActionIconAppearance? ActionAppearance { get; set; }
+    [CascadingParameter] private CnIconRole? InheritedRole { get; set; }
+    [CascadingParameter(Name = "CnButtonIconAppearance")] private CnIconAppearance? ButtonAppearance { get; set; }
+
+    private static readonly CnIconAppearance Outline = new();
+    private static long _sequence;
+    private readonly string _prefix = "cn-icon-" + System.Threading.Interlocked.Increment(ref _sequence);
+    private CnIconKind? _renderedKind;
+    private CnIconStyle? _renderedStyle;
+    private MarkupString _artwork;
+    private CnIconRole EffectiveRole => Role ?? InheritedRole ?? CnIconRole.Action;
+    private bool UsesActionAppearance => Appearance is null && ButtonAppearance is null
+        && EffectiveRole == CnIconRole.Action && ActionAppearance is not null;
+    private CnIconAppearance EffectiveAppearance => Appearance ?? ButtonAppearance
+        ?? (UsesActionAppearance ? ActionAppearance!.For(Kind) : InheritedAppearance) ?? Outline;
+    private string? ToneClass => UsesActionAppearance && ActionAppearance!.Tone(Kind) is { } tone
+        ? $"cn-icon--{tone}" : null;
+    private string AppearanceClass => EffectiveAppearance.Style == CnIconStyle.Outline ? string.Empty
+        : $"cn-icon--{EffectiveAppearance.Style.ToString().ToLowerInvariant()} {(EffectiveAppearance.Intensity == CnIconIntensity.Quiet ? "cn-icon--quiet" : null)} {(!EffectiveAppearance.Depth ? "cn-icon--flat" : null)}";
+    private MarkupString Content => EffectiveAppearance.Style == CnIconStyle.Outline ? OutlineContent : _artwork;
+
+    protected override void OnParametersSet()
     {
-        CnIconKind.Add => """<path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>""",
+        if (_renderedKind == Kind && _renderedStyle == EffectiveAppearance.Style) return;
+        _renderedKind = Kind;
+        _renderedStyle = EffectiveAppearance.Style;
+        if (EffectiveAppearance.Style == CnIconStyle.Outline)
+        {
+            _artwork = default;
+            return;
+        }
+        var svg = EffectiveAppearance.Style == CnIconStyle.Category
+            ? CnIconArtwork.Category(Kind) : CnIconArtwork.Natural(Kind);
+        _artwork = new(svg.Replace("__CN_ICON__", _prefix, StringComparison.Ordinal));
+    }
+
+    private CnIconKind OutlineKind => Kind switch
+    {
+        CnIconKind.DocumentSpark => CnIconKind.DocumentStack,
+        CnIconKind.DocumentTag => CnIconKind.Document,
+        CnIconKind.DocumentFlow => CnIconKind.DocumentStack,
+        CnIconKind.ClipboardArrowRight => CnIconKind.Document,
+        CnIconKind.Truck => CnIconKind.Box,
+        CnIconKind.InvoiceArrowRight => CnIconKind.Document,
+        CnIconKind.ClipboardArrowLeft => CnIconKind.Document,
+        CnIconKind.BoxCheck => CnIconKind.Box,
+        CnIconKind.InvoiceArrowLeft => CnIconKind.Document,
+        CnIconKind.Inbox => CnIconKind.DocumentStack,
+        CnIconKind.LinkedBlocks => CnIconKind.Settings,
+        CnIconKind.BoxLabel => CnIconKind.Box,
+        CnIconKind.Boxes => CnIconKind.Box,
+        CnIconKind.BoxChecklist => CnIconKind.Checkmark,
+        CnIconKind.Wrench => CnIconKind.Coins,
+        CnIconKind.FolderPlan => CnIconKind.Briefcase,
+        CnIconKind.TaskBoard => CnIconKind.TaskCheck,
+        CnIconKind.CalendarClock => CnIconKind.Calculator,
+        CnIconKind.Wallet => CnIconKind.Briefcase,
+        CnIconKind.CreditCard => CnIconKind.Coins,
+        CnIconKind.Transfer => CnIconKind.SwapArrows,
+        CnIconKind.DocumentMatch => CnIconKind.TaskCheck,
+        CnIconKind.IdBadge => CnIconKind.People,
+        CnIconKind.LedgerExport => CnIconKind.ArrowDownload,
+        _ => Kind,
+    };
+
+    private MarkupString OutlineContent => new(OutlineKind switch
+    {
+        CnIconKind.Add => """<path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>""",
         CnIconKind.Archive => """<path d="M2.5 5.2h11M3.6 5.2v7.4c0 .5.4.9.9.9h7c.5 0 .9-.4.9-.9V5.2M2.5 5.2 3.4 3h9.2l.9 2.2M6.4 8.4h3.2" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>""",
         CnIconKind.ArrowDownload => """<path d="M8 2.5v7M5 7l3 3 3-3M3 12.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>""",
         CnIconKind.ArrowLeft => """<path d="M9.5 3.5 5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>""",

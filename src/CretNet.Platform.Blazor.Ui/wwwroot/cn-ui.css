@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    cn-ui — own component library styles (ADR-011, M-014/S-073).
    Design tokens taken from the owner-approved composer mockup:
    accent #17af3d, 4px grid, compact 28/32px controls, light+dark.
@@ -351,6 +351,11 @@
     height: 16px;
     flex: none;
 }
+
+/* Align icons with the font's visible lettering, not just its line box.
+   All button roles and icon styles share this optical baseline; standalone
+   icons remain centered in their button. */
+.cn-btn:not(.cn-btn--icononly) > .cn-icon { translate: 0 1px; }
 
 .cn-toolbar {
     display: flex;
@@ -5194,3 +5199,31 @@ tr:hover .cn-task-more,
 /* Expanded grid details; hosts supply row content and expansion state. */
 .cn-grid-table tr.cn-grid-row-detail > td { background: var(--cn-accent-tint); padding: 4px 12px 14px 36px; border-bottom: 1px solid var(--cn-stroke-soft); }
 .cn-grid-table tr.cn-grid-row--open td { background: var(--cn-accent-tint); border-bottom-color: transparent; }
+
+/* Shared dimensional icon family. Outline consumers retain the original glyphs. */
+.cn-icon-scope { display: contents; }
+.cn-icon--quiet { filter: saturate(.56); }
+.cn-icon--flat .cn-icon-shadow { filter: none; }
+.cn-icon--flat .cn-icon-bevel { opacity: 0; }
+.cn-icon--flat .cn-icon-tone-hi,
+.cn-icon--flat .cn-icon-tone-lo { stop-color: var(--cn-icon-mid); }
+.cn-icon-settings { display: grid; gap: 8px; min-width: 0; }
+.cn-icon-settings-label { font: 600 11px/1.3 var(--cn-font); color: var(--cn-text-2); margin-top: 4px; }
+.cn-icon-choices { display: flex; gap: 4px; }
+.cn-icon-choices button { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; border: 1px solid var(--cn-stroke-soft); border-radius: 7px; padding: 8px 5px; background: var(--cn-card); color: var(--cn-text-2); font: 600 11px/1.3 var(--cn-font); cursor: pointer; }
+.cn-icon-choices button:hover { background: var(--cn-row-hover); }
+.cn-icon-choices button[aria-pressed=true] { color: var(--cn-text); border-color: var(--cn-accent); background: var(--cn-accent-tint); }
+.cn-icon-choices button:focus-visible { outline: 2px solid var(--cn-accent); outline-offset: 2px; }
+.cn-icon-settings .cn-check-wrap { margin-top: 4px; font-size: 12px; }
+
+/* The role chooses the visual vocabulary; host applications own entity mappings. */
+.cn-icon--danger { color: var(--cn-danger); }
+.cn-icon--warning { color: var(--cn-warn); }
+.cn-icon--success { color: var(--cn-lane-phys); }
+.cn-icon--info { color: var(--cn-lane-fin); }
+.cn-icon-settings-heading { margin: 0; font: 600 12px/1.4 var(--cn-font); color: var(--cn-text); }
+.cn-icon-settings-heading--actions { border-top: 1px solid var(--cn-stroke-soft); padding-top: 13px; margin-top: 6px; }
+.cn-icon-action-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cn-icon-action-choices button { flex-direction: column; }
+.cn-icon-action-sample { display: flex; align-items: center; gap: 10px; height: 24px; }
+.cn-icon-action-sample .cn-icon { width: 18px; height: 18px; }

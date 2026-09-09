@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -243,4 +243,20 @@
   <data xml:space="preserve" name="YouAreAllCaughtUp">
     <value>You are all caught up</value>
   </data>
+  <data name="IconColorStyle" xml:space="preserve"><value>Icon colours</value></data>
+  <data name="IconNaturalColors" xml:space="preserve"><value>Natural</value></data>
+  <data name="IconCategoryColors" xml:space="preserve"><value>By category</value></data>
+  <data name="IconColorIntensity" xml:space="preserve"><value>Colour intensity</value></data>
+  <data name="IconNormalIntensity" xml:space="preserve"><value>Normal</value></data>
+  <data name="IconQuietIntensity" xml:space="preserve"><value>Quiet</value></data>
+  <data name="IconNavigationSize" xml:space="preserve"><value>Sidebar icon size</value></data>
+  <data name="IconSubtleDepth" xml:space="preserve"><value>Subtle depth</value></data>
+  <data name="IconEntities" xml:space="preserve"><value>Entity icons</value></data>
+  <data name="IconActions" xml:space="preserve"><value>Action &amp; system icons</value></data>
+  <data name="IconActionStyle" xml:space="preserve"><value>Action icon style</value></data>
+  <data name="IconMonochrome" xml:space="preserve"><value>Monochrome</value></data>
+  <data name="IconFunctional" xml:space="preserve"><value>Functional colours</value></data>
+  <data name="IconColored" xml:space="preserve"><value>Colour surfaces</value></data>
+  <data name="IconNaturalMaterials" xml:space="preserve"><value>Natural materials</value></data>
+  <data name="IconDestructiveColor" xml:space="preserve"><value>Show delete icons in red</value></data>
 </root>

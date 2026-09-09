@@ -1,0 +1,85 @@
+@using CretNet.Platform.Blazor.Ui.Resources
+
+<div class="cn-icon-settings">
+    @if (ActionValue is not null)
+    {
+        <h3 class="cn-icon-settings-heading">@CnLabels.IconEntities</h3>
+    }
+    <div class="cn-icon-settings-label">@CnLabels.IconColorStyle</div>
+    <div class="cn-icon-choices" role="group" aria-label="@CnLabels.IconColorStyle">
+        @foreach (var style in new[] { CnIconStyle.Natural, CnIconStyle.Category })
+        {
+            <button type="button" aria-pressed="@Pressed(Value.Style == style)"
+                    @onclick="() => Change(Value with { Style = style })">
+                <CnIcon Kind="CnIconKind.DocumentSpark" Appearance="@(Value with { Style = style })" Style="width:24px;height:24px" />
+                @(style == CnIconStyle.Natural ? CnLabels.IconNaturalColors : CnLabels.IconCategoryColors)
+            </button>
+        }
+    </div>
+    <div class="cn-icon-settings-label">@CnLabels.IconColorIntensity</div>
+    <div class="cn-icon-choices" role="group" aria-label="@CnLabels.IconColorIntensity">
+        @foreach (var intensity in Enum.GetValues<CnIconIntensity>())
+        {
+            <button type="button" aria-pressed="@Pressed(Value.Intensity == intensity)"
+                    @onclick="() => Change(Value with { Intensity = intensity })">
+                @(intensity == CnIconIntensity.Normal ? CnLabels.IconNormalIntensity : CnLabels.IconQuietIntensity)
+            </button>
+        }
+    </div>
+    <div class="cn-icon-settings-label">@CnLabels.IconNavigationSize</div>
+    <div class="cn-icon-choices" role="group" aria-label="@CnLabels.IconNavigationSize">
+        @foreach (var size in Enum.GetValues<CnNavigationIconSize>())
+        {
+            <button type="button" aria-pressed="@Pressed(Value.NavigationSize == size)"
+                    @onclick="() => Change(Value with { NavigationSize = size })">
+                <CnIcon Kind="CnIconKind.FolderPlan" Appearance="Value" Style="@($"width:{(int)size}px;height:{(int)size}px")" />
+                @((int)size) px
+            </button>
+        }
+    </div>
+    <CnCheckbox Value="Value.Depth" ValueChanged="depth => Change(Value with { Depth = depth })" Label="@CnLabels.IconSubtleDepth" />
+    @if (ActionValue is { } actions)
+    {
+        <h3 class="cn-icon-settings-heading cn-icon-settings-heading--actions">@CnLabels.IconActions</h3>
+        <div class="cn-icon-choices cn-icon-action-choices" role="group" aria-label="@CnLabels.IconActionStyle">
+            @foreach (var style in Enum.GetValues<CnActionIconStyle>())
+            {
+                var preview = actions.Style == style ? actions
+                    : actions with { Style = style, Depth = style == CnActionIconStyle.Natural };
+                <button type="button" aria-pressed="@Pressed(actions.Style == style)"
+                        @onclick="() => ActionValueChanged.InvokeAsync(preview)">
+                    <CascadingValue Value="preview">
+                        <span class="cn-icon-action-sample" aria-hidden="true">
+                            <CnIcon Kind="CnIconKind.Edit" Role="CnIconRole.Action" />
+                            <CnIcon Kind="CnIconKind.Delete" Role="CnIconRole.Action" />
+                        </span>
+                    </CascadingValue>
+                    <span>@ActionLabel(style)</span>
+                </button>
+            }
+        </div>
+        <CnCheckbox Value="@(actions.SupportsDepth && actions.Depth)" Disabled="@(!actions.SupportsDepth)"
+                    ValueChanged="depth => ActionValueChanged.InvokeAsync(actions with { Depth = depth })"
+                    Label="@CnLabels.IconSubtleDepth" />
+        <CnCheckbox Value="actions.DestructiveColor"
+                    ValueChanged="red => ActionValueChanged.InvokeAsync(actions with { DestructiveColor = red })"
+                    Label="@CnLabels.IconDestructiveColor" />
+    }
+</div>
+
+@code {
+    [Parameter] public CnIconAppearance Value { get; set; } = new(CnIconStyle.Natural);
+    [Parameter] public EventCallback<CnIconAppearance> ValueChanged { get; set; }
+    [Parameter] public CnActionIconAppearance? ActionValue { get; set; }
+    [Parameter] public EventCallback<CnActionIconAppearance> ActionValueChanged { get; set; }
+
+    private Task Change(CnIconAppearance value) => ValueChanged.InvokeAsync(value);
+    private static string Pressed(bool selected) => selected ? "true" : "false";
+    private static string ActionLabel(CnActionIconStyle style) => style switch
+    {
+        CnActionIconStyle.Functional => CnLabels.IconFunctional,
+        CnActionIconStyle.Colored => CnLabels.IconColored,
+        CnActionIconStyle.Natural => CnLabels.IconNaturalMaterials,
+        _ => CnLabels.IconMonochrome,
+    };
+}

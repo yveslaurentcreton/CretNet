@@ -1,4 +1,4 @@
-﻿namespace CretNet.Platform.Blazor.Ui.Components;
+namespace CretNet.Platform.Blazor.Ui.Components;
 
 /// <summary>Inline SVG icon set for the Cn components (S-073, shell icons S-083).</summary>
 public enum CnIconKind
@@ -45,4 +45,30 @@ public enum CnIconKind
     SwapArrows,
     Warning,
     TaskCheck,
+
+    // Distinct object silhouettes for shared navigation and entity surfaces.
+    DocumentSpark,
+    DocumentTag,
+    DocumentFlow,
+    ClipboardArrowRight,
+    Truck,
+    InvoiceArrowRight,
+    ClipboardArrowLeft,
+    BoxCheck,
+    InvoiceArrowLeft,
+    Inbox,
+    LinkedBlocks,
+    BoxLabel,
+    Boxes,
+    BoxChecklist,
+    Wrench,
+    FolderPlan,
+    TaskBoard,
+    CalendarClock,
+    Wallet,
+    CreditCard,
+    Transfer,
+    DocumentMatch,
+    IdBadge,
+    LedgerExport,
 }

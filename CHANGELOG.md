@@ -1,3 +1,10 @@
+# [0.11.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.10.0...v0.11.0) (2026-09-09)
+
+
+### Features
+
+* **ui:** add configurable entity and action icons ([b26211e](https://github.com/yveslaurentcreton/CretNet/commit/b26211eaee4460efbdb95dd638795d413e46a278))
+
 # [0.10.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.9.0...v0.10.0) (2026-09-08)
 
 

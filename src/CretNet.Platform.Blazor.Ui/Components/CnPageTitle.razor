@@ -10,11 +10,20 @@
 
 @if (!Hide)
 {
-    <h1 class="cn-page-title">@Title</h1>
+    <h1 class="cn-page-title cn-page-title--standalone @(Icon.HasValue ? "cn-page-title--with-icon" : null)">
+        @if (Icon is { } icon)
+        {
+            <CnIcon Kind="icon" Role="CnIconRole.Entity" />
+        }
+        <span>@Title</span>
+    </h1>
 }
 
 @code {
     [Parameter, EditorRequired] public string Title { get; set; } = "";
+
+    /// <summary>Optional decorative entity icon; inherits the host's icon appearance.</summary>
+    [Parameter] public CnIconKind? Icon { get; set; }
 
     /// <summary>A top-level page: the trail starts over here.</summary>
     [Parameter] public bool IsMain { get; set; }

@@ -66,6 +66,97 @@ at its form boundary. Calendar chrome now uses the library resources.
 
 ## Browser sample
 
+### Configurable icon appearance
+
+`CnIcon` retains its original outline rendering when no appearance is supplied.
+`CnIconScope Appearance="..."` opts a subtree into the dimensional Natural or
+Category styles; an individual `CnIcon.Appearance` overrides that scope.
+`CnIconAppearance` also carries Normal/Quiet intensity, subtle depth and sidebar
+sizes 18/22/26 px. Immutable replacement updates existing descendants, including
+buttons and hosted dialogs. Scope a dialog host together with the calling app.
+
+The 66 shared kinds cover the accepted 71 navigation/action proposals; five
+identical symbols are reused. Existing enum values remain stable; additional
+object silhouettes are appended. SVG geometry and paint live in
+`CnIconArtwork.Natural.cs` and `CnIconArtwork.Category.cs`. Each component uses
+a stable, unique prefix for its gradient/filter IDs. No runtime JavaScript,
+external images or network access is needed to render an icon.
+
+`CnIconSettings` provides resource-backed colour, intensity, size and depth
+controls. Hosts own persistence and identity, and use `ValueChanged` to replace
+the scoped appearance. `--cn-nav-icon-size` only sizes navigation icons; other
+contexts retain their allocated sizes. Scope wrappers use `display: contents`.
+
+#### Entity and action roles
+
+`CnIconRole.Entity` identifies objects, destinations, search results and timeline
+records. `CnIconRole.Action` covers buttons and system controls, and is the default
+role of a standalone icon. The role describes its placement, not its shape: the
+same document symbol can identify an entity or appear on an action button.
+Hosts retain their own entity-to-symbol registry. Shared `CnIconKind` names describe
+generic objects and operations; their existing names and numeric values stay stable.
+
+Supply `CnIconScope.ActionAppearance` to opt into independent action rendering:
+
+```razor
+<CnIconScope Appearance="entityIcons" ActionAppearance="actionIcons">
+    <CnIcon Kind="CnIconKind.FolderPlan" Role="CnIconRole.Entity" />
+    <CnButton Icon="CnIconKind.Edit" Label="Edit" />
+</CnIconScope>
+```
+
+`CnActionIconAppearance` provides `Style`, `Depth` and `DestructiveColor`.
+`CnActionIconStyle.Monochrome` uses foreground outlines; `Functional` adds semantic
+colours; `Colored` uses coloured object surfaces; `Natural` uses material artwork.
+Depth applies only to the last two styles. Entity intensity and navigation size
+never alter action icons. Destructive colour changes the actual Delete artwork,
+including red versus steel material in coloured styles. Status/error symbols retain
+their semantic meaning; explicit button roles still control the button's own colour.
+
+`CnIconSettings.ActionValue`/`ActionValueChanged` adds a second, translated group
+with four style previews, depth and destructive colour. Leaving it null retains the
+original settings layout. Hosts persist both values per their own account model;
+the recommended new action default is monochrome, no depth and destructive red.
+
+Leaving `ActionAppearance` null retains the original single-appearance contract,
+including outline rendering without any scope. `CnPageTitle.Icon` uses Entity;
+`CnButton` assigns Action to its leading, trailing and composed icons. Individual
+`CnIcon.Appearance` overrides remain strongest, followed by the button override
+(including Accent foreground contrast), role preferences and the legacy scope.
+This remains one shared renderer; there are no per-page alignment or colour fixes.
+
+`CnButton` chooses foreground outline icons for the Accent role so they inherit
+the button text colour on a solid accent background. This applies to `Icon`,
+`IconEnd` and icons composed through `ChildContent`; Quiet/depth preferences do
+not weaken the foreground variant. Neutral, Subtle and Danger buttons follow
+scoped action preferences when supplied, or the legacy appearance otherwise.
+`IconAppearance` provides an explicit per-button
+override, while an individual `CnIcon.Appearance` remains the most specific
+override. Role and appearance changes update existing button icons immediately.
+The Add symbol uses a slim, rounded cross in all styles; coloured variants keep
+a restrained gradient and optional depth instead of a filled block.
+Beside a button label, all icons receive the same 1px downward optical correction
+to align with the shell font's visible lettering. This rule covers every button
+role and icon appearance, including leading/trailing icons. Icon-only buttons
+keep geometric centering. The correction belongs to shared button composition;
+there are no symbol-specific offsets or application-level exceptions.
+
+This extension is source-verified before publication. Consumers must adopt the
+owner-approved published package and pass their NuGet gate before merge.
+
+### Standalone page titles
+
+`CnPageTitle` leaves 16 px below its visible heading so following grid search
+toolbars or forms do not touch it. Hosts can override `--cn-page-title-spacing`
+when their layout supplies spacing. `Hide` adds no heading or spacing; composed
+headers using `.cn-page-title` keep their own layout.
+
+The optional `Icon` parameter adds a decorative 28 px `CnIcon`, inheriting the
+host's appearance scope. The same `.cn-page-title--with-icon` class can be used
+on a composed heading containing a `CnIcon` and a text `span`. It retains a
+10 px gap and allows long names to wrap. `Hide` still omits the entire heading;
+icons never enter the document title or breadcrumb text.
+
 ### Field widths
 
 Date, time, date-time and date-range borders fill the width allocated to their
@@ -169,3 +260,12 @@ Both regressions failed before their corrections. Final shared verification:
 HCMT notification panel after English/Dutch switches refreshed all owned labels;
 dark presentation was visually checked. HCMT S-076 records the precise browser
 scope, remaining host-child label refresh issue and pending published-package gate.
+
+## Standalone title verification (2026-09-09)
+
+All 55 component tests and HCMT's 11 focused inbox/title tests passed. HCMT's
+Debug and Release frontend source builds passed without warnings or errors.
+The running inbox measured a 16 px gap from the standalone heading to its search
+field. This is browser layout evidence; no component-test CSS string assertion
+is used as a substitute. The change is local on `codex/page-title-spacing` and
+has not been published as a package.

@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Resources;
 
 namespace CretNet.Platform.Blazor.Ui.Resources;
@@ -90,4 +90,20 @@ public static class CnLabels
     public static string Yes => ResourceManager.GetString(nameof(Yes), CultureInfo.CurrentUICulture)!;
     public static string Yesterday => ResourceManager.GetString(nameof(Yesterday), CultureInfo.CurrentUICulture)!;
     public static string YouAreAllCaughtUp => ResourceManager.GetString(nameof(YouAreAllCaughtUp), CultureInfo.CurrentUICulture)!;
+    public static string IconColorStyle => ResourceManager.GetString(nameof(IconColorStyle), CultureInfo.CurrentUICulture)!;
+    public static string IconNaturalColors => ResourceManager.GetString(nameof(IconNaturalColors), CultureInfo.CurrentUICulture)!;
+    public static string IconCategoryColors => ResourceManager.GetString(nameof(IconCategoryColors), CultureInfo.CurrentUICulture)!;
+    public static string IconColorIntensity => ResourceManager.GetString(nameof(IconColorIntensity), CultureInfo.CurrentUICulture)!;
+    public static string IconNormalIntensity => ResourceManager.GetString(nameof(IconNormalIntensity), CultureInfo.CurrentUICulture)!;
+    public static string IconQuietIntensity => ResourceManager.GetString(nameof(IconQuietIntensity), CultureInfo.CurrentUICulture)!;
+    public static string IconNavigationSize => ResourceManager.GetString(nameof(IconNavigationSize), CultureInfo.CurrentUICulture)!;
+    public static string IconSubtleDepth => ResourceManager.GetString(nameof(IconSubtleDepth), CultureInfo.CurrentUICulture)!;
+    public static string IconEntities => ResourceManager.GetString(nameof(IconEntities), CultureInfo.CurrentUICulture)!;
+    public static string IconActions => ResourceManager.GetString(nameof(IconActions), CultureInfo.CurrentUICulture)!;
+    public static string IconActionStyle => ResourceManager.GetString(nameof(IconActionStyle), CultureInfo.CurrentUICulture)!;
+    public static string IconMonochrome => ResourceManager.GetString(nameof(IconMonochrome), CultureInfo.CurrentUICulture)!;
+    public static string IconFunctional => ResourceManager.GetString(nameof(IconFunctional), CultureInfo.CurrentUICulture)!;
+    public static string IconColored => ResourceManager.GetString(nameof(IconColored), CultureInfo.CurrentUICulture)!;
+    public static string IconNaturalMaterials => ResourceManager.GetString(nameof(IconNaturalMaterials), CultureInfo.CurrentUICulture)!;
+    public static string IconDestructiveColor => ResourceManager.GetString(nameof(IconDestructiveColor), CultureInfo.CurrentUICulture)!;
 }

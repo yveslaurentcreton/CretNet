@@ -1,0 +1,14 @@
+<CascadingValue Value="Appearance">
+<CascadingValue Value="ActionAppearance">
+    <div class="cn-icon-scope" style="--cn-nav-icon-size: @((int)Appearance.NavigationSize)px;">
+        @ChildContent
+    </div>
+</CascadingValue>
+</CascadingValue>
+
+@code {
+    [Parameter, EditorRequired] public CnIconAppearance Appearance { get; set; } = new();
+    /// <summary>Opt into independent action icons. Null preserves the original shared appearance.</summary>
+    [Parameter] public CnActionIconAppearance? ActionAppearance { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

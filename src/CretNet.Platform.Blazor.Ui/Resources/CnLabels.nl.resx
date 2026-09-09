@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -243,4 +243,20 @@
   <data xml:space="preserve" name="YouAreAllCaughtUp">
     <value>Je bent helemaal bij</value>
   </data>
+  <data name="IconColorStyle" xml:space="preserve"><value>Icoonkleuren</value></data>
+  <data name="IconNaturalColors" xml:space="preserve"><value>Natuurlijk</value></data>
+  <data name="IconCategoryColors" xml:space="preserve"><value>Per categorie</value></data>
+  <data name="IconColorIntensity" xml:space="preserve"><value>Kleurintensiteit</value></data>
+  <data name="IconNormalIntensity" xml:space="preserve"><value>Helder</value></data>
+  <data name="IconQuietIntensity" xml:space="preserve"><value>Rustig</value></data>
+  <data name="IconNavigationSize" xml:space="preserve"><value>Icoonformaat zijbalk</value></data>
+  <data name="IconSubtleDepth" xml:space="preserve"><value>Subtiele diepte</value></data>
+  <data name="IconEntities" xml:space="preserve"><value>Entity-iconen</value></data>
+  <data name="IconActions" xml:space="preserve"><value>Actie- en systeemiconen</value></data>
+  <data name="IconActionStyle" xml:space="preserve"><value>Stijl van actie-iconen</value></data>
+  <data name="IconMonochrome" xml:space="preserve"><value>Monochroom</value></data>
+  <data name="IconFunctional" xml:space="preserve"><value>Functionele kleuren</value></data>
+  <data name="IconColored" xml:space="preserve"><value>Kleurvlakken</value></data>
+  <data name="IconNaturalMaterials" xml:space="preserve"><value>Natuurlijke materialen</value></data>
+  <data name="IconDestructiveColor" xml:space="preserve"><value>Verwijdericonen in rood</value></data>
 </root>

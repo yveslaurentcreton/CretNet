@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    cn-shell — application shell (S-083, owner-approved mockup).
    Sidebar (wide/rail/mobile drawer), topbar, settings popover,
    page scaffolding for the new screen archetypes (S-085).
@@ -94,14 +94,14 @@
     color: var(--company-accent, var(--cn-accent));
     font-weight: 600;
 }
-.cn-nav-item .cn-icon { width: 16px; height: 16px; flex: none; }
+.cn-nav-item .cn-icon { width: var(--cn-nav-icon-size, 16px); height: var(--cn-nav-icon-size, 16px); flex: none; }
 .cn-nav-label { overflow: hidden; text-overflow: ellipsis; }
 
 .cn-sidebar-foot { margin-top: auto; padding-top: 8px; }
 
 /* rail variant */
 .rail .cn-brand-name, .rail .cn-nav-group, .rail .cn-nav-label { display: none; }
-.rail .cn-nav-item { justify-content: center; padding: 10px; width: 44px; margin: 0 auto; }
+.rail .cn-nav-item { justify-content: center; padding: 10px; width: max(44px, calc(var(--cn-nav-icon-size, 16px) + 20px)); margin: 0 auto; }
 .rail .cn-sidebar { padding-left: 8px; padding-right: 8px; }
 .rail .cn-brand { justify-content: center; padding-left: 0; padding-right: 0; }
 
@@ -192,6 +192,10 @@
 
 .cn-page-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .cn-page-title { font: 600 20px var(--cn-font); margin: 0; }
+.cn-page-title--standalone { margin-block-end: var(--cn-page-title-spacing, 16px); }
+.cn-page-title--with-icon { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.cn-page-title--with-icon > .cn-icon { width: 28px; height: 28px; flex: 0 0 28px; }
+.cn-page-title--with-icon > span { min-width: 0; overflow-wrap: anywhere; }
 .cn-page-sub { color: var(--cn-text-2); font-size: 12.5px; }
 
 .cn-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }

@@ -1,66 +1,61 @@
-﻿@inject CnThemeService Theme
+@inject CnThemeService Theme
 @inject CnDialogService Dialogs
 @inject CretNet.Platform.Blazor.Ui.Toasts.CnToastService Toasts
 
-<main style="max-width:1000px;margin:auto;padding:24px;display:grid;gap:16px">
-    <header style="display:flex;align-items:center;gap:16px">
-        <CnAvatar Name="CretNet" Size="40" />
-        <h1 style="margin:0;font-size:22px">CretNet · Cn</h1>
-        <span style="flex:1"></span>
+@* Control catalogue: every public Cn control, live, grouped. One heading and
+   one API line per control; no prose. Reference for people and agents. *@
+
+<main class="demo">
+    <header class="demo-head">
+        <CnAvatar Name="CretNet" Size="36" />
+        <h1>CretNet · Cn</h1>
+        <span class="demo-spacer"></span>
         <CnNotificationBell PollInterval="TimeSpan.Zero" OnOpen="item => Toasts.Information(item.Title, item.Message)" />
         <CnSelect TValue="CnThemeMode" Options="Enum.GetValues<CnThemeMode>()" Value="Theme.Mode"
-                  ValueChanged="mode => Theme.SetModeAsync(mode)" />
+                  ValueChanged="mode => Theme.SetModeAsync(mode)" aria-label="Theme" Style="width:110px" />
         <a data-enhance-nav="false" href="/culture/nl-BE">NL</a>
         <a data-enhance-nav="false" href="/culture/en-GB">EN</a>
     </header>
-    <CnCard Title="@CnLabels.Value">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
-            <div>
-                <CnCurrencyField Label="@CnLabels.Amount" @bind-Value="_amount" />
-                <output id="amount">@(_amount?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "null")</output>
+
+    <nav class="demo-toc" aria-label="Controls">
+        @foreach (var group in Toc)
+        {
+            <div class="demo-toc-group">
+                <a class="demo-toc-title" href="#@group.Id">@group.Title</a>
+                @foreach (var control in group.Controls)
+                {
+                    <a href="#@Anchor(control)">@control</a>
+                }
             </div>
-            <div>
-                <CnNumberField Label="@CnLabels.Value" ParsingMode="CnNumberParsingMode.Decimal" MaxDecimals="4" @bind-Value="_quantity" />
-                <output id="quantity">@(_quantity?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "null")</output>
-            </div>
-            <CnPercentField Label="%" @bind-Value="_percent" />
-            <div>
-                <CnDateField Label="@CnLabels.Date" @bind-Value="_date" />
-                <output id="date">@(_date?.ToString("yyyy-MM-dd") ?? "null")</output>
-            </div>
-            <CnTimeField Label="@CnLabels.Time" @bind-Value="_time" />
-            <CnPicker Label="@CnLabels.Item" Provider="FindItems" @bind-Value="_item" />
-            <CnDateTimeField Label="@($"{CnLabels.Date} / {CnLabels.Time}")" @bind-Value="_moment" />
-            <CnDateRangeField Label="@($"{CnLabels.From} / {CnLabels.To}")" @bind-From="_from" @bind-To="_to" />
+        }
+    </nav>
+
+    @* ============================== Acties ============================== *@
+    <h2 id="acties" class="demo-group">Acties</h2>
+
+    <section id="@Anchor("CnButton")" class="demo-sec">
+        <h3><code>CnButton</code></h3>
+        <p class="demo-api">Label · Icon · IconEnd · Role (Neutral/Accent/Subtle/Danger) · Dashed · Loading · Disabled · Title · OnClick</p>
+        <div class="demo-row">
+            <CnButton Label="Neutral" />
+            <CnButton Label="Accent" Role="CnButtonRole.Accent" Icon="CnIconKind.Add" />
+            <CnButton Label="Subtle" Role="CnButtonRole.Subtle" />
+            <CnButton Label="Danger" Role="CnButtonRole.Danger" Icon="CnIconKind.Delete" />
+            <CnButton Label="Dashed" Dashed Icon="CnIconKind.Add" />
+            <CnButton Icon="CnIconKind.Edit" Title="Icon-only" />
+            <CnButton Label="{0:Bezig|Laden}" Loading />
+            <CnButton Label="Disabled" Disabled />
+            <CnButton Label="Save" Role="CnButtonRole.Accent" OnClick="SlowSave" />
         </div>
-        <div class="sample-widths" style="display:flex;flex-wrap:wrap;gap:16px;margin-top:16px">
-            <CnDateField Label="240px" Style="width:240px;max-width:100%" @bind-Value="_date" />
-            <CnTimeField Label="fit-content" Style="width:fit-content" @bind-Value="_time" />
-        </div>
-    </CnCard>
-    <CnCard Title="@CnLabels.Search">
-        <CnButton Label="@CnLabels.Item" OnClick="() => _expanded = !_expanded" />
-        <CnDataGrid TItem="string" Provider="GridItems" RowExpanded="_ => _expanded">
-            <ChildContent>
-                <CnGridColumn TItem="string" Title="@CnLabels.Item" Value="x => x" />
-            </ChildContent>
-            <RowDetail Context="row"><CnBadge Accent>@row · A-001</CnBadge></RowDetail>
-        </CnDataGrid>
-    </CnCard>
-    <CnCard Title="@CnLabels.New">
-        <CnRichTextBox Placeholder="@CnLabels.NewItem" PostLabel="@CnLabels.Save" Posted="body => _posted = body" />
-        <CnMessageBar Message="@_posted" MessageChanged="message => _posted = message" Intent="CnMessageIntent.Info" />
-        <CnButton Label="@CnLabels.Save" OnClick="Confirm" />
-    </CnCard>
-    <CnCard Title="@CnLabels.More">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+    </section>
+
+    <section id="@Anchor("CnActionMenu")" class="demo-sec">
+        <h3><code>CnActionMenu</code> · <code>CnActionMenuItem</code> · <code>CnActionMenuSeparator</code></h3>
+        <p class="demo-api">Label · Icon · IconOnly · AlignStart · Role — item: Label · Icon · OnClick · Danger · Disabled · DisabledReason · Loading</p>
+        <div class="demo-row demo-row--spread">
             <CnActionMenu IconOnly AlignStart>
-                <CnActionMenuItem Label="@CnLabels.Item" Icon="CnIconKind.Copy" />
+                <CnActionMenuItem Label="@CnLabels.Item" Icon="CnIconKind.Copy" OnClick="() => Toasts.Information(CnLabels.Item)" />
             </CnActionMenu>
-            <span style="display:flex;gap:8px">
-                <CnButton Label="+" OnClick="() => _accordion.ExpandAllAsync()" />
-                <CnButton Label="-" OnClick="() => _accordion.CollapseAllAsync()" />
-            </span>
             <CnActionMenu>
                 <CnActionMenuItem Label="@CnLabels.Save" Icon="CnIconKind.Save" OnClick="() => Toasts.Success(CnLabels.Save)" />
                 <CnActionMenuItem Label="@CnLabels.Archive" Icon="CnIconKind.Archive" Disabled DisabledReason="@CnLabels.NothingArchived" />
@@ -70,7 +65,195 @@
                 <CnActionMenuItem Label="@CnLabels.Clear" Icon="CnIconKind.Delete" Danger OnClick="ConfirmDelete" />
             </CnActionMenu>
         </div>
-        <CnViewSwitch TValue="CnThemeMode" Options="Enum.GetValues<CnThemeMode>()" @bind-Value="_view" />
+    </section>
+
+    <section id="@Anchor("CnConfirmDialog")" class="demo-sec">
+        <h3><code>CnConfirmDialog</code></h3>
+        <p class="demo-api">Dialogs.ConfirmAsync(title, message, yesLabel?, noLabel?, destructive = false) → bool</p>
+        <div class="demo-row">
+            <CnButton Label="ConfirmAsync" OnClick="Confirm" />
+            <CnButton Label="destructive: true" Role="CnButtonRole.Danger" Icon="CnIconKind.Delete" OnClick="ConfirmDelete" />
+        </div>
+    </section>
+
+    <section id="@Anchor("CnDialogFooter")" class="demo-sec">
+        <h3><code>CnDialogFooter</code> · <code>CnDialogHost</code></h3>
+        <p class="demo-api">OnSave · OnCancel · OnSaveAndOpen · CanSave · Saving — Dialogs.ShowAsync&lt;TContent, TResult&gt;(title, parameters)</p>
+        <CnButton Label="ShowAsync" Icon="CnIconKind.DocumentAdd" OnClick="OpenDialog" />
+    </section>
+
+    @* ============================== Invoer ============================== *@
+    <h2 id="invoer" class="demo-group">Invoer</h2>
+
+    <section id="@Anchor("CnTextField")" class="demo-sec">
+        <h3><code>CnTextField</code> · <code>CnTextArea</code></h3>
+        <p class="demo-api">Value · Label · Placeholder · ReadOnly · Disabled · Subtle — TextArea: Rows</p>
+        <div class="demo-fields">
+            <CnTextField Label="Naam" Placeholder="Naam…" @bind-Value="_text" />
+            <CnTextField Label="Alleen-lezen" Value="HC Partners" ReadOnly />
+            <CnTextField Label="Disabled" Value="—" Disabled />
+            <CnTextArea Label="Notitie" Rows="3" @bind-Value="_note" />
+        </div>
+    </section>
+
+    <section id="@Anchor("CnCheckbox")" class="demo-sec">
+        <h3><code>CnCheckbox</code></h3>
+        <p class="demo-api">Value · ValueChanged · Label · Disabled</p>
+        <div class="demo-row">
+            <CnCheckbox Label="Actief" @bind-Value="_checked" />
+            <CnCheckbox Label="Disabled" Value="true" Disabled />
+        </div>
+    </section>
+
+    <section id="@Anchor("CnNumberField")" class="demo-sec">
+        <h3><code>CnNumberField</code> · <code>CnCurrencyField</code> · <code>CnPercentField</code></h3>
+        <p class="demo-api">decimal? Value · ParsingMode (Flexible/Decimal/Culture) · MaxDecimals · Min · Max</p>
+        <div class="demo-fields">
+            <div>
+                <CnCurrencyField Label="@CnLabels.Amount" @bind-Value="_amount" />
+                <output id="amount">@(_amount?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "null")</output>
+            </div>
+            <div>
+                <CnNumberField Label="@CnLabels.Value" ParsingMode="CnNumberParsingMode.Decimal" MaxDecimals="4" @bind-Value="_quantity" />
+                <output id="quantity">@(_quantity?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "null")</output>
+            </div>
+            <CnPercentField Label="%" @bind-Value="_percent" />
+        </div>
+    </section>
+
+    <section id="@Anchor("CnDateField")" class="demo-sec">
+        <h3><code>CnDateField</code> · <code>CnTimeField</code> · <code>CnDateTimeField</code> · <code>CnDateRangeField</code></h3>
+        <p class="demo-api">DateTime?/TimeOnly? Value · From/To (range) · Label</p>
+        <div class="demo-fields">
+            <div>
+                <CnDateField Label="@CnLabels.Date" @bind-Value="_date" />
+                <output id="date">@(_date?.ToString("yyyy-MM-dd") ?? "null")</output>
+            </div>
+            <CnTimeField Label="@CnLabels.Time" @bind-Value="_time" />
+            <CnDateTimeField Label="@($"{CnLabels.Date} / {CnLabels.Time}")" @bind-Value="_moment" />
+            <CnDateRangeField Label="@($"{CnLabels.From} / {CnLabels.To}")" @bind-From="_from" @bind-To="_to" />
+        </div>
+        <div class="sample-widths demo-row">
+            <CnDateField Label="240px" Style="width:240px;max-width:100%" @bind-Value="_date" />
+            <CnTimeField Label="fit-content" Style="width:fit-content" @bind-Value="_time" />
+        </div>
+    </section>
+
+    <section id="@Anchor("CnPicker")" class="demo-sec">
+        <h3><code>CnPicker</code> · <code>CnSelect</code></h3>
+        <p class="demo-api">Picker: Guid? Value · Provider(search) · OnAdd · AdvancedSearch — Select: Value · Options · OptionText · Placeholder</p>
+        <div class="demo-fields">
+            <CnPicker Label="@CnLabels.Item" Provider="FindItems" @bind-Value="_item" />
+            <CnSelect TValue="CnStatIntent" Label="CnSelect" Options="Enum.GetValues<CnStatIntent>()" @bind-Value="_selectValue" />
+        </div>
+    </section>
+
+    <section id="@Anchor("CnViewSwitch")" class="demo-sec">
+        <h3><code>CnViewSwitch</code></h3>
+        <p class="demo-api">Value · ValueChanged · Options · OptionText · AriaLabel · ControlsId</p>
+        <CnViewSwitch TValue="SampleView" Options="Enum.GetValues<SampleView>()" @bind-Value="_view" />
+    </section>
+
+    <section id="@Anchor("CnStatusPicker")" class="demo-sec">
+        <h3><code>CnStatusPicker</code></h3>
+        <p class="demo-api">Value · ValueChanged · Options (CnStatusOption: Value, Label, Tone, Disabled, Description) · CanChange · Prefix · Loading</p>
+        <div class="demo-row">
+            <CnStatusPicker TStatus="SampleStatus" @bind-Value="_status" Options="StatusOptions" CanChange Prefix="Status" />
+            <CnStatusPicker TStatus="SampleStatus" Value="SampleStatus.Paid" Options="StatusOptions" />
+        </div>
+    </section>
+
+    <section id="@Anchor("CnRichTextBox")" class="demo-sec">
+        <h3><code>CnRichTextBox</code> · <code>CnRichTextEditor</code></h3>
+        <p class="demo-api">RichTextBox: Placeholder · PostLabel · Posted · Posting — Editor: Value · ValueChanged · ReadOnly · AutoFocus</p>
+        <CnRichTextBox Placeholder="@CnLabels.NewItem" PostLabel="@CnLabels.Save" Posted="body => _posted = body" />
+        <CnRichTextEditor @bind-Value="_richText" />
+    </section>
+
+    @* ============================== Data ============================== *@
+    <h2 id="data" class="demo-group">Data</h2>
+
+    <section id="@Anchor("CnDataGrid")" class="demo-sec">
+        <h3><code>CnDataGrid</code> · <code>CnGridColumn</code></h3>
+        <p class="demo-api">Provider(CnGridRequest) · ShowSearch · PageSize · RowDetail · RowExpanded · OnRowClick · ItemsTemplate · ReloadAsync() — column: Title · Value · CellTemplate · SortField · Align</p>
+        <CnButton Label="RowExpanded" OnClick="() => _expanded = !_expanded" />
+        <CnDataGrid TItem="string" Provider="GridItems" RowExpanded="_ => _expanded">
+            <ChildContent>
+                <CnGridColumn TItem="string" Title="@CnLabels.Item" Value="x => x" />
+            </ChildContent>
+            <RowDetail Context="row"><CnBadge Accent>@row · A-001</CnBadge></RowDetail>
+        </CnDataGrid>
+        <CnDataGrid TItem="string" Provider="GridItems" ShowSearch="false" Class="demo-grid-cards">
+            <ItemsTemplate Context="items">
+                <div class="demo-cards">
+                    @foreach (var item in items)
+                    {
+                        <div class="demo-card-item">@item</div>
+                    }
+                </div>
+            </ItemsTemplate>
+        </CnDataGrid>
+    </section>
+
+    <section id="@Anchor("CnStatStrip")" class="demo-sec">
+        <h3><code>CnStatStrip</code> · <code>CnStat</code></h3>
+        <p class="demo-api">Stat: Label · Value · Sub · Intent (Default/Danger/Warn) · OnClick</p>
+        <CnStatStrip>
+            <CnStat Label="Open" Value="12" Sub="offertes" />
+            <CnStat Label="Te laat" Value="3" Intent="CnStatIntent.Danger" OnClick="() => Toasts.Warning(CnLabels.Item)" />
+            <CnStat Label="Wacht" Value="5" Intent="CnStatIntent.Warn" Sub="klikbaar" OnClick="() => Toasts.Information(CnLabels.Item)" />
+        </CnStatStrip>
+    </section>
+
+    <section id="@Anchor("CnTimeline")" class="demo-sec">
+        <h3><code>CnTimeline</code></h3>
+        <p class="demo-api">Rows (CnTimelineRow: Label, From, To, Fill, Tone, Value, SecondValue) · From · To · Today · ShowSecondValue</p>
+        <div class="demo-scroll">
+            <CnTimeline Rows="TimelineRows" From="new DateOnly(2026, 1, 1)" To="new DateOnly(2026, 12, 31)" Today="new DateOnly(2026, 9, 24)" />
+        </div>
+    </section>
+
+    <section id="@Anchor("CnProgressBar")" class="demo-sec">
+        <h3><code>CnProgressBar</code></h3>
+        <p class="demo-api">Value · Maximum (budget line at 70% of the track) · Large · Title</p>
+        <div class="demo-stack">
+            <CnProgressBar Value="45" Maximum="100" />
+            <CnProgressBar Value="100" Maximum="100" />
+            <CnProgressBar Value="130" Maximum="100" Large Title="130 / 100" />
+        </div>
+    </section>
+
+    <section id="@Anchor("CnBadge")" class="demo-sec">
+        <h3><code>CnBadge</code> · <code>CnAvatar</code></h3>
+        <p class="demo-api">Badge: Accent · ChildContent — Avatar: Name · PartyId · Size</p>
+        <div class="demo-row">
+            <CnBadge>Concept</CnBadge>
+            <CnBadge Accent>A-001</CnBadge>
+            <CnAvatar Name="Ada Lovelace" />
+            <CnAvatar Name="HC Partners" Size="40" />
+        </div>
+    </section>
+
+    @* ============================== Navigatie ============================== *@
+    <h2 id="navigatie" class="demo-group">Navigatie</h2>
+
+    <section id="@Anchor("CnTabs")" class="demo-sec">
+        <h3><code>CnTabs</code> · <code>CnTab</code></h3>
+        <p class="demo-api">InitialActiveIndex · ActiveIndexChanged · RightContent · ActivateAsync(i) — tab: Label · Count</p>
+        <CnTabs>
+            <CnTab Label="Overzicht">Overzicht-inhoud</CnTab>
+            <CnTab Label="Lijnen" Count="7">Zeven lijnen</CnTab>
+            <CnTab Label="Documenten" Count="0">Geen documenten</CnTab>
+        </CnTabs>
+    </section>
+
+    <section id="@Anchor("CnAccordion")" class="demo-sec">
+        <h3><code>CnAccordion</code> · <code>CnAccordionItem</code></h3>
+        <p class="demo-api">ExpandAllAsync() · CollapseAllAsync() — item: Title · Count · Open/OpenChanged · Dimmed</p>
+        <div class="demo-row">
+            <CnButton Label="ExpandAll" OnClick="() => _accordion.ExpandAllAsync()" />
+            <CnButton Label="CollapseAll" OnClick="() => _accordion.CollapseAllAsync()" />
+        </div>
         <CnAccordion @ref="_accordion">
             <CnAccordionItem Title="@CnLabels.Item" Count="3" @bind-Open="_sectionOpen">
                 <CnBadge Accent>A-001</CnBadge>
@@ -79,12 +262,156 @@
                 <span>@CnLabels.EmptyValue</span>
             </CnAccordionItem>
         </CnAccordion>
-    </CnCard>
+    </section>
+
+    <section id="@Anchor("CnBreadcrumb")" class="demo-sec">
+        <h3><code>CnBreadcrumb</code></h3>
+        <p class="demo-api">Items (CnBreadcrumbItem: Text, Href) · MaxAncestors</p>
+        <CnBreadcrumb Items="Crumbs" />
+    </section>
+
+    <section id="@Anchor("CnFlowRail")" class="demo-sec">
+        <h3><code>CnFlowRail</code></h3>
+        <p class="demo-api">Steps (CnFlowStep: Label, Detail, State Pending/Current/Done, OnClick)</p>
+        <div class="demo-scroll">
+            <CnFlowRail Steps="FlowSteps" />
+        </div>
+    </section>
+
+    <section id="@Anchor("CnPageTitle")" class="demo-sec">
+        <h3><code>CnPageTitle</code></h3>
+        <p class="demo-api">Title · Icon · IsMain · Hide</p>
+        <CnPageTitle Title="CretNet · Cn" Icon="CnIconKind.BookOpen" IsMain />
+    </section>
+
+    @* ============================== Feedback ============================== *@
+    <h2 id="feedback" class="demo-group">Feedback</h2>
+
+    <section id="@Anchor("CnMessageBar")" class="demo-sec">
+        <h3><code>CnMessageBar</code></h3>
+        <p class="demo-api">Message · MessageChanged · Intent (Danger/Warning/Info)</p>
+        <CnMessageBar Message="@_posted" MessageChanged="message => _posted = message" Intent="CnMessageIntent.Info" />
+        <CnMessageBar Message="Opslaan mislukt." Intent="CnMessageIntent.Danger" />
+        <CnMessageBar Message="Prijs ontbreekt." Intent="CnMessageIntent.Warning" />
+    </section>
+
+    <section id="@Anchor("CnToastHost")" class="demo-sec">
+        <h3><code>CnToastHost</code></h3>
+        <p class="demo-api">CnToastService: Success · Information · Warning · Error(title, message?)</p>
+        <div class="demo-row">
+            <CnButton Label="Success" OnClick="() => Toasts.Success(CnLabels.Save)" />
+            <CnButton Label="Information" OnClick="() => Toasts.Information(CnLabels.Item)" />
+            <CnButton Label="Warning" OnClick="() => Toasts.Warning(CnLabels.Item)" />
+            <CnButton Label="Error" OnClick="() => Toasts.Error(CnLabels.Item, CnLabels.CouldNotLoadNotifications)" />
+        </div>
+    </section>
+
+    <section id="@Anchor("CnLoading")" class="demo-sec">
+        <h3><code>CnLoading</code></h3>
+        <p class="demo-api">IsLoading · ChildContent · AriaLabel</p>
+        <CnCheckbox Label="IsLoading" @bind-Value="_loading" />
+        <CnLoading IsLoading="_loading"><span>Inhoud geladen.</span></CnLoading>
+    </section>
+
+    <section id="@Anchor("CnNotificationCenter")" class="demo-sec">
+        <h3><code>CnNotificationBell</code> · <code>CnNotificationCenter</code></h3>
+        <p class="demo-api">OnOpen · OnClose · PollInterval (bell) — host registers ICnNotificationClient</p>
+        <div class="demo-nc">
+            <CnNotificationCenter OnOpen="item => Toasts.Information(item.Title, item.Message)" />
+        </div>
+    </section>
+
+    @* ============================== Layout ============================== *@
+    <h2 id="layout" class="demo-group">Layout</h2>
+
+    <section id="@Anchor("CnCard")" class="demo-sec">
+        <h3><code>CnCard</code></h3>
+        <p class="demo-api">Title · Hint · CardHeaderActions · ChildContent</p>
+        <CnCard Title="Kaart" Hint="hint">
+            <CardHeaderActions><CnButton Role="CnButtonRole.Subtle" Icon="CnIconKind.Edit" Title="Edit" /></CardHeaderActions>
+            <ChildContent>Inhoud van de kaart.</ChildContent>
+        </CnCard>
+    </section>
+
+    @* ============================== Iconen ============================== *@
+    <h2 id="iconen" class="demo-group">Iconen</h2>
+
+    <section id="@Anchor("CnIconScope")" class="demo-sec">
+        <h3><code>CnIconScope</code> · <code>CnIconSettings</code></h3>
+        <p class="demo-api">Scope: Appearance · ActionAppearance — Settings: Value/ValueChanged · ActionValue/ActionValueChanged</p>
+        <CnIconSettings @bind-Value="_iconAppearance" @bind-ActionValue="_actionAppearance" />
+    </section>
+
+    <section id="@Anchor("CnIcon")" class="demo-sec">
+        <h3><code>CnIcon</code></h3>
+        <p class="demo-api">Kind · Role (Entity/Action) · Appearance — @IconKinds.Length kinds, shown in the scope above</p>
+        <CnIconScope Appearance="_iconAppearance" ActionAppearance="_actionAppearance">
+            <div class="demo-icons">
+                @foreach (var kind in IconKinds)
+                {
+                    <div class="demo-icon">
+                        <CnIcon Kind="kind" Role="CnIconRole.Entity" />
+                        <span>@kind</span>
+                    </div>
+                }
+            </div>
+        </CnIconScope>
+    </section>
+
     <CnDialogHost />
     <CnToastHost />
 </main>
 
 @code {
+    public enum SampleView { Dag, Week, Maand, Lijst }
+    public enum SampleStatus { Draft, Sent, Paid, Cancelled }
+
+    private sealed record TocGroup(string Id, string Title, string[] Controls);
+
+    private static readonly TocGroup[] Toc =
+    [
+        new("acties", "Acties", ["CnButton", "CnActionMenu", "CnConfirmDialog", "CnDialogFooter"]),
+        new("invoer", "Invoer", ["CnTextField", "CnCheckbox", "CnNumberField", "CnDateField", "CnPicker", "CnViewSwitch", "CnStatusPicker", "CnRichTextBox"]),
+        new("data", "Data", ["CnDataGrid", "CnStatStrip", "CnTimeline", "CnProgressBar", "CnBadge"]),
+        new("navigatie", "Navigatie", ["CnTabs", "CnAccordion", "CnBreadcrumb", "CnFlowRail", "CnPageTitle"]),
+        new("feedback", "Feedback", ["CnMessageBar", "CnToastHost", "CnLoading", "CnNotificationCenter"]),
+        new("layout", "Layout", ["CnCard"]),
+        new("iconen", "Iconen", ["CnIconScope", "CnIcon"]),
+    ];
+
+    private static string Anchor(string control) => control.ToLowerInvariant();
+
+    private static readonly CnIconKind[] IconKinds = Enum.GetValues<CnIconKind>();
+
+    private static readonly IReadOnlyList<CnStatusOption<SampleStatus>> StatusOptions =
+    [
+        new(SampleStatus.Draft, "Concept"),
+        new(SampleStatus.Sent, "Verstuurd", CnStatusTone.Accent),
+        new(SampleStatus.Paid, "Betaald", CnStatusTone.Accent, Description: "Afgeletterd"),
+        new(SampleStatus.Cancelled, "Geannuleerd", CnStatusTone.Danger, Disabled: true, Description: "Niet vanuit deze status"),
+    ];
+
+    private static readonly IReadOnlyList<CnTimelineRow> TimelineRows =
+    [
+        new() { Label = "Ontwerp", From = new(2026, 1, 12), To = new(2026, 4, 30), Fill = 1, Value = "120 u", SecondValue = "€ 9.600" },
+        new() { Label = "Uitvoering", Note = "fase 2", From = new(2026, 4, 1), To = new(2026, 10, 15), Fill = .8, Value = "310 u", SecondValue = "€ 24.800" },
+        new() { Label = "Meerwerk", From = new(2026, 6, 1), To = new(2026, 8, 31), Fill = 1.3, Tone = CnTimelineTone.Over, Value = "65 u", ValueTone = CnTimelineTone.Over },
+        new() { Label = "Oplevering", From = new(2026, 11, 1), To = new(2026, 12, 15), Tone = CnTimelineTone.Pending, Value = "—" },
+    ];
+
+    private static readonly IReadOnlyList<CnBreadcrumbItem> Crumbs =
+    [
+        new("Home", "/"), new("Projecten", "/"), new("P-2026-014", "/"), new("Fase 2", "/"), new("Meerwerk"),
+    ];
+
+    private static readonly List<CnFlowStep> FlowSteps =
+    [
+        new("Offerte", "verstuurd", CnFlowState.Done),
+        new("Order", "bevestigd", CnFlowState.Done),
+        new("Levering", "gepland", CnFlowState.Current),
+        new("Factuur", null, CnFlowState.Pending),
+    ];
+
     private decimal? _amount;
     private decimal? _quantity;
     private decimal? _percent;
@@ -96,20 +423,28 @@
     private Guid? _item;
     private bool _expanded;
     private string? _posted;
+    private string? _text;
+    private string? _note;
+    private bool _checked = true;
+    private bool _loading = true;
+    private CnStatIntent _selectValue;
+    private string? _richText = "<p>Vrije <b>opmaak</b>.</p>";
+    private SampleStatus _status = SampleStatus.Sent;
+    private SampleView _view = SampleView.Week;
     private CnAccordion _accordion = default!;
     private bool _sectionOpen = true;
-    private CnThemeMode _view = CnThemeMode.Light;
-    private async Task ConfirmDelete()
-    {
-        if (await Dialogs.ConfirmAsync(CnLabels.Clear, CnLabels.Amount, destructive: true))
-            Toasts.Success(CnLabels.Clear);
-    }
+    private CnIconAppearance _iconAppearance = new(CnIconStyle.Natural);
+    private CnActionIconAppearance _actionAppearance = new();
+
     private static readonly Guid ItemId = Guid.Parse("00000000-0000-0000-0000-000000000001");
     private static Task<IReadOnlyList<CnPickerItem>> FindItems(string? search) =>
         Task.FromResult<IReadOnlyList<CnPickerItem>>(string.IsNullOrEmpty(search) || "CretNet".Contains(search, StringComparison.OrdinalIgnoreCase)
             ? [new CnPickerItem(ItemId, "CretNet")] : []);
     private static Task<CnGridPage<string>> GridItems(CnGridRequest request) =>
-        Task.FromResult(new CnGridPage<string>(["CretNet"], 1));
+        Task.FromResult(new CnGridPage<string>(["CretNet", "HCMT", "WAM"], 3));
+
+    private static Task SlowSave() => Task.Delay(1200);
+
     private async Task Confirm()
     {
         if (await Dialogs.ConfirmAsync(CnLabels.Save, CnLabels.Amount))
@@ -117,6 +452,19 @@
         else
             Toasts.Information(CnLabels.Cancel);
     }
+
+    private async Task ConfirmDelete()
+    {
+        if (await Dialogs.ConfirmAsync(CnLabels.Clear, CnLabels.Amount, destructive: true))
+            Toasts.Success(CnLabels.Clear);
+    }
+
+    private async Task OpenDialog()
+    {
+        if (await Dialogs.ShowAsync<SampleDialog, bool>(CnLabels.NewItem, width: "480px"))
+            Toasts.Success(CnLabels.Save);
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

@@ -222,11 +222,10 @@ fit-content fields for checking allocated widths before/after typing and clearin
 Run from the repository root:
 
 ```powershell
-$env:ASPNETCORE_ENVIRONMENT = "Development"
-dotnet run --project src/CretNet.Platform.Blazor.Ui.Sample -- --urls http://localhost:5218
+dotnet run --project src/CretNet.Platform.Blazor.Ui.Sample   # http://localhost:5199 (launchSettings)
 ```
 
-The sample provides nullable numbers, dates/times, a picker, expandable grid,
+The sample is the control catalogue: every public Cn control, grouped, with one API line each. It provides nullable numbers, dates/times, a picker, expandable grid,
 rich-text editor, confirmation dialogs, toasts and a notification bell with
 Dutch/English and theme switches. Notification actions use an in-memory client
 scoped to the sample circuit. It supplements consumer component and browser tests.

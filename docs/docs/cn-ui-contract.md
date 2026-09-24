@@ -175,6 +175,22 @@ text `--cn-danger-ink`). The plain danger role remains a quiet text button.
 `CnButton` accepts extra attributes and exposes `FocusAsync()`. `CnIconKind` appends
 `More` and `Link`, with outline, Natural and Category artwork.
 
+### View switch and grid item templates
+
+`CnViewSwitch<TValue>`: `Value`/`ValueChanged` (`@bind-Value`), `Options`,
+`OptionText`, `AriaLabel` (default resource `View`), `ControlsId` (aria-controls),
+`Class`. An ARIA tablist with roving tabindex; arrows (wrapping), Home and End
+select and focus. Classes: `.cn-view-switch`, `__option`, `__option--active`.
+
+`CnDataGrid.ItemsTemplate` (`RenderFragment<IReadOnlyList<TItem>>?`) replaces the
+table with a host presentation of the current page. Toolbar, search, sort state,
+paging footer and provider are unchanged; declared columns are not rendered. With
+no items after loading, `EmptyText` renders in `div.cn-grid-empty`. `ReloadAsync()`
+re-queries the current page, `ResetAsync()` returns to page 1.
+
+HCMT catalogue styles (`cn-prod`, `cn-pp`, `cn-onb`, `cn-cmp`, `cn-refresh`) moved to
+HCMT's `catalog.css`; the generic `.cn-num` stays here.
+
 ### Standalone page titles
 
 `CnPageTitle` leaves 16 px below its visible heading so following grid search

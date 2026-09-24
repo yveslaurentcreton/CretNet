@@ -70,6 +70,7 @@
                 <CnActionMenuItem Label="@CnLabels.Clear" Icon="CnIconKind.Delete" Danger OnClick="ConfirmDelete" />
             </CnActionMenu>
         </div>
+        <CnViewSwitch TValue="CnThemeMode" Options="Enum.GetValues<CnThemeMode>()" @bind-Value="_view" />
         <CnAccordion @ref="_accordion">
             <CnAccordionItem Title="@CnLabels.Item" Count="3" @bind-Open="_sectionOpen">
                 <CnBadge Accent>A-001</CnBadge>
@@ -97,6 +98,7 @@
     private string? _posted;
     private CnAccordion _accordion = default!;
     private bool _sectionOpen = true;
+    private CnThemeMode _view = CnThemeMode.Light;
     private async Task ConfirmDelete()
     {
         if (await Dialogs.ConfirmAsync(CnLabels.Clear, CnLabels.Amount, destructive: true))

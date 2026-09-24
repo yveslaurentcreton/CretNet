@@ -1,0 +1,28 @@
+@using CretNet.Platform.Blazor.Ui.Components
+
+<CnDataGrid @ref="Grid" TItem="string" Provider="Fetch" ShowSearch="false" PageSize="2" EmptyText="No products"
+            ItemsTemplate="UseTemplate ? Cards : null">
+    <CnGridColumn TItem="string" Title="Name" Value="row => row" />
+</CnDataGrid>
+
+@code {
+    [Parameter] public bool UseTemplate { get; set; } = true;
+    [Parameter] public List<string> Rows { get; set; } = ["Drill", "Saw", "Hammer"];
+
+    public CnDataGrid<string> Grid { get; private set; } = default!;
+    public List<CnGridRequest> Requests { get; } = [];
+
+    private static readonly RenderFragment<IReadOnlyList<string>> Cards = items => @<div class="cards">
+        @foreach (var item in items)
+        {
+            <article class="card">@item</article>
+        }
+    </div>;
+
+    private Task<CnGridPage<string>> Fetch(CnGridRequest request)
+    {
+        Requests.Add(request);
+        var page = Rows.Skip((request.PageIndex - 1) * request.PageSize).Take(request.PageSize).ToList();
+        return Task.FromResult(new CnGridPage<string>(page, Rows.Count));
+    }
+}

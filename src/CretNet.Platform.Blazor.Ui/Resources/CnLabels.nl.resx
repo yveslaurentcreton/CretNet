@@ -237,6 +237,9 @@
   <data xml:space="preserve" name="Value">
     <value>Waarde</value>
   </data>
+  <data xml:space="preserve" name="View">
+    <value>Weergave</value>
+  </data>
   <data xml:space="preserve" name="Yes">
     <value>Ja</value>
   </data>

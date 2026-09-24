@@ -1,0 +1,85 @@
+@typeparam TValue
+
+@* A compact segmented view switch (lifted from HCMT's timesheet tsw-views):
+   an ARIA tablist with roving tabindex; arrows/Home/End select and focus. *@
+
+<div class="cn-view-switch @Class" role="tablist" aria-label="@AriaLabel">
+    @for (var index = 0; index < _options.Count; index++)
+    {
+        var current = index;
+        var option = _options[index];
+        var active = IsActive(option);
+        <button @ref="_buttons[current]"
+                id="@TabId(current)"
+                type="button"
+                class="cn-view-switch__option @(active ? "cn-view-switch__option--active" : null)"
+                role="tab"
+                tabindex="@(active || (_activeIndex < 0 && current == 0) ? 0 : -1)"
+                aria-selected="@(active ? "true" : "false")"
+                aria-controls="@ControlsId"
+                @onclick="() => SelectAsync(current)"
+                @onkeydown="args => HandleKeyDownAsync(args, current)">@OptionText(option)</button>
+    }
+</div>
+
+@code {
+    [Parameter] public TValue? Value { get; set; }
+    [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
+    [Parameter, EditorRequired] public IEnumerable<TValue> Options { get; set; } = [];
+    [Parameter] public Func<TValue, string> OptionText { get; set; } = value => value?.ToString() ?? string.Empty;
+    #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
+    [Parameter] public string AriaLabel { get => field ?? CnLabels.View; set; } = null!;
+    #pragma warning restore BL0007
+
+    /// <summary>Optional id of the panel the views control (aria-controls).</summary>
+    [Parameter] public string? ControlsId { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    private readonly string _id = $"cn-view-switch-{Guid.NewGuid():N}";
+    private List<TValue> _options = [];
+    private ElementReference[] _buttons = [];
+    private int _activeIndex = -1;
+
+    protected override void OnParametersSet()
+    {
+        _options = Options.ToList();
+        if (_buttons.Length != _options.Count)
+            _buttons = new ElementReference[_options.Count];
+        _activeIndex = _options.FindIndex(IsActive);
+    }
+
+    private bool IsActive(TValue option) => EqualityComparer<TValue>.Default.Equals(option, Value);
+
+    private string TabId(int index) => $"{_id}-{index}";
+
+    private async Task SelectAsync(int index)
+    {
+        if (index == _activeIndex)
+            return;
+
+        _activeIndex = index;
+        Value = _options[index];
+        await ValueChanged.InvokeAsync(_options[index]);
+    }
+
+    private async Task HandleKeyDownAsync(KeyboardEventArgs args, int current)
+    {
+        if (_options.Count == 0)
+            return;
+
+        var target = args.Key switch
+        {
+            "ArrowRight" or "ArrowDown" => (current + 1) % _options.Count,
+            "ArrowLeft" or "ArrowUp" => (current - 1 + _options.Count) % _options.Count,
+            "Home" => 0,
+            "End" => _options.Count - 1,
+            _ => current,
+        };
+        if (target == current)
+            return;
+
+        await SelectAsync(target);
+        StateHasChanged();
+        await _buttons[target].FocusAsync();
+    }
+}

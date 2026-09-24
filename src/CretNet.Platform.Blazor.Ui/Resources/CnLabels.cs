@@ -48,6 +48,7 @@ public static class CnLabels
     public static string MarkRead => ResourceManager.GetString(nameof(MarkRead), CultureInfo.CurrentUICulture)!;
     public static string MarkUnread => ResourceManager.GetString(nameof(MarkUnread), CultureInfo.CurrentUICulture)!;
     public static string MinutesAgo => ResourceManager.GetString(nameof(MinutesAgo), CultureInfo.CurrentUICulture)!;
+    public static string More => ResourceManager.GetString(nameof(More), CultureInfo.CurrentUICulture)!;
     public static string MoreToasts => ResourceManager.GetString(nameof(MoreToasts), CultureInfo.CurrentUICulture)!;
     public static string MoveLeft => ResourceManager.GetString(nameof(MoveLeft), CultureInfo.CurrentUICulture)!;
     public static string MoveRight => ResourceManager.GetString(nameof(MoveRight), CultureInfo.CurrentUICulture)!;

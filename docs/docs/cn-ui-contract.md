@@ -144,6 +144,37 @@ there are no symbol-specific offsets or application-level exceptions.
 This extension is source-verified before publication. Consumers must adopt the
 owner-approved published package and pass their NuGet gate before merge.
 
+### Action menu, accordion and destructive confirmation
+
+`CnActionMenu` (namespace `CretNet.Platform.Blazor.Ui.Components`): `Label` (default
+resource `More`), `Icon` (default `CnIconKind.More`), `Role`, `IconOnly`, `Disabled`,
+`AlignStart`, `CloseLabel`, `Class`, `ChildContent`. Children: `CnActionMenuItem`
+(`Label`, `Icon`, `OnClick`, `Danger`, `Disabled`, `DisabledReason`, `Loading`) and
+`CnActionMenuSeparator`. Closes on outside click, Escape, Tab and after a choice;
+arrows/Home/End move focus. Disabled items stay focusable with `aria-disabled`.
+The list aligns right under the trigger (`AlignStart` for a trigger near the left edge).
+Classes: `.cn-action-menu`, `__list`, `__item`, `__item--danger`, `__reason`, `__separator`.
+
+```razor
+<CnActionMenu>
+    <CnActionMenuItem Label="Archive" Icon="CnIconKind.Archive" Disabled DisabledReason="Open orders" />
+    <CnActionMenuSeparator />
+    <CnActionMenuItem Label="Delete" Icon="CnIconKind.Delete" Danger OnClick="DeleteAsync" />
+</CnActionMenu>
+```
+
+`CnAccordion` (`ExpandAllAsync()`, `CollapseAllAsync()`, `Class`) contains
+`CnAccordionItem` (`Title`, `Count`, `Open`/`OpenChanged`, `Dimmed`, `Class`,
+`ChildContent`). `Open` works bound or as an initial value; content renders only
+while open. Header: `aria-expanded`/`aria-controls`; the chevron transition honours
+`prefers-reduced-motion`. Classes: `.cn-accordion`, `__item`, `__header`, `__count`, `__panel`.
+
+`CnConfirmDialog.Destructive` and `ConfirmAsync(..., destructive: true)` render the
+yes button as `CnButtonRole.Danger` plus `.cn-btn--solid` (solid `--cn-danger`,
+text `--cn-danger-ink`). The plain danger role remains a quiet text button.
+`CnButton` accepts extra attributes and exposes `FocusAsync()`. `CnIconKind` appends
+`More` and `Link`, with outline, Natural and Category artwork.
+
 ### Standalone page titles
 
 `CnPageTitle` leaves 16 px below its visible heading so following grid search

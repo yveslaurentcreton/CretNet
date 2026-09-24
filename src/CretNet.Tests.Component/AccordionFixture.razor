@@ -1,0 +1,15 @@
+@using CretNet.Platform.Blazor.Ui.Components
+
+<CnAccordion @ref="Accordion">
+    <CnAccordionItem Title="Products" Count="3" @bind-Open="ProductsOpen">
+        <span class="products-body">product rows</span>
+    </CnAccordionItem>
+    <CnAccordionItem Title="Services" Dimmed>
+        <span class="services-body">service rows</span>
+    </CnAccordionItem>
+</CnAccordion>
+
+@code {
+    public CnAccordion Accordion { get; private set; } = default!;
+    public bool ProductsOpen { get; set; }
+}

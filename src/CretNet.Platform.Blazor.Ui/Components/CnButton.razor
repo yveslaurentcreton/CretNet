@@ -3,7 +3,9 @@
 
 <CascadingValue Name="CnButtonIconAppearance" Value="@EffectiveIconAppearance">
 <CascadingValue Value="CnIconRole.Action" IsFixed="true">
-<button type="@(Submit ? "submit" : "button")"
+<button @ref="_element"
+        @attributes="AdditionalAttributes"
+        type="@(Submit ? "submit" : "button")"
         class="cn-btn @RoleClass @(IconOnly ? "cn-btn--icononly" : null) @(Dashed ? "cn-btn--dashed" : null) @Class"
         style="@Style"
         title="@FormattedTitle"
@@ -46,6 +48,14 @@
     [Parameter] public string? Class { get; set; }
     [Parameter] public string? Style { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+    /// <summary>Extra attributes (e.g. aria-haspopup/aria-expanded for a menu
+    /// trigger). The button's own attributes win on a name clash.</summary>
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private ElementReference _element;
+
+    /// <summary>Moves focus to the button, e.g. back to a menu trigger on Escape.</summary>
+    public ValueTask FocusAsync() => _element.FocusAsync();
 
     private bool _busy;
 

@@ -30,6 +30,7 @@
     --cn-accent-strong: var(--cn-accent-hover);
 
     --cn-danger: #d13438;
+    --cn-danger-ink: #ffffff;
     --cn-warn: #b8860b;
     --cn-lane-phys: #00876f;
     --cn-lane-phys-tint: rgba(0, 135, 111, .10);
@@ -4981,6 +4982,184 @@ tr:hover .cn-task-more,
     .cn-status-picker__trigger,
     .cn-status-picker__readonly { justify-content: center; }
     .cn-status-picker__menu { right: auto; left: 0; }
+}
+
+/* ---------- CnActionMenu ----------
+   Secondary actions behind a "More" button. Same surface as the status
+   picker menu, one compact row per action: icon, label and, for a disabled
+   action, its short reason at the end. */
+
+.cn-action-menu { position: relative; display: inline-flex; font-family: var(--cn-font); }
+
+.cn-action-menu__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    border: 0;
+    background: transparent;
+    cursor: default;
+}
+
+.cn-action-menu__list {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    z-index: 71;
+    display: grid;
+    width: max-content;
+    min-width: 200px;
+    max-width: min(320px, calc(100vw - 32px));
+    max-height: min(420px, calc(100dvh - 96px));
+    overflow: auto;
+    padding: 4px;
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: var(--cn-radius);
+    background: var(--cn-card);
+    box-shadow: var(--cn-shadow);
+}
+
+.cn-action-menu--start .cn-action-menu__list { right: auto; left: 0; }
+
+.cn-action-menu__item {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: var(--cn-radius-s);
+    background: transparent;
+    color: var(--cn-text);
+    font: 13px/1.2 var(--cn-font);
+    text-align: left;
+    cursor: pointer;
+}
+
+.cn-action-menu__item:hover:not(.is-disabled),
+.cn-action-menu__item:focus-visible { background: var(--cn-ground); outline: none; }
+.cn-action-menu__item.is-disabled { cursor: not-allowed; }
+.cn-action-menu__item.is-disabled .cn-action-menu__icon,
+.cn-action-menu__item.is-disabled .cn-action-menu__label { opacity: .45; }
+
+.cn-action-menu__icon {
+    display: inline-flex;
+    width: 16px;
+    height: 16px;
+    align-items: center;
+    justify-content: center;
+    color: var(--cn-text-2);
+}
+
+.cn-action-menu__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.cn-action-menu__reason {
+    max-width: 18ch;
+    overflow: hidden;
+    color: var(--cn-text-3);
+    font: 11px/1.2 var(--cn-font);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-action-menu__item--danger,
+.cn-action-menu__item--danger .cn-action-menu__icon { color: var(--cn-danger); }
+.cn-action-menu__item--danger:hover:not(.is-disabled),
+.cn-action-menu__item--danger:focus-visible { background: color-mix(in srgb, var(--cn-danger) 10%, transparent); }
+
+.cn-action-menu__separator {
+    height: 1px;
+    margin: 4px 6px;
+    background: var(--cn-stroke-soft);
+}
+
+.cn-action-menu__spinner {
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid var(--cn-stroke);
+    border-top-color: var(--cn-accent);
+    border-radius: 50%;
+    animation: cn-action-menu-spin .7s linear infinite;
+}
+
+@keyframes cn-action-menu-spin { to { transform: rotate(360deg); } }
+
+/* ---------- CnAccordion ----------
+   Collapsible sections in a hairline-separated list. The chevron turns
+   from right to down; the count reads like a CnTab count. */
+
+.cn-accordion {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--cn-stroke-soft);
+    font-family: var(--cn-font);
+}
+
+.cn-accordion__item { border-bottom: 1px solid var(--cn-stroke-soft); }
+
+.cn-accordion__header {
+    display: flex;
+    width: 100%;
+    min-height: 40px;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 4px;
+    border: 0;
+    background: transparent;
+    color: var(--cn-text);
+    font: 600 14px/1.2 var(--cn-font);
+    text-align: left;
+    cursor: pointer;
+}
+
+.cn-accordion__header:hover { background: var(--cn-row-hover); }
+.cn-accordion__header:focus-visible { outline: 2px solid var(--cn-accent); outline-offset: -2px; }
+
+.cn-accordion__chevron {
+    width: 6px;
+    height: 6px;
+    flex: none;
+    margin: 0 3px 0 2px;
+    border-right: 1.5px solid var(--cn-text-2);
+    border-bottom: 1.5px solid var(--cn-text-2);
+    transform: rotate(-45deg);
+    transition: transform .15s ease;
+}
+
+.cn-accordion__item.is-open > .cn-accordion__header .cn-accordion__chevron { transform: rotate(45deg); }
+
+.cn-accordion__title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.cn-accordion__count {
+    font: 600 11.5px/1 var(--cn-font);
+    color: var(--cn-text-2);
+    background: var(--cn-ground);
+    border-radius: 9px;
+    padding: 2px 7px;
+}
+
+.cn-accordion__panel { padding: 0 4px 12px; }
+
+.cn-accordion__item--dimmed > .cn-accordion__header { color: var(--cn-text-3); }
+.cn-accordion__item--dimmed .cn-accordion__count { color: var(--cn-text-3); }
+
+@media (prefers-reduced-motion: reduce) {
+    .cn-accordion__chevron { transition: none; }
+    .cn-action-menu__spinner { animation-duration: 2s; }
+}
+
+/* Solid danger button for destructive confirmations (CnConfirmDialog). The
+   plain danger role stays a quiet text button everywhere else. */
+.cn-btn--danger.cn-btn--solid {
+    background: var(--cn-danger);
+    border-color: var(--cn-danger);
+    color: var(--cn-danger-ink);
+}
+
+.cn-btn--danger.cn-btn--solid:hover {
+    background: color-mix(in srgb, var(--cn-danger) 86%, var(--cn-text));
+    border-color: color-mix(in srgb, var(--cn-danger) 86%, var(--cn-text));
+    color: var(--cn-danger-ink);
 }
 
 /* ---------- Company identity bits (M-018) ----------

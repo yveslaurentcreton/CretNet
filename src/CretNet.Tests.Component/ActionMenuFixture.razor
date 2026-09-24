@@ -1,0 +1,14 @@
+@using CretNet.Platform.Blazor.Ui.Components
+
+<CnActionMenu @ref="Menu">
+    <CnActionMenuItem Label="Edit" Icon="CnIconKind.Edit" OnClick="() => Clicked.Add(nameof(CnIconKind.Edit))" />
+    <CnActionMenuItem Label="Archive" Icon="CnIconKind.Archive" Disabled DisabledReason="Has open orders"
+                      OnClick="() => Clicked.Add(nameof(CnIconKind.Archive))" />
+    <CnActionMenuSeparator />
+    <CnActionMenuItem Label="Delete" Icon="CnIconKind.Delete" Danger OnClick="() => Clicked.Add(nameof(CnIconKind.Delete))" />
+</CnActionMenu>
+
+@code {
+    public CnActionMenu Menu { get; private set; } = default!;
+    public List<string> Clicked { get; } = [];
+}

@@ -47,7 +47,7 @@ public sealed record CnActionIconAppearance(
         return kind switch
         {
             CnIconKind.Add or CnIconKind.Save or CnIconKind.Checkmark or CnIconKind.Play => "success",
-            CnIconKind.Edit or CnIconKind.Copy or CnIconKind.ArrowDownload or CnIconKind.Send => "info",
+            CnIconKind.Edit or CnIconKind.Copy or CnIconKind.Link or CnIconKind.ArrowDownload or CnIconKind.Send => "info",
             CnIconKind.Stop => "danger",
             _ => null,
         };

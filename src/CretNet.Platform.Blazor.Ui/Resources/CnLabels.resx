@@ -117,6 +117,9 @@
   <data xml:space="preserve" name="MinutesAgo">
     <value>{0} min ago</value>
   </data>
+  <data xml:space="preserve" name="More">
+    <value>More</value>
+  </data>
   <data xml:space="preserve" name="MoreToasts">
     <value>+{0} more · dismiss all</value>
   </data>

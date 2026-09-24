@@ -1,4 +1,4 @@
-@inject CnThemeService Theme
+﻿@inject CnThemeService Theme
 @inject CnDialogService Dialogs
 @inject CretNet.Platform.Blazor.Ui.Toasts.CnToastService Toasts
 
@@ -52,6 +52,33 @@
         <CnMessageBar Message="@_posted" MessageChanged="message => _posted = message" Intent="CnMessageIntent.Info" />
         <CnButton Label="@CnLabels.Save" OnClick="Confirm" />
     </CnCard>
+    <CnCard Title="@CnLabels.More">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+            <CnActionMenu IconOnly AlignStart>
+                <CnActionMenuItem Label="@CnLabels.Item" Icon="CnIconKind.Copy" />
+            </CnActionMenu>
+            <span style="display:flex;gap:8px">
+                <CnButton Label="+" OnClick="() => _accordion.ExpandAllAsync()" />
+                <CnButton Label="-" OnClick="() => _accordion.CollapseAllAsync()" />
+            </span>
+            <CnActionMenu>
+                <CnActionMenuItem Label="@CnLabels.Save" Icon="CnIconKind.Save" OnClick="() => Toasts.Success(CnLabels.Save)" />
+                <CnActionMenuItem Label="@CnLabels.Archive" Icon="CnIconKind.Archive" Disabled DisabledReason="@CnLabels.NothingArchived" />
+                <CnActionMenuItem Label="@CnLabels.Loading" Icon="CnIconKind.ArrowSync" Loading />
+                <CnActionMenuItem Label="Link" Icon="CnIconKind.Link" OnClick="() => Toasts.Information(CnLabels.Item)" />
+                <CnActionMenuSeparator />
+                <CnActionMenuItem Label="@CnLabels.Clear" Icon="CnIconKind.Delete" Danger OnClick="ConfirmDelete" />
+            </CnActionMenu>
+        </div>
+        <CnAccordion @ref="_accordion">
+            <CnAccordionItem Title="@CnLabels.Item" Count="3" @bind-Open="_sectionOpen">
+                <CnBadge Accent>A-001</CnBadge>
+            </CnAccordionItem>
+            <CnAccordionItem Title="@CnLabels.Amount" Count="0" Dimmed>
+                <span>@CnLabels.EmptyValue</span>
+            </CnAccordionItem>
+        </CnAccordion>
+    </CnCard>
     <CnDialogHost />
     <CnToastHost />
 </main>
@@ -68,6 +95,13 @@
     private Guid? _item;
     private bool _expanded;
     private string? _posted;
+    private CnAccordion _accordion = default!;
+    private bool _sectionOpen = true;
+    private async Task ConfirmDelete()
+    {
+        if (await Dialogs.ConfirmAsync(CnLabels.Clear, CnLabels.Amount, destructive: true))
+            Toasts.Success(CnLabels.Clear);
+    }
     private static readonly Guid ItemId = Guid.Parse("00000000-0000-0000-0000-000000000001");
     private static Task<IReadOnlyList<CnPickerItem>> FindItems(string? search) =>
         Task.FromResult<IReadOnlyList<CnPickerItem>>(string.IsNullOrEmpty(search) || "CretNet".Contains(search, StringComparison.OrdinalIgnoreCase)

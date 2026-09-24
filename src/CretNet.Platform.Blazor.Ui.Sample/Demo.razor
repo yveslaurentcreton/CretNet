@@ -211,6 +211,15 @@
         <div class="demo-scroll">
             <CnTimeline Rows="TimelineRows" From="new DateOnly(2026, 1, 1)" To="new DateOnly(2026, 12, 31)" Today="new DateOnly(2026, 9, 24)" />
         </div>
+        <p class="demo-api">Lanes (CnTimelineLane: Label · Thin · Segments — CnTimelineSegment: From · To (inclusive) · Tone · Title · Key) · IsGroup · Key · OnRowClick · OnSegmentClick · SelectedKey</p>
+        <div class="demo-scroll">
+            <CnTimeline Rows="LaneRows" From="new DateOnly(2025, 10, 1)" To="new DateOnly(2027, 3, 31)" Today="new DateOnly(2026, 9, 24)"
+                        LabelHeader="Dienst" ValueHeader="Volgende" SecondValueHeader="Marge/jaar"
+                        SelectedKey="_timelineSelected"
+                        OnRowClick="row => { _timelineSelected = row.Key; _timelineClick = row.Label; }"
+                        OnSegmentClick="SegmentClicked" />
+        </div>
+        <p class="demo-api">Laatste klik: @(_timelineClick ?? "—")</p>
     </section>
 
     <section id="@Anchor("CnProgressBar")" class="demo-sec">
@@ -397,6 +406,69 @@
         new() { Label = "Uitvoering", Note = "fase 2", From = new(2026, 4, 1), To = new(2026, 10, 15), Fill = .8, Value = "310 u", SecondValue = "€ 24.800" },
         new() { Label = "Meerwerk", From = new(2026, 6, 1), To = new(2026, 8, 31), Fill = 1.3, Tone = CnTimelineTone.Over, Value = "65 u", ValueTone = CnTimelineTone.Over },
         new() { Label = "Oplevering", From = new(2026, 11, 1), To = new(2026, 12, 15), Tone = CnTimelineTone.Pending, Value = "—" },
+    ];
+
+    private object? _timelineSelected;
+    private string? _timelineClick;
+
+    private void SegmentClicked(CnTimelineSegmentClick click)
+    {
+        _timelineSelected = click.Segment.Key;
+        _timelineClick = $"{click.Row.Label} · {click.Segment.Title}";
+    }
+
+    private static CnTimelineSegment Seg(int y1, int m1, int y2, int m2, CnTimelineSegmentTone tone, string title) => new()
+    {
+        From = new(y1, m1, 1),
+        To = new DateOnly(y2, m2, 1).AddMonths(1).AddDays(-1),
+        Tone = tone,
+        Title = title,
+        Key = title,
+    };
+
+    private static readonly IReadOnlyList<CnTimelineRow> LaneRows =
+    [
+        new() { Label = "Kantoor 365", Note = "AB-0012", IsGroup = true, Key = "AB-0012", SecondValue = "€ 612" },
+        new()
+        {
+            Label = "Microsoft 365 Business Premium", Note = "M365-BP · 12 ×", Key = "svc-1", Value = "01/10/2026", SecondValue = "€ 432",
+            Lanes =
+            [
+                new() { Label = "A", Thin = true, Segments =
+                [
+                    Seg(2025, 10, 2026, 9, CnTimelineSegmentTone.Purchase, "Aankoop · okt 2025 – sep 2026"),
+                    Seg(2026, 9, 2027, 8, CnTimelineSegmentTone.Purchase, "Aankoop · sep 2026 – aug 2027 (overlap)"),
+                ] },
+                new() { Label = "V", Segments =
+                [
+                    Seg(2025, 10, 2025, 12, CnTimelineSegmentTone.Billed, "VF-2025-0412 · Q4"),
+                    Seg(2026, 1, 2026, 3, CnTimelineSegmentTone.Billed, "VF-2026-0031 · Q1"),
+                    Seg(2026, 4, 2026, 6, CnTimelineSegmentTone.Billed, "VF-2026-0188 · Q2"),
+                    Seg(2026, 7, 2026, 9, CnTimelineSegmentTone.Concept, "Concept · Q3"),
+                    Seg(2026, 10, 2026, 12, CnTimelineSegmentTone.Due, "Te factureren · Q4"),
+                    Seg(2027, 1, 2027, 8, CnTimelineSegmentTone.Later, "Voorgesteld · 2027"),
+                ] },
+            ],
+        },
+        new()
+        {
+            Label = "Back-up 1 TB", Note = "BCK-1T", Key = "svc-2", Value = "01/01/2027", SecondValue = "€ 180",
+            Lanes =
+            [
+                new() { Label = "A", Thin = true, Segments = [Seg(2025, 7, 2026, 6, CnTimelineSegmentTone.Purchase, "Aankoop · jul 2025 – jun 2026")] },
+                new() { Label = "V", Segments =
+                [
+                    Seg(2025, 7, 2026, 6, CnTimelineSegmentTone.Billed, "VF-2025-0290 · jaar"),
+                    Seg(2026, 7, 2026, 12, CnTimelineSegmentTone.Uncovered, "Niet gedekt · jul – dec 2026"),
+                    Seg(2027, 1, 2027, 6, CnTimelineSegmentTone.Later, "Voorgesteld · H1 2027"),
+                ] },
+            ],
+        },
+        new()
+        {
+            Label = "Domeinnaam", Note = "DOM-BE", Key = "svc-3", SecondValue = "—",
+            Lanes = [new() { Label = "V", Segments = [Seg(2025, 1, 2027, 12, CnTimelineSegmentTone.Neutral, "Doorlopend · geen facturatie")] }],
+        },
     ];
 
     private static readonly IReadOnlyList<CnBreadcrumbItem> Crumbs =

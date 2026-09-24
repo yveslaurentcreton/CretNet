@@ -181,7 +181,19 @@
 
 .cn-gantt-h--r { text-align: right; }
 
-.cn-gantt-axis { position: relative; height: 20px; }
+/* The label column stays put while a host scroll container pans the axis.
+   --cn-gantt-bg lets a host on a non-card surface match its background. */
+.cn-gantt-h--name,
+.cn-gantt-name {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    background-color: var(--cn-gantt-bg, var(--cn-card));
+}
+
+/* The axis is its own size container: alternate month labels give way
+   when the axis itself gets narrow, whatever the surrounding layout. */
+.cn-gantt-axis { position: relative; height: 20px; container-type: inline-size; }
 
 .cn-gantt-mo {
     position: absolute;
@@ -193,6 +205,17 @@
     font: 400 10px/14px var(--cn-font);
     text-transform: none;
     letter-spacing: 0;
+    white-space: nowrap;
+}
+
+.cn-gantt-mo--year { color: var(--cn-text-2); font-weight: 700; border-left-color: var(--cn-stroke); }
+
+@container (max-width: 560px) {
+    .cn-gantt-mo--alt { color: transparent; }
+}
+
+@container (max-width: 900px) {
+    .cn-gantt--dense .cn-gantt-mo--alt { color: transparent; }
 }
 
 .cn-gantt-name {
@@ -209,10 +232,11 @@
     font-variant-numeric: tabular-nums;
 }
 
+/* One gridline per month; CnTimeline sets --cn-gantt-months from the axis. */
 .cn-gantt-track {
     position: relative;
-    background: repeating-linear-gradient(
-        to right, var(--cn-stroke-soft) 0 1px, transparent 1px 8.3333%);
+    background-image: repeating-linear-gradient(
+        to right, var(--cn-stroke-soft) 0 1px, transparent 1px calc(100% / var(--cn-gantt-months, 12)));
 }
 
 .cn-gantt-bar {
@@ -243,6 +267,7 @@
     width: 2px;
     background: var(--cn-warn);
     z-index: 1;
+    pointer-events: none;
 }
 
 .cn-gantt-n {
@@ -261,6 +286,169 @@
 .cn-gantt-n.cn-gantt--muted { color: var(--cn-text-3); }
 
 .cn-gantt-name.cn-gantt--muted { color: var(--cn-text-2); font-style: italic; }
+
+/* ---- Lanes, segments, groups and clickable rows (HCMT S-323) ----
+   Rows using any of these are a subgrid .cn-gantt-row, so the whole line
+   hovers and selects as one. Plain rows keep their flat cells above. */
+.cn-gantt > .cn-gantt-row {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    border-bottom: 0;
+}
+
+.cn-gantt-row > * {
+    border-bottom: 1px solid var(--cn-stroke-soft);
+    transition: background-color .12s ease;
+}
+
+.cn-gantt-row--lanes .cn-gantt-name {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 1px;
+    min-width: 0;
+    padding: 7px 20px 7px 2px;
+}
+
+.cn-gantt-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-gantt-row .cn-gantt-note { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+button.cn-gantt-label {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+button.cn-gantt-label:hover { text-decoration: underline; }
+
+/* Lane tags sit at the right of the label cell and share the track's lane
+   geometry (same heights, gap and vertical centring), so they line up. */
+.cn-gantt-lane-tags {
+    position: absolute;
+    top: 0;
+    right: 6px;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    color: var(--cn-text-3);
+    font: 600 9px/1 var(--cn-font);
+}
+
+.cn-gantt-lane-tag { height: 13px; line-height: 13px; }
+.cn-gantt-lane-tag.cn-gantt-lane--thin { height: 9px; line-height: 9px; }
+
+.cn-gantt-row--lanes .cn-gantt-track {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    min-height: 44px;
+    padding: 6px 0;
+}
+
+.cn-gantt-lane { position: relative; height: 13px; }
+.cn-gantt-lane--thin { height: 9px; }
+
+/* Segments: the tone is the fill, there is no legend. */
+.cn-gantt-seg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--cn-accent);
+    border-radius: 3px;
+    background: var(--cn-accent-tint);
+    font: inherit;
+    transition: box-shadow .12s ease;
+}
+
+.cn-gantt-seg--thin { border-radius: 2px; }
+.cn-gantt-seg--concept { border-style: dashed; }
+.cn-gantt-seg--due { background: var(--cn-accent); }
+.cn-gantt-seg--later { border-style: dashed; background: transparent; }
+
+.cn-gantt-seg--uncovered {
+    border-color: var(--cn-danger);
+    background: repeating-linear-gradient(
+        135deg, color-mix(in srgb, var(--cn-danger) 55%, transparent) 0 2px, transparent 2px 5px);
+}
+
+/* Translucent, so overlapping purchase periods visibly darken. */
+.cn-gantt-seg--purchase {
+    border-color: color-mix(in srgb, var(--cn-lane-fin) 70%, transparent);
+    background: color-mix(in srgb, var(--cn-lane-fin) 16%, transparent);
+}
+
+.cn-gantt-seg--neutral {
+    border-color: var(--cn-text-3);
+    background: color-mix(in srgb, var(--cn-text-3) 14%, transparent);
+}
+
+/* Cut flat where the period runs past the axis. */
+.cn-gantt-seg--cut-l { border-left-width: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.cn-gantt-seg--cut-r { border-right-width: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+
+button.cn-gantt-seg { cursor: pointer; }
+button.cn-gantt-seg:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--cn-accent) 30%, transparent); }
+button.cn-gantt-seg--purchase:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--cn-lane-fin) 30%, transparent); }
+button.cn-gantt-seg--uncovered:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--cn-danger) 30%, transparent); }
+button.cn-gantt-seg--neutral:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--cn-text-3) 30%, transparent); }
+
+.cn-gantt-seg:focus-visible,
+.cn-gantt-seg--selected {
+    outline: 2px solid var(--cn-text);
+    outline-offset: 1px;
+    z-index: 2;
+}
+
+.cn-gantt-label:focus-visible { outline: 2px solid var(--cn-accent); outline-offset: 1px; }
+
+/* Group header: the label spans label and track, the figures stay. */
+.cn-gantt-row--group > * { background-color: color-mix(in srgb, var(--cn-ground) 60%, var(--cn-gantt-bg, var(--cn-card))); }
+
+.cn-gantt-row--group .cn-gantt-name {
+    grid-column: 1 / 3;
+    padding: 6px 2px;
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.cn-gantt-group-title {
+    position: sticky;
+    left: 2px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.cn-gantt-row--group .cn-gantt-n { color: var(--cn-text-2); font-weight: 600; }
+
+.cn-gantt-row--click { cursor: pointer; }
+.cn-gantt-row--click:hover > * { background-color: var(--cn-row-hover); }
+.cn-gantt-row--group.cn-gantt-row--click:hover > * { background-color: color-mix(in srgb, var(--cn-accent) 6%, var(--cn-gantt-bg, var(--cn-card))); }
+.cn-gantt-row--selected > *,
+.cn-gantt-row--selected.cn-gantt-row--click:hover > * { background-color: color-mix(in srgb, var(--cn-accent) 8%, var(--cn-gantt-bg, var(--cn-card))); }
+
+@media (prefers-reduced-motion: reduce) {
+    .cn-gantt-row > *,
+    .cn-gantt-seg { transition: none; }
+}
 
 /* ---------- CnButton ---------- */
 .cn-btn {

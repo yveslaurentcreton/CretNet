@@ -1,14 +1,18 @@
 @using System.Globalization
 @* A row per span over a shared date axis, with up to two figure columns.
-   Styled by .cn-gantt in cn-ui.css. *@
+   Styled by .cn-gantt in cn-ui.css. Rows without lanes, group or click
+   behaviour keep the original flat cells; the others are wrapped in a
+   subgrid .cn-gantt-row so the whole line can hover and be selected. *@
 
-<div class="cn-gantt @(ShowSecondValue ? null : "cn-gantt--novalue2") @Class">
-    <div class="cn-gantt-h">@LabelHeader</div>
+<div class="cn-gantt @(ShowSecondValue ? null : "cn-gantt--novalue2") @(Dense ? "cn-gantt--dense" : null) @Class"
+     style="--cn-gantt-months: @MonthCount">
+    <div class="cn-gantt-h cn-gantt-h--name">@LabelHeader</div>
     <div class="cn-gantt-h">
         <div class="cn-gantt-axis">
             @foreach (var tick in Ticks)
             {
-                <span class="cn-gantt-mo" style="left: @Css(tick.Percentage)%">@tick.Label</span>
+                <span class="cn-gantt-mo @(tick.Year ? "cn-gantt-mo--year" : null) @(tick.Alternate ? "cn-gantt-mo--alt" : null)"
+                      style="left: @Css(tick.Percentage)%">@tick.Label</span>
             }
         </div>
     </div>
@@ -20,6 +24,84 @@
 
     @foreach (var row in Rows)
     {
+        if (IsEnhanced(row))
+        {
+            var current = row;
+            <div class="@RowClass(row)" @key="row"
+                 @onclick="() => RowClicked(current)">
+                <div class="cn-gantt-name @ToneClass(row.Tone)">
+                    @if (row.IsGroup)
+                    {
+                        @* The cell spans two columns, too wide to stick; its title sticks instead. *@
+                        <span class="cn-gantt-group-title">@RowTitle(row)</span>
+                    }
+                    else
+                    {
+                        @RowTitle(row)
+                    }
+                    @if (HasLanes(row) && row.Lanes!.Any(l => !string.IsNullOrWhiteSpace(l.Label)))
+                    {
+                        <span class="cn-gantt-lane-tags" aria-hidden="true">
+                            @foreach (var lane in row.Lanes!)
+                            {
+                                <span class="cn-gantt-lane-tag @(lane.Thin ? "cn-gantt-lane--thin" : null)">@lane.Label</span>
+                            }
+                        </span>
+                    }
+                </div>
+
+                @if (!row.IsGroup)
+                {
+                    <div class="cn-gantt-track">
+                        @if (HasLanes(row))
+                        {
+                            @foreach (var lane in row.Lanes!)
+                            {
+                                <div class="cn-gantt-lane @(lane.Thin ? "cn-gantt-lane--thin" : null)">
+                                    @foreach (var segment in lane.Segments)
+                                    {
+                                        if (Place(segment) is not { } place)
+                                        {
+                                            continue;
+                                        }
+
+                                        var title = SegmentTitle(segment);
+                                        if (OnSegmentClick.HasDelegate)
+                                        {
+                                            var (r, l, s) = (row, lane, segment);
+                                            <button type="button" class="@SegmentClass(segment, lane.Thin, place)"
+                                                    style="@SegmentStyle(place)" title="@title" aria-label="@title"
+                                                    aria-current="@(IsSelected(segment.Key) ? "true" : null)"
+                                                    @onclick="() => SegmentClicked(r, l, s)" @onclick:stopPropagation="true"></button>
+                                        }
+                                        else
+                                        {
+                                            <span class="@SegmentClass(segment, lane.Thin, place)"
+                                                  style="@SegmentStyle(place)" title="@title" role="img" aria-label="@title"></span>
+                                        }
+                                    }
+                                </div>
+                            }
+                        }
+                        else if (Span(row) is { } bar)
+                        {
+                            <span class="cn-gantt-bar @ToneClass(row.Tone)"
+                                  style="left: @Css(bar.Left)%; width: @Css(bar.Width)%">
+                                <i style="width: @Css(Math.Clamp(row.Fill, 0d, 1d) * 100d)%"></i>
+                            </span>
+                        }
+                        @if (TodayPercentage is { } now)
+                        {
+                            <span class="cn-gantt-today" style="left: @Css(now)%"></span>
+                        }
+                    </div>
+                }
+
+                @ValueCells(row)
+            </div>
+            continue;
+        }
+
         <div class="cn-gantt-name @ToneClass(row.Tone)">
             <span>@row.Label</span>
             @if (!string.IsNullOrWhiteSpace(row.Note))
@@ -42,6 +124,27 @@
             }
         </div>
 
+        @ValueCells(row)
+    }
+</div>
+
+@code {
+    private RenderFragment RowTitle(CnTimelineRow row) => @<text>
+        @if (OnRowClick.HasDelegate)
+        {
+            <button type="button" class="cn-gantt-label">@row.Label</button>
+        }
+        else
+        {
+            <span class="cn-gantt-label">@row.Label</span>
+        }
+        @if (!string.IsNullOrWhiteSpace(row.Note))
+        {
+            <span class="cn-gantt-note">@row.Note</span>
+        }
+    </text>;
+
+    private RenderFragment ValueCells(CnTimelineRow row) => @<text>
         <div class="cn-gantt-n @ToneClass(row.ValueTone)">
             <span>@(row.Value ?? EmptyText)</span>
             @if (!string.IsNullOrWhiteSpace(row.ValueNote))
@@ -60,5 +163,5 @@
                 }
             </div>
         }
-    }
-</div>
+    </text>;
+}

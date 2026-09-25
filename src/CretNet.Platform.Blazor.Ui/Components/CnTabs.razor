@@ -71,6 +71,22 @@
         StateHasChanged();
     }
 
+    // A tab's new label, count or content arrive after this component drew
+    // them (CnTab.OnParametersSet); one extra render per batch picks them up.
+    // The flag stops that extra render from asking for yet another one.
+    private bool _redrawQueued;
+
+    internal void TabChanged(CnTab tab)
+    {
+        if (_redrawQueued || !_tabs.Contains(tab))
+            return;
+
+        _redrawQueued = true;
+        StateHasChanged();
+    }
+
+    protected override void OnAfterRender(bool firstRender) => _redrawQueued = false;
+
     /// <summary>
     /// Activates a tab from code — a hint on one tab that points at another,
     /// a deep link. Out-of-range is ignored rather than thrown: the host

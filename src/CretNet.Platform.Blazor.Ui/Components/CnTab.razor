@@ -10,5 +10,20 @@
 
     internal ElementReference ButtonReference { get; set; }
 
+    private bool _registered;
+
     protected override void OnInitialized() => Tabs.AddTab(this);
+
+    /// <summary>
+    /// CnTabs draws this tab's label, count and content in its own render,
+    /// which runs before this tab receives the new values of that same
+    /// render. New values therefore ask CnTabs to draw once more, or the tab
+    /// would show the previous render's content until something else redraws.
+    /// </summary>
+    protected override void OnParametersSet()
+    {
+        if (_registered)
+            Tabs.TabChanged(this);
+        _registered = true;
+    }
 }

@@ -211,7 +211,7 @@
         <div class="demo-scroll">
             <CnTimeline Rows="TimelineRows" From="new DateOnly(2026, 1, 1)" To="new DateOnly(2026, 12, 31)" Today="new DateOnly(2026, 9, 24)" />
         </div>
-        <p class="demo-api">Lanes (CnTimelineLane: Label · Thin · Segments — CnTimelineSegment: From · To (inclusive) · Tone · Title · Key) · IsGroup · Key · OnRowClick · OnSegmentClick · SelectedKey</p>
+        <p class="demo-api">Lanes (CnTimelineLane: Label · Thin · Segments — CnTimelineSegment: From · To (inclusive) · Tone · Title · Text · OpenStart · OpenEnd · Key) · IsGroup · Key · OnRowClick · OnSegmentClick · SelectedKey</p>
         <div class="demo-scroll">
             <CnTimeline Rows="LaneRows" From="new DateOnly(2025, 10, 1)" To="new DateOnly(2027, 3, 31)" Today="new DateOnly(2026, 9, 24)"
                         LabelHeader="Dienst" ValueHeader="Volgende" SecondValueHeader="Marge/jaar"
@@ -447,6 +447,15 @@
                     Seg(2026, 7, 2026, 9, CnTimelineSegmentTone.Concept, "Concept · Q3"),
                     Seg(2026, 10, 2026, 12, CnTimelineSegmentTone.Due, "Te factureren · Q4"),
                     Seg(2027, 1, 2027, 8, CnTimelineSegmentTone.Later, "Voorgesteld · 2027"),
+                ] },
+                new() { Label = "P", Segments =
+                [
+                    new() { From = DateOnly.MinValue, To = new(2026, 9, 30), OpenStart = true, Tone = CnTimelineSegmentTone.Neutral,
+                            Text = "€ 12,50 / maand", Title = "Artikelprijs · € 12,50 / maand" },
+                    new() { From = new(2026, 10, 1), To = new(2026, 12, 31), Tone = CnTimelineSegmentTone.Warn,
+                            Text = "€ 10,00 / maand", Title = "Afwijkende prijs · € 10,00 / maand" },
+                    new() { From = new(2027, 1, 1), To = DateOnly.MaxValue, OpenEnd = true, Tone = CnTimelineSegmentTone.Neutral,
+                            Text = "€ 12,50 / maand", Title = "Artikelprijs · € 12,50 / maand" },
                 ] },
             ],
         },

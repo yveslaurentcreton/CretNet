@@ -72,12 +72,12 @@
                                             <button type="button" class="@SegmentClass(segment, lane.Thin, place)"
                                                     style="@SegmentStyle(place)" title="@title" aria-label="@title"
                                                     aria-current="@(IsSelected(segment.Key) ? "true" : null)"
-                                                    @onclick="() => SegmentClicked(r, l, s)" @onclick:stopPropagation="true"></button>
+                                                    @onclick="() => SegmentClicked(r, l, s)" @onclick:stopPropagation="true">@segment.Text</button>
                                         }
                                         else
                                         {
                                             <span class="@SegmentClass(segment, lane.Thin, place)"
-                                                  style="@SegmentStyle(place)" title="@title" role="img" aria-label="@title"></span>
+                                                  style="@SegmentStyle(place)" title="@title" role="img" aria-label="@title">@segment.Text</span>
                                         }
                                     }
                                 </div>

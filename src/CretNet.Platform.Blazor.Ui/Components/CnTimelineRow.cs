@@ -100,6 +100,10 @@ public enum CnTimelineSegmentTone
 
     /// <summary>Anything else — a quiet grey tint.</summary>
     Neutral,
+
+    /// <summary>An exception worth a look (a deviating price, say) — an
+    /// amber tint.</summary>
+    Warn,
 }
 
 /// <summary>One lane of a <see cref="CnTimelineRow"/>.</summary>
@@ -117,7 +121,8 @@ public sealed record CnTimelineLane
 /// <summary>
 /// A period on a lane. Both dates are inclusive, so consecutive periods
 /// (1–31 January, 1–28 February) tile with the same 2px gap between them.
-/// Segments running past either axis edge are cut flat at that edge.
+/// Segments running past either axis edge are cut flat at that edge, unless
+/// they are open-ended there.
 /// </summary>
 public sealed record CnTimelineSegment
 {
@@ -127,6 +132,19 @@ public sealed record CnTimelineSegment
 
     /// <summary>Tooltip and accessible name. Falls back to the date range.</summary>
     public string? Title { get; init; }
+
+    /// <summary>A short text drawn inside the segment (a price, say), cut
+    /// with an ellipsis when it does not fit. Absent, the segment is a plain
+    /// bar.</summary>
+    public string? Text { get; init; }
+
+    /// <summary>The period has no start (pass <see cref="DateOnly.MinValue"/>
+    /// as <see cref="From"/>): its left edge is dotted instead of cut flat.</summary>
+    public bool OpenStart { get; init; }
+
+    /// <summary>The period has no end (pass <see cref="DateOnly.MaxValue"/>
+    /// as <see cref="To"/>): its right edge is dotted instead of cut flat.</summary>
+    public bool OpenEnd { get; init; }
 
     /// <summary>Identifies the segment for the host; compared with
     /// <see cref="CnTimeline.SelectedKey"/>.</summary>

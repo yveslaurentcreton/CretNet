@@ -196,8 +196,11 @@ HCMT's `catalog.css`; the generic `.cn-num` stays here.
 `CnTimelineRow` adds `Lanes` (`IReadOnlyList<CnTimelineLane>?`), `IsGroup` and `Key`.
 `CnTimelineLane`: `Label` (short tag such as "A"/"V"), `Thin`, `Segments`.
 `CnTimelineSegment`: `From`/`To` (inclusive `DateOnly`), `Tone`
-(`CnTimelineSegmentTone`: Billed, Concept, Due, Later, Uncovered, Purchase, Neutral),
-`Title` (tooltip and accessible name; date range fallback), `Key`. `CnTimeline` adds
+(`CnTimelineSegmentTone`: Billed, Concept, Due, Later, Uncovered, Purchase, Neutral, Warn),
+`Title` (tooltip and accessible name; date range fallback), `Text` (a short text inside
+the segment, cut with an ellipsis — e.g. a price per period), `OpenStart`/`OpenEnd`
+(no start/end: pass `DateOnly.MinValue`/`MaxValue`; that edge is dotted instead of cut
+flat) and `Key`. `CnTimeline` adds
 `OnRowClick` (`EventCallback<CnTimelineRow>`), `OnSegmentClick`
 (`EventCallback<CnTimelineSegmentClick>` with `Row`, `Lane`, `Segment`) and `SelectedKey`.
 Rows without lanes, group or row click keep their original flat cells and single bar.
@@ -205,7 +208,7 @@ Other rows are subgrid `.cn-gantt-row` (`--group`, `--lanes`, `--click`, `--sele
 Only delegates make things clickable: rows get a label button, segments become buttons
 whose click does not also raise the row click. Segments have 2px gaps and are cut flat
 (`--cut-l`/`--cut-r`) past the axis. Classes: `.cn-gantt-lane`, `.cn-gantt-lane-tag`,
-`.cn-gantt-seg--billed|concept|due|later|uncovered|purchase|neutral|thin|selected`.
+`.cn-gantt-seg--billed|concept|due|later|uncovered|purchase|neutral|warn|thin|text|open-l|open-r|selected`.
 January shows the year (`.cn-gantt-mo--year`); even months (`--alt`) hide on a narrow
 axis. Gridlines follow `--cn-gantt-months`. The label column is sticky;
 `--cn-gantt-bg` matches a non-card surface. Hover transitions honour reduced motion.

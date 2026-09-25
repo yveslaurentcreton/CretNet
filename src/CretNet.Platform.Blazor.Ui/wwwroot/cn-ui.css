@@ -398,15 +398,39 @@ button.cn-gantt-label:hover { text-decoration: underline; }
     background: color-mix(in srgb, var(--cn-text-3) 14%, transparent);
 }
 
+.cn-gantt-seg--warn {
+    border-color: var(--cn-warn);
+    background: color-mix(in srgb, var(--cn-warn) 14%, var(--cn-card));
+}
+
+/* A short text inside the segment (a price), cut rather than wrapped. */
+.cn-gantt-seg--text {
+    padding: 0 4px;
+    overflow: hidden;
+    color: var(--cn-text-2);
+    font: 600 9.5px/11px var(--cn-font);
+    font-variant-numeric: tabular-nums;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-gantt-seg--warn.cn-gantt-seg--text { color: var(--cn-warn); }
+
 /* Cut flat where the period runs past the axis. */
 .cn-gantt-seg--cut-l { border-left-width: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
 .cn-gantt-seg--cut-r { border-right-width: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+
+/* Open-ended: no start or no end, drawn dotted at that edge. */
+.cn-gantt-seg--open-l { border-left-style: dotted; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.cn-gantt-seg--open-r { border-right-style: dotted; border-top-right-radius: 0; border-bottom-right-radius: 0; }
 
 button.cn-gantt-seg { cursor: pointer; }
 button.cn-gantt-seg:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--cn-accent) 30%, transparent); }
 button.cn-gantt-seg--purchase:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--cn-lane-fin) 30%, transparent); }
 button.cn-gantt-seg--uncovered:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--cn-danger) 30%, transparent); }
 button.cn-gantt-seg--neutral:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--cn-text-3) 30%, transparent); }
+button.cn-gantt-seg--warn:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--cn-warn) 30%, transparent); }
 
 .cn-gantt-seg:focus-visible,
 .cn-gantt-seg--selected {

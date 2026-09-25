@@ -141,6 +141,53 @@ public sealed class CnTimelineTests : CnTestContext
     }
 
     [Fact]
+    public void TextSegments_ShowTheirTextAndDotOpenEndsInsteadOfCuttingThem()
+    {
+        var row = new CnTimelineRow
+        {
+            Label = "Microsoft 365",
+            Lanes =
+            [
+                new CnTimelineLane
+                {
+                    Label = "P",
+                    Segments =
+                    [
+                        new CnTimelineSegment
+                        {
+                            From = DateOnly.MinValue, To = new(2026, 9, 30), OpenStart = true,
+                            Tone = CnTimelineSegmentTone.Neutral, Text = "€ 12,50 / maand", Title = "Artikelprijs",
+                        },
+                        new CnTimelineSegment
+                        {
+                            From = new(2026, 10, 1), To = new(2026, 12, 31),
+                            Tone = CnTimelineSegmentTone.Warn, Text = "€ 10,00 / maand",
+                        },
+                        new CnTimelineSegment
+                        {
+                            From = new(2027, 1, 1), To = DateOnly.MaxValue, OpenEnd = true,
+                            Tone = CnTimelineSegmentTone.Neutral, Text = "€ 12,50 / maand",
+                        },
+                    ],
+                },
+            ],
+        };
+
+        var cut = RenderTimeline([row]);
+
+        var segments = cut.FindAll(".cn-gantt-seg");
+        segments.Count.ShouldBe(2); // the third lies wholly past the axis
+        segments.Select(x => x.TextContent).ShouldBe(["€ 12,50 / maand", "€ 10,00 / maand"]);
+        segments.ShouldAllBe(x => x.ClassList.Contains("cn-gantt-seg--text"));
+
+        segments[0].ClassList.ShouldContain("cn-gantt-seg--open-l");
+        segments[0].ClassList.ShouldNotContain("cn-gantt-seg--cut-l");
+        segments[0].GetAttribute("aria-label").ShouldBe("Artikelprijs");
+        segments[1].ClassList.ShouldContain("cn-gantt-seg--warn");
+        segments[1].ClassList.ShouldNotContain("cn-gantt-seg--open-r");
+    }
+
+    [Fact]
     public void GroupRow_SpansTheLabelAndKeepsItsFigures()
     {
         var cut = RenderTimeline(

@@ -169,8 +169,9 @@ public partial class CnTimeline
         var left = Math.Clamp((segment.From.DayNumber - From.DayNumber) / AxisDays * 100d, 0d, 100d);
         var right = Math.Clamp((segment.To.DayNumber + 1 - From.DayNumber) / AxisDays * 100d, 0d, 100d);
 
-        var cutLeft = segment.From.DayNumber < From.DayNumber;
-        var cutRight = segment.To.DayNumber > To.DayNumber;
+        // An open end runs to the edge and is drawn dotted there, not cut.
+        var cutLeft = !segment.OpenStart && segment.From.DayNumber < From.DayNumber;
+        var cutRight = !segment.OpenEnd && segment.To.DayNumber > To.DayNumber;
 
         return (left, right - left, cutLeft, cutRight);
     }
@@ -188,8 +189,11 @@ public partial class CnTimeline
             "cn-gantt-seg",
             SegmentToneClass(segment.Tone),
             thin ? "cn-gantt-seg--thin" : null,
+            string.IsNullOrEmpty(segment.Text) ? null : "cn-gantt-seg--text",
             place.CutLeft ? "cn-gantt-seg--cut-l" : null,
             place.CutRight ? "cn-gantt-seg--cut-r" : null,
+            segment.OpenStart ? "cn-gantt-seg--open-l" : null,
+            segment.OpenEnd ? "cn-gantt-seg--open-r" : null,
             IsSelected(segment.Key) ? "cn-gantt-seg--selected" : null,
         }.Where(x => x is not null));
 
@@ -201,6 +205,7 @@ public partial class CnTimeline
         CnTimelineSegmentTone.Uncovered => "cn-gantt-seg--uncovered",
         CnTimelineSegmentTone.Purchase => "cn-gantt-seg--purchase",
         CnTimelineSegmentTone.Neutral => "cn-gantt-seg--neutral",
+        CnTimelineSegmentTone.Warn => "cn-gantt-seg--warn",
         _ => "cn-gantt-seg--billed",
     };
 

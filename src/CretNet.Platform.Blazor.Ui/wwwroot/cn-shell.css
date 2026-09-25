@@ -182,6 +182,8 @@
     color: var(--cn-text-2);
     font: 600 12.5px var(--cn-font);
     cursor: pointer;
+    padding: 0 11px;
+    white-space: nowrap;
 }
 .cn-seg button.on { background: var(--cn-accent); color: #fff; }
 

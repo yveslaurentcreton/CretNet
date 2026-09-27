@@ -1,3 +1,10 @@
+# [0.12.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.11.0...v0.12.0) (2026-09-27)
+
+
+### Features
+
+* **ui:** add action menu, accordion, view switch and timeline lanes ([1619cda](https://github.com/yveslaurentcreton/CretNet/commit/1619cdabe9c889ad4ca4c0ab33b2fc21c58bbfad))
+
 # [0.11.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.10.0...v0.11.0) (2026-09-09)
 
 

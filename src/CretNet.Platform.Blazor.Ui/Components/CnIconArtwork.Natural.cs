@@ -2571,6 +2571,78 @@ internal static partial class CnIconArtwork
             </g>
             </g>
             """,
+        CnIconKind.More => """
+            <defs>
+            <linearGradient id="__CN_ICON__-steel-front" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#9daebb">
+            <stop class="cn-icon-tone-hi" stop-color="#e1e8ee"/>
+            <stop offset=".55" stop-color="#9daebb"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#617486"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__-steel-dark" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#617486">
+            <stop class="cn-icon-tone-hi" stop-color="#9daebb"/>
+            <stop offset=".55" stop-color="#617486"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#617486"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__-paper-front" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#f4f6f8">
+            <stop class="cn-icon-tone-hi" stop-color="#ffffff"/>
+            <stop offset=".55" stop-color="#f4f6f8"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#dce3ea"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__-glass-front" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#c5e5f0">
+            <stop class="cn-icon-tone-hi" stop-color="#f3fcff"/>
+            <stop offset=".55" stop-color="#c5e5f0"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#8cb9cf"/>
+            </linearGradient>
+            <filter id="__CN_ICON__s" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy=".8" stdDeviation=".65" flood-color="#354354" flood-opacity=".2"/>
+            </filter>
+            </defs>
+            <g class="cn-icon-shadow" filter="url(#__CN_ICON__s)">
+            <circle cx="10" cy="24" r="5.5" fill="url(#__CN_ICON__-steel-front)" />
+            <path d="M6 26.5A5.5 5.5 0 0 0 14 26.5" fill="none" stroke="#617486" stroke-width="1.5" stroke-linecap="round" class="cn-icon-bevel"/>
+            <circle cx="24" cy="24" r="5.5" fill="url(#__CN_ICON__-steel-front)" />
+            <path d="M20 26.5A5.5 5.5 0 0 0 28 26.5" fill="none" stroke="#617486" stroke-width="1.5" stroke-linecap="round" class="cn-icon-bevel"/>
+            <circle cx="38" cy="24" r="5.5" fill="url(#__CN_ICON__-steel-front)" />
+            <path d="M34 26.5A5.5 5.5 0 0 0 42 26.5" fill="none" stroke="#617486" stroke-width="1.5" stroke-linecap="round" class="cn-icon-bevel"/>
+            </g>
+            """,
+        CnIconKind.Link => """
+            <defs>
+            <linearGradient id="__CN_ICON__-blue-front" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#458fdc">
+            <stop class="cn-icon-tone-hi" stop-color="#95ceff"/>
+            <stop offset=".55" stop-color="#458fdc"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#285a9b"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__-blue-dark" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#285a9b">
+            <stop class="cn-icon-tone-hi" stop-color="#458fdc"/>
+            <stop offset=".55" stop-color="#285a9b"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#285a9b"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__-paper-front" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#f4f6f8">
+            <stop class="cn-icon-tone-hi" stop-color="#ffffff"/>
+            <stop offset=".55" stop-color="#f4f6f8"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#dce3ea"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__-glass-front" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#c5e5f0">
+            <stop class="cn-icon-tone-hi" stop-color="#f3fcff"/>
+            <stop offset=".55" stop-color="#c5e5f0"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#8cb9cf"/>
+            </linearGradient>
+            <filter id="__CN_ICON__s" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy=".8" stdDeviation=".65" flood-color="#354354" flood-opacity=".2"/>
+            </filter>
+            </defs>
+            <g class="cn-icon-shadow" filter="url(#__CN_ICON__s)">
+            <g transform="translate(0 .7) scale(2)" fill="none" stroke="#285a9b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" class="cn-icon-bevel">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+            </g>
+            <g transform="scale(2)" fill="none" stroke="url(#__CN_ICON__-blue-front)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+            </g>
+            </g>
+            """,
         _ => string.Empty,
     };
 }

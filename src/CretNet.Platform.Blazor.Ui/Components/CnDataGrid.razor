@@ -20,6 +20,19 @@
         @ToolbarActions
     </div>
 
+    @if (ItemsTemplate is not null)
+    {
+        @if (_items.Count == 0 && !_loading)
+        {
+            <div class="cn-grid-empty">@EmptyText</div>
+        }
+        else
+        {
+            @ItemsTemplate(_items)
+        }
+    }
+    else
+    {
     <div class="cn-grid-scroll">
         <table class="cn-grid-table">
             <thead>
@@ -81,6 +94,7 @@
             </tbody>
         </table>
     </div>
+    }
 
     <div class="cn-grid-footer">
         @if (FooterSummary is not null)
@@ -122,6 +136,11 @@
     /// <summary>Optional expanded detail; the host owns which rows are open.</summary>
     [Parameter] public RenderFragment<TItem>? RowDetail { get; set; }
     [Parameter] public Func<TItem, bool>? RowExpanded { get; set; }
+
+    /// <summary>Optional alternative presentation (cards, tiles) of the current
+    /// page's items instead of the table. Toolbar, search, sort state, paging and
+    /// the provider stay the same; declared columns are simply not rendered.</summary>
+    [Parameter] public RenderFragment<IReadOnlyList<TItem>>? ItemsTemplate { get; set; }
 
     [Parameter] public EventCallback<TItem> OnRowClick { get; set; }
     [Parameter] public bool ShowSearch { get; set; } = true;

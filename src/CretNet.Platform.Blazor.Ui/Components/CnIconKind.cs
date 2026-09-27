@@ -71,4 +71,10 @@ public enum CnIconKind
     DocumentMatch,
     IdBadge,
     LedgerExport,
+
+    // Overflow trigger for secondary actions (CnActionMenu).
+    More,
+
+    // Chain link for linking/unlinking related records.
+    Link,
 }

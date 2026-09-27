@@ -1,0 +1,64 @@
+@implements IDisposable
+
+@* One action in a CnActionMenu: icon + label only. A disabled item stays
+   focusable (aria-disabled) so its short reason can be read and seen. *@
+
+<button @ref="_element"
+        type="button"
+        role="menuitem"
+        tabindex="-1"
+        class="cn-action-menu__item @(Danger ? "cn-action-menu__item--danger" : null) @(CanActivate ? null : "is-disabled")"
+        aria-disabled="@(CanActivate ? "false" : "true")"
+        aria-busy="@(Loading ? "true" : null)"
+        title="@(ShowReason ? DisabledReason : null)"
+        @onfocus="() => Menu?.OnItemFocused(this)"
+        @onclick="ActivateAsync">
+    <span class="cn-action-menu__icon" aria-hidden="true">
+        @if (Loading)
+        {
+            <span class="cn-action-menu__spinner"></span>
+        }
+        else if (Icon is not null)
+        {
+            <CnIcon Kind="Icon.Value" />
+        }
+    </span>
+    <span class="cn-action-menu__label">@Label</span>
+    @if (ShowReason)
+    {
+        <small class="cn-action-menu__reason">@DisabledReason</small>
+    }
+</button>
+
+@code {
+    [CascadingParameter] public CnActionMenu? Menu { get; set; }
+
+    [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
+    [Parameter] public CnIconKind? Icon { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    /// <summary>Red text and icon for destructive actions.</summary>
+    [Parameter] public bool Danger { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>Short reason shown, small and muted, at the end of a disabled row.</summary>
+    [Parameter] public string? DisabledReason { get; set; }
+
+    /// <summary>Shows a spinner and blocks activation while the action runs.</summary>
+    [Parameter] public bool Loading { get; set; }
+
+    private ElementReference _element;
+
+    internal bool CanActivate => !Disabled && !Loading;
+    private bool ShowReason => Disabled && !string.IsNullOrWhiteSpace(DisabledReason);
+
+    internal ValueTask FocusAsync() => _element.FocusAsync();
+
+    protected override void OnInitialized() => Menu?.Register(this);
+
+    private Task ActivateAsync() => Menu is null
+        ? (CanActivate ? OnClick.InvokeAsync() : Task.CompletedTask)
+        : Menu.SelectAsync(this);
+
+    public void Dispose() => Menu?.Unregister(this);
+}

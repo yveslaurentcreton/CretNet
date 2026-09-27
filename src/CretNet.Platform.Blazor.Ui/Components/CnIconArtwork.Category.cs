@@ -2106,6 +2106,72 @@ internal static partial class CnIconArtwork
             </g>
             </g>
             """,
+        CnIconKind.More => """
+            <defs>
+            <linearGradient id="__CN_ICON__g" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#7c91ac">
+            <stop class="cn-icon-tone-hi" stop-color="#bbcada"/>
+            <stop offset=".55" stop-color="#7c91ac"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#4b6081"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__d" x1="0" y1="0" x2=".8" y2="1" style="--cn-icon-mid:#7c91ac">
+            <stop stop-color="#7c91ac"/>
+            <stop offset="1" stop-color="#4b6081"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__p" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#7c91ac">
+            <stop stop-color="#fff"/>
+            <stop offset="1" stop-color="#e5edf3"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__glass" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#7c91ac">
+            <stop stop-color="#fff"/>
+            <stop offset="1" stop-color="#bbcada"/>
+            </linearGradient>
+            <filter id="__CN_ICON__s" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy=".8" stdDeviation=".65" flood-color="#4b6081" flood-opacity=".2"/>
+            </filter>
+            </defs>
+            <g class="cn-icon-shadow" filter="url(#__CN_ICON__s)">
+            <circle cx="10" cy="24" r="5.5" fill="url(#__CN_ICON__g)" />
+            <path d="M6 26.5A5.5 5.5 0 0 0 14 26.5" fill="none" stroke="#4b6081" stroke-width="1.5" stroke-linecap="round" class="cn-icon-bevel"/>
+            <circle cx="24" cy="24" r="5.5" fill="url(#__CN_ICON__g)" />
+            <path d="M20 26.5A5.5 5.5 0 0 0 28 26.5" fill="none" stroke="#4b6081" stroke-width="1.5" stroke-linecap="round" class="cn-icon-bevel"/>
+            <circle cx="38" cy="24" r="5.5" fill="url(#__CN_ICON__g)" />
+            <path d="M34 26.5A5.5 5.5 0 0 0 42 26.5" fill="none" stroke="#4b6081" stroke-width="1.5" stroke-linecap="round" class="cn-icon-bevel"/>
+            </g>
+            """,
+        CnIconKind.Link => """
+            <defs>
+            <linearGradient id="__CN_ICON__g" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#388ce7">
+            <stop class="cn-icon-tone-hi" stop-color="#92cdff"/>
+            <stop offset=".55" stop-color="#388ce7"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#2458a8"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__d" x1="0" y1="0" x2=".8" y2="1" style="--cn-icon-mid:#388ce7">
+            <stop stop-color="#388ce7"/>
+            <stop offset="1" stop-color="#2458a8"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__p" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#388ce7">
+            <stop stop-color="#fff"/>
+            <stop offset="1" stop-color="#e5edf3"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__glass" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#388ce7">
+            <stop stop-color="#fff"/>
+            <stop offset="1" stop-color="#92cdff"/>
+            </linearGradient>
+            <filter id="__CN_ICON__s" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy=".8" stdDeviation=".65" flood-color="#2458a8" flood-opacity=".2"/>
+            </filter>
+            </defs>
+            <g class="cn-icon-shadow" filter="url(#__CN_ICON__s)">
+            <g transform="translate(0 .7) scale(2)" fill="none" stroke="#2458a8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" class="cn-icon-bevel">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+            </g>
+            <g transform="scale(2)" fill="none" stroke="url(#__CN_ICON__g)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+            </g>
+            </g>
+            """,
         _ => string.Empty,
     };
 }

@@ -54,6 +54,18 @@ public partial class CnTimeline
 
     [Parameter] public string? Class { get; set; }
 
+    /// <summary>Makes every row clickable (mouse on the whole row, keyboard
+    /// on its label button). Group rows included.</summary>
+    [Parameter] public EventCallback<CnTimelineRow> OnRowClick { get; set; }
+
+    /// <summary>Makes lane segments buttons. A segment click does not also
+    /// raise <see cref="OnRowClick"/>.</summary>
+    [Parameter] public EventCallback<CnTimelineSegmentClick> OnSegmentClick { get; set; }
+
+    /// <summary>Highlights the row and/or segment whose <c>Key</c> equals
+    /// this value.</summary>
+    [Parameter] public object? SelectedKey { get; set; }
+
     private double AxisDays => Math.Max(1d, To.DayNumber - From.DayNumber);
 
     private double? TodayPercentage =>
@@ -61,7 +73,7 @@ public partial class CnTimeline
             ? (today.DayNumber - From.DayNumber) / AxisDays * 100d
             : null;
 
-    private IEnumerable<(string Label, double Percentage)> Ticks
+    private IEnumerable<(string Label, double Percentage, bool Year, bool Alternate)> Ticks
     {
         get
         {
@@ -77,14 +89,27 @@ public partial class CnTimeline
             while (cursor <= To && months < 60)
             {
                 var at = cursor < From ? From : cursor;
-                yield return (names[(cursor.Month - 1) % names.Count],
-                              (at.DayNumber - From.DayNumber) / AxisDays * 100d);
+                // January carries the year: it is where the reader needs it,
+                // and a year label on every tick would crowd out the months.
+                // Even months are the ones that give way when narrow, so the
+                // year never loses its label and never has a neighbour.
+                var year = cursor.Month == 1;
+                yield return (year ? cursor.Year.ToString(CultureInfo.InvariantCulture) : names[(cursor.Month - 1) % names.Count],
+                              (at.DayNumber - From.DayNumber) / AxisDays * 100d,
+                              year,
+                              cursor.Month % 2 == 0);
 
                 cursor = cursor.AddMonths(1);
                 months++;
             }
         }
     }
+
+    /// <summary>Months on the axis, for the gridline pitch.</summary>
+    private string MonthCount => Css(Math.Max(1d, AxisDays / (365.2425d / 12d)));
+
+    /// <summary>Beyond about fifteen months the alternate labels go earlier.</summary>
+    private bool Dense => AxisDays > 460d;
 
     private static readonly string[] DefaultMonthNames =
         ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
@@ -120,6 +145,90 @@ public partial class CnTimeline
         // A single-day span would otherwise be invisible.
         return (left, Math.Max(1d, right - left));
     }
+
+    private bool HasLanes(CnTimelineRow row) => !row.IsGroup && row.Lanes is { Count: > 0 };
+
+    /// <summary>Rows using none of the lane/group/click features keep the
+    /// original flat markup, cell for cell.</summary>
+    private bool IsEnhanced(CnTimelineRow row) => row.IsGroup || HasLanes(row) || OnRowClick.HasDelegate;
+
+    private bool IsSelected(object? key) => SelectedKey is not null && key is not null && Equals(key, SelectedKey);
+
+    /// <summary>
+    /// Null when the segment misses the axis. Dates are inclusive, so the
+    /// right edge is the day after <c>To</c>; a segment is cut when it runs
+    /// past an axis edge, and loses its 1px inset on that side.
+    /// </summary>
+    private (double Left, double Width, bool CutLeft, bool CutRight)? Place(CnTimelineSegment segment)
+    {
+        if (To <= From || (segment.To < segment.From) || (segment.To < From) || (segment.From > To))
+        {
+            return null;
+        }
+
+        var left = Math.Clamp((segment.From.DayNumber - From.DayNumber) / AxisDays * 100d, 0d, 100d);
+        var right = Math.Clamp((segment.To.DayNumber + 1 - From.DayNumber) / AxisDays * 100d, 0d, 100d);
+
+        // An open end runs to the edge and is drawn dotted there, not cut.
+        var cutLeft = !segment.OpenStart && segment.From.DayNumber < From.DayNumber;
+        var cutRight = !segment.OpenEnd && segment.To.DayNumber > To.DayNumber;
+
+        return (left, right - left, cutLeft, cutRight);
+    }
+
+    private static string SegmentStyle((double Left, double Width, bool CutLeft, bool CutRight) place)
+    {
+        var inset = place.CutLeft ? 0 : 1;
+        var gaps = inset + (place.CutRight ? 0 : 1);
+        return $"left: calc({Css(place.Left)}% + {inset}px); width: max(2px, calc({Css(place.Width)}% - {gaps}px))";
+    }
+
+    private string SegmentClass(CnTimelineSegment segment, bool thin, (double Left, double Width, bool CutLeft, bool CutRight) place) =>
+        string.Join(' ', new[]
+        {
+            "cn-gantt-seg",
+            SegmentToneClass(segment.Tone),
+            thin ? "cn-gantt-seg--thin" : null,
+            string.IsNullOrEmpty(segment.Text) ? null : "cn-gantt-seg--text",
+            place.CutLeft ? "cn-gantt-seg--cut-l" : null,
+            place.CutRight ? "cn-gantt-seg--cut-r" : null,
+            segment.OpenStart ? "cn-gantt-seg--open-l" : null,
+            segment.OpenEnd ? "cn-gantt-seg--open-r" : null,
+            IsSelected(segment.Key) ? "cn-gantt-seg--selected" : null,
+        }.Where(x => x is not null));
+
+    private static string SegmentToneClass(CnTimelineSegmentTone tone) => tone switch
+    {
+        CnTimelineSegmentTone.Concept => "cn-gantt-seg--concept",
+        CnTimelineSegmentTone.Due => "cn-gantt-seg--due",
+        CnTimelineSegmentTone.Later => "cn-gantt-seg--later",
+        CnTimelineSegmentTone.Uncovered => "cn-gantt-seg--uncovered",
+        CnTimelineSegmentTone.Purchase => "cn-gantt-seg--purchase",
+        CnTimelineSegmentTone.Neutral => "cn-gantt-seg--neutral",
+        CnTimelineSegmentTone.Warn => "cn-gantt-seg--warn",
+        _ => "cn-gantt-seg--billed",
+    };
+
+    private static string SegmentTitle(CnTimelineSegment segment) =>
+        string.IsNullOrWhiteSpace(segment.Title)
+            ? $"{segment.From.ToString("d", CultureInfo.CurrentCulture)} – {segment.To.ToString("d", CultureInfo.CurrentCulture)}"
+            : segment.Title;
+
+    private string RowClass(CnTimelineRow row) =>
+        string.Join(' ', new[]
+        {
+            "cn-gantt-row",
+            row.IsGroup ? "cn-gantt-row--group" : null,
+            HasLanes(row) ? "cn-gantt-row--lanes" : null,
+            OnRowClick.HasDelegate ? "cn-gantt-row--click" : null,
+            IsSelected(row.Key) ? "cn-gantt-row--selected" : null,
+        }.Where(x => x is not null));
+
+    private Task RowClicked(CnTimelineRow row) =>
+        OnRowClick.HasDelegate ? OnRowClick.InvokeAsync(row) : Task.CompletedTask;
+
+    private Task SegmentClicked(CnTimelineRow row, CnTimelineLane lane, CnTimelineSegment segment) =>
+        OnSegmentClick.InvokeAsync(new CnTimelineSegmentClick(row, lane, segment));
 
     private static string? ToneClass(CnTimelineTone tone) => tone switch
     {

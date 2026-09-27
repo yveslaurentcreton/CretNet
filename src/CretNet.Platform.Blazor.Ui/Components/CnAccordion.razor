@@ -1,0 +1,33 @@
+@* A list of collapsible CnAccordionItem sections separated by hairlines.
+   Items own their open state; the container only offers expand/collapse all. *@
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="cn-accordion @Class">@ChildContent</div>
+</CascadingValue>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    private readonly List<CnAccordionItem> _items = [];
+
+    internal void Register(CnAccordionItem item)
+    {
+        if (!_items.Contains(item))
+            _items.Add(item);
+    }
+
+    internal void Unregister(CnAccordionItem item) => _items.Remove(item);
+
+    /// <summary>Opens every item; each raises its own OpenChanged.</summary>
+    public Task ExpandAllAsync() => SetAllAsync(true);
+
+    /// <summary>Closes every item; each raises its own OpenChanged.</summary>
+    public Task CollapseAllAsync() => SetAllAsync(false);
+
+    private async Task SetAllAsync(bool open)
+    {
+        foreach (var item in _items.ToArray())
+            await item.SetOpenAsync(open);
+    }
+}

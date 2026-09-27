@@ -71,4 +71,19 @@ public sealed class CnTabsTests : CnTestContext
             .ShouldBe(buttons[1].GetAttribute("id"));
         cut.Find("[role=tabpanel]").TextContent.ShouldBe("financial-content");
     }
+
+    [Fact]
+    public async Task HostRedraw_ShowsTheNewContentAndCountAtOnce()
+    {
+        // HCMT BUG-079: the active panel and the count lagged one render
+        // behind the host, because CnTabs drew them before the tab received
+        // its new parameters.
+        var cut = Render<TabsFixture>();
+        cut.FindAll(".items li").Count.ShouldBe(1);
+
+        await cut.InvokeAsync(() => cut.Instance.Replace("domain", "hosting", "mail"));
+
+        cut.FindAll(".items li").Count.ShouldBe(3);
+        cut.Find(".cn-tab-count").TextContent.ShouldBe("3");
+    }
 }

@@ -48,6 +48,7 @@ public static class CnLabels
     public static string MarkRead => ResourceManager.GetString(nameof(MarkRead), CultureInfo.CurrentUICulture)!;
     public static string MarkUnread => ResourceManager.GetString(nameof(MarkUnread), CultureInfo.CurrentUICulture)!;
     public static string MinutesAgo => ResourceManager.GetString(nameof(MinutesAgo), CultureInfo.CurrentUICulture)!;
+    public static string More => ResourceManager.GetString(nameof(More), CultureInfo.CurrentUICulture)!;
     public static string MoreToasts => ResourceManager.GetString(nameof(MoreToasts), CultureInfo.CurrentUICulture)!;
     public static string MoveLeft => ResourceManager.GetString(nameof(MoveLeft), CultureInfo.CurrentUICulture)!;
     public static string MoveRight => ResourceManager.GetString(nameof(MoveRight), CultureInfo.CurrentUICulture)!;
@@ -87,6 +88,7 @@ public static class CnLabels
     public static string Underline => ResourceManager.GetString(nameof(Underline), CultureInfo.CurrentUICulture)!;
     public static string Unread => ResourceManager.GetString(nameof(Unread), CultureInfo.CurrentUICulture)!;
     public static string Value => ResourceManager.GetString(nameof(Value), CultureInfo.CurrentUICulture)!;
+    public static string View => ResourceManager.GetString(nameof(View), CultureInfo.CurrentUICulture)!;
     public static string Yes => ResourceManager.GetString(nameof(Yes), CultureInfo.CurrentUICulture)!;
     public static string Yesterday => ResourceManager.GetString(nameof(Yesterday), CultureInfo.CurrentUICulture)!;
     public static string YouAreAllCaughtUp => ResourceManager.GetString(nameof(YouAreAllCaughtUp), CultureInfo.CurrentUICulture)!;

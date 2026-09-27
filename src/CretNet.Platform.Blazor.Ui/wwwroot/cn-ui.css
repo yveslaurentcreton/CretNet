@@ -30,6 +30,7 @@
     --cn-accent-strong: var(--cn-accent-hover);
 
     --cn-danger: #d13438;
+    --cn-danger-ink: #ffffff;
     --cn-warn: #b8860b;
     --cn-lane-phys: #00876f;
     --cn-lane-phys-tint: rgba(0, 135, 111, .10);
@@ -180,7 +181,19 @@
 
 .cn-gantt-h--r { text-align: right; }
 
-.cn-gantt-axis { position: relative; height: 20px; }
+/* The label column stays put while a host scroll container pans the axis.
+   --cn-gantt-bg lets a host on a non-card surface match its background. */
+.cn-gantt-h--name,
+.cn-gantt-name {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    background-color: var(--cn-gantt-bg, var(--cn-card));
+}
+
+/* The axis is its own size container: alternate month labels give way
+   when the axis itself gets narrow, whatever the surrounding layout. */
+.cn-gantt-axis { position: relative; height: 20px; container-type: inline-size; }
 
 .cn-gantt-mo {
     position: absolute;
@@ -192,6 +205,17 @@
     font: 400 10px/14px var(--cn-font);
     text-transform: none;
     letter-spacing: 0;
+    white-space: nowrap;
+}
+
+.cn-gantt-mo--year { color: var(--cn-text-2); font-weight: 700; border-left-color: var(--cn-stroke); }
+
+@container (max-width: 560px) {
+    .cn-gantt-mo--alt { color: transparent; }
+}
+
+@container (max-width: 900px) {
+    .cn-gantt--dense .cn-gantt-mo--alt { color: transparent; }
 }
 
 .cn-gantt-name {
@@ -208,10 +232,11 @@
     font-variant-numeric: tabular-nums;
 }
 
+/* One gridline per month; CnTimeline sets --cn-gantt-months from the axis. */
 .cn-gantt-track {
     position: relative;
-    background: repeating-linear-gradient(
-        to right, var(--cn-stroke-soft) 0 1px, transparent 1px 8.3333%);
+    background-image: repeating-linear-gradient(
+        to right, var(--cn-stroke-soft) 0 1px, transparent 1px calc(100% / var(--cn-gantt-months, 12)));
 }
 
 .cn-gantt-bar {
@@ -242,6 +267,7 @@
     width: 2px;
     background: var(--cn-warn);
     z-index: 1;
+    pointer-events: none;
 }
 
 .cn-gantt-n {
@@ -260,6 +286,193 @@
 .cn-gantt-n.cn-gantt--muted { color: var(--cn-text-3); }
 
 .cn-gantt-name.cn-gantt--muted { color: var(--cn-text-2); font-style: italic; }
+
+/* ---- Lanes, segments, groups and clickable rows (HCMT S-323) ----
+   Rows using any of these are a subgrid .cn-gantt-row, so the whole line
+   hovers and selects as one. Plain rows keep their flat cells above. */
+.cn-gantt > .cn-gantt-row {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    border-bottom: 0;
+}
+
+.cn-gantt-row > * {
+    border-bottom: 1px solid var(--cn-stroke-soft);
+    transition: background-color .12s ease;
+}
+
+.cn-gantt-row--lanes .cn-gantt-name {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 1px;
+    min-width: 0;
+    padding: 7px 20px 7px 2px;
+}
+
+.cn-gantt-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-gantt-row .cn-gantt-note { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+button.cn-gantt-label {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+button.cn-gantt-label:hover { text-decoration: underline; }
+
+/* Lane tags sit at the right of the label cell and share the track's lane
+   geometry (same heights, gap and vertical centring), so they line up. */
+.cn-gantt-lane-tags {
+    position: absolute;
+    top: 0;
+    right: 6px;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    color: var(--cn-text-3);
+    font: 600 9px/1 var(--cn-font);
+}
+
+.cn-gantt-lane-tag { height: 13px; line-height: 13px; }
+.cn-gantt-lane-tag.cn-gantt-lane--thin { height: 9px; line-height: 9px; }
+
+.cn-gantt-row--lanes .cn-gantt-track {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    min-height: 44px;
+    padding: 6px 0;
+}
+
+.cn-gantt-lane { position: relative; height: 13px; }
+.cn-gantt-lane--thin { height: 9px; }
+
+/* Segments: the tone is the fill, there is no legend. */
+.cn-gantt-seg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--cn-accent);
+    border-radius: 3px;
+    background: var(--cn-accent-tint);
+    font: inherit;
+    transition: box-shadow .12s ease;
+}
+
+.cn-gantt-seg--thin { border-radius: 2px; }
+.cn-gantt-seg--concept { border-style: dashed; }
+.cn-gantt-seg--due { background: var(--cn-accent); }
+.cn-gantt-seg--later { border-style: dashed; background: transparent; }
+
+.cn-gantt-seg--uncovered {
+    border-color: var(--cn-danger);
+    background: repeating-linear-gradient(
+        135deg, color-mix(in srgb, var(--cn-danger) 55%, transparent) 0 2px, transparent 2px 5px);
+}
+
+/* Translucent, so overlapping purchase periods visibly darken. */
+.cn-gantt-seg--purchase {
+    border-color: color-mix(in srgb, var(--cn-lane-fin) 70%, transparent);
+    background: color-mix(in srgb, var(--cn-lane-fin) 16%, transparent);
+}
+
+.cn-gantt-seg--neutral {
+    border-color: var(--cn-text-3);
+    background: color-mix(in srgb, var(--cn-text-3) 14%, transparent);
+}
+
+.cn-gantt-seg--warn {
+    border-color: var(--cn-warn);
+    background: color-mix(in srgb, var(--cn-warn) 14%, var(--cn-card));
+}
+
+/* A short text inside the segment (a price), cut rather than wrapped. */
+.cn-gantt-seg--text {
+    padding: 0 4px;
+    overflow: hidden;
+    color: var(--cn-text-2);
+    font: 600 9.5px/11px var(--cn-font);
+    font-variant-numeric: tabular-nums;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-gantt-seg--warn.cn-gantt-seg--text { color: var(--cn-warn); }
+
+/* Cut flat where the period runs past the axis. */
+.cn-gantt-seg--cut-l { border-left-width: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.cn-gantt-seg--cut-r { border-right-width: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+
+/* Open-ended: no start or no end, drawn dotted at that edge. */
+.cn-gantt-seg--open-l { border-left-style: dotted; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.cn-gantt-seg--open-r { border-right-style: dotted; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+
+button.cn-gantt-seg { cursor: pointer; }
+button.cn-gantt-seg:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--cn-accent) 30%, transparent); }
+button.cn-gantt-seg--purchase:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--cn-lane-fin) 30%, transparent); }
+button.cn-gantt-seg--uncovered:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--cn-danger) 30%, transparent); }
+button.cn-gantt-seg--neutral:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--cn-text-3) 30%, transparent); }
+button.cn-gantt-seg--warn:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--cn-warn) 30%, transparent); }
+
+.cn-gantt-seg:focus-visible,
+.cn-gantt-seg--selected {
+    outline: 2px solid var(--cn-text);
+    outline-offset: 1px;
+    z-index: 2;
+}
+
+.cn-gantt-label:focus-visible { outline: 2px solid var(--cn-accent); outline-offset: 1px; }
+
+/* Group header: the label spans label and track, the figures stay. */
+.cn-gantt-row--group > * { background-color: color-mix(in srgb, var(--cn-ground) 60%, var(--cn-gantt-bg, var(--cn-card))); }
+
+.cn-gantt-row--group .cn-gantt-name {
+    grid-column: 1 / 3;
+    padding: 6px 2px;
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+.cn-gantt-group-title {
+    position: sticky;
+    left: 2px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.cn-gantt-row--group .cn-gantt-n { color: var(--cn-text-2); font-weight: 600; }
+
+.cn-gantt-row--click { cursor: pointer; }
+.cn-gantt-row--click:hover > * { background-color: var(--cn-row-hover); }
+.cn-gantt-row--group.cn-gantt-row--click:hover > * { background-color: color-mix(in srgb, var(--cn-accent) 6%, var(--cn-gantt-bg, var(--cn-card))); }
+.cn-gantt-row--selected > *,
+.cn-gantt-row--selected.cn-gantt-row--click:hover > * { background-color: color-mix(in srgb, var(--cn-accent) 8%, var(--cn-gantt-bg, var(--cn-card))); }
+
+@media (prefers-reduced-motion: reduce) {
+    .cn-gantt-row > *,
+    .cn-gantt-seg { transition: none; }
+}
 
 /* ---------- CnButton ---------- */
 .cn-btn {
@@ -1861,613 +2074,8 @@ tr.cn-sort-placeholder > td {
 .cn-stock-state--delivered { background: #e9eef8; color: #405779; }
 .cn-stock-state--pendingreceipt { background: #f2f2f2; color: #6b6b6b; }
 
-/* ---------- Catalog (M-020) — moved from CatalogListPage.razor.css to the global sheet:
-   scoped-css + unfingerprinted bundle caching made page styles unreliable after deploys. ---------- */
-/* M-020/S-103a: product-card grid, ported 1:1 from the owner-approved mock
-   (catalog-mockup.html .prod-* rules) onto the app's own cn-* design tokens. */
-
-.cn-prod-search {
-    display: inline-flex;
-}
-
-.cn-prod-search .cn-input {
-    height: 32px;
-    border-radius: 16px;
-    width: 280px;
-}
-
-.cn-prod-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 12px;
-}
-
-.cn-prod {
-    background: var(--cn-card);
-    border-radius: 8px;
-    box-shadow: var(--cn-shadow);
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    cursor: pointer;
-    position: relative;
-    transition: transform .1s;
-}
-
-.cn-prod:hover {
-    transform: translateY(-1px);
-}
-
-/* Image boxes use flex centering + px clamps + overflow:hidden, NOT
-   grid + percentage max-sizes: in a grid the auto track first grows to
-   the photo's intrinsic size, so max-height:100% resolves against the
-   blown-up track and constrains nothing (owner-visible overflow bug,
-   fixed 2026-07-12). Same pattern for gallery/compare/onboard below. */
-.cn-prod-img {
-    height: 120px;
-    background: var(--cn-ground);
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    color: var(--cn-text-2);
-}
-
-.cn-prod-img img {
-    max-width: 100%;
-    max-height: 120px;
-    object-fit: contain;
-}
-
-.cn-prod-img svg {
-    width: 32px;
-    height: 32px;
-}
-
-.cn-prod-brand {
-    font: 700 10.5px var(--cn-font);
-    letter-spacing: .8px;
-    text-transform: uppercase;
-    color: var(--cn-text-2);
-}
-
-.cn-prod-name {
-    font: 600 13.5px var(--cn-font);
-    line-height: 1.3;
-}
-
-.cn-prod-specs {
-    font-size: 11.5px;
-    color: var(--cn-text-2);
-    line-height: 1.5;
-}
-
-.cn-prod-cmp {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 26px;
-    height: 26px;
-    border-radius: 6px;
-    border: 1px solid var(--cn-stroke);
-    background: var(--cn-card);
-    color: var(--cn-text-2);
-    cursor: pointer;
-    display: grid;
-    place-items: center;
-}
-
-.cn-prod-cmp--on {
-    background: var(--cn-accent);
-    border-color: var(--cn-accent);
-    color: #fff;
-}
-
-.cn-prod-cmp-tray {
-    position: sticky;
-    bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    background: var(--cn-card);
-    border: 1px solid var(--cn-accent);
-    border-radius: 10px;
-    box-shadow: var(--cn-shadow);
-    padding: 8px 12px;
-}
-
-.cn-prod-cmp-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--cn-accent-tint);
-    border-radius: 6px;
-    padding: 3px 8px;
-    font: 600 12px var(--cn-font);
-}
-
-.cn-prod-cmp-chip button {
-    border: none;
-    background: none;
-    cursor: pointer;
-    color: var(--cn-text-2);
-    font-size: 12px;
-    padding: 0;
-}
-
-/* ---------- Catalog (M-020) — moved from CatalogComparePage.razor.css to the global sheet:
-   scoped-css + unfingerprinted bundle caching made page styles unreliable after deploys. ---------- */
-/* M-020/S-104: comparison v2 (owner-approved mock, catalog-mockup.html
-   .cmp-table/.cmp-prod-head/.cmp-diff/.cmp-group/.toggle rules) ported onto
-   the app's own cn-* design tokens; the table itself reuses cn-grid-table. */
-
-.cn-cmp-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 12.5px;
-    color: var(--cn-text-2);
-    cursor: pointer;
-}
-
-.cn-cmp-table {
-    min-width: 640px;
-}
-
-.cn-cmp-table .cn-cmp-lbl {
-    color: var(--cn-text-2);
-    width: 180px;
-    white-space: nowrap;
-}
-
-.cn-cmp-head {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    min-width: 170px;
-}
-
-.cn-cmp-head-img {
-    height: 70px;
-    width: 100%;
-    background: var(--cn-ground);
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    color: var(--cn-text-2);
-}
-
-.cn-cmp-head-img img {
-    max-width: 100%;
-    max-height: 70px;
-    object-fit: contain;
-}
-
-.cn-cmp-add {
-    min-width: 120px;
-}
-
-.cn-cmp-diff td {
-    background: var(--cn-accent-tint);
-    font-weight: 600;
-}
-
-.cn-cmp-group-row td {
-    font: 700 10.5px var(--cn-font);
-    letter-spacing: .7px;
-    text-transform: uppercase;
-    color: var(--cn-text-2);
-    background: var(--cn-ground);
-    padding: 4px 12px;
-}
-
-/* ---------- Catalog (M-020) — moved from CatalogItemDetailPage.razor.css to the global sheet:
-   scoped-css + unfingerprinted bundle caching made page styles unreliable after deploys. ---------- */
-/* M-020/S-103b+104+105: product fiche — gallery + spec groups + price
-   context (owner-approved mock; the pp / gallery / spec mockup rules)
-   ported onto the app's own cn-* design tokens.
-   NOTE: never write glob text like "x-*" followed by "/" inside these
-   comments — the embedded star-slash ended this comment early and the
-   leaked tail swallowed the .cn-pp grid rule (owner-visible layout bug,
-   fixed 2026-07-12). */
-
-.cn-pp {
-    display: grid;
-    grid-template-columns: 380px 1fr;
-    gap: 14px;
-    align-items: start;
-}
-
-@media (max-width: 900px) {
-    .cn-pp {
-        grid-template-columns: 1fr;
-    }
-}
-
-.cn-pp-right {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.cn-pp-gallery-main {
-    height: 280px;
-    background: var(--cn-ground);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    color: var(--cn-text-2);
-}
-
-.cn-pp-gallery-main img {
-    max-width: 100%;
-    max-height: 280px;
-    object-fit: contain;
-}
-
-.cn-pp-gallery-main svg {
-    width: 48px;
-    height: 48px;
-}
-
-.cn-pp-gallery-thumbs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.cn-pp-thumb {
-    width: 56px;
-    height: 56px;
-    background: var(--cn-ground);
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: 2px solid transparent;
-    padding: 0;
-    overflow: hidden;
-}
-
-.cn-pp-thumb img {
-    max-width: 100%;
-    max-height: 52px;
-    object-fit: contain;
-}
-
-.cn-pp-thumb--on {
-    border-color: var(--cn-accent);
-}
-
 .cn-num {
     font-variant-numeric: tabular-nums;
-}
-
-.cn-pp-links {
-    margin-top: 12px;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.cn-pp-spec-group {
-    margin-bottom: 12px;
-}
-
-.cn-pp-spec-group h4 {
-    margin: 0 0 4px;
-    font: 700 11px var(--cn-font);
-    letter-spacing: .6px;
-    text-transform: uppercase;
-    color: var(--cn-text-2);
-}
-
-.cn-pp-spec-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 14px;
-    padding: 5px 0;
-    border-bottom: 1px solid var(--cn-stroke-soft);
-    font-size: 13px;
-}
-
-.cn-pp-spec-row span:first-child {
-    color: var(--cn-text-2);
-}
-
-.cn-pp-card-title {
-    margin: 0 0 8px;
-    font: 700 11px var(--cn-font);
-    letter-spacing: .6px;
-    text-transform: uppercase;
-    color: var(--cn-text-2);
-}
-
-.cn-pp-linked-item {
-    border: 1px solid var(--cn-stroke-soft);
-    cursor: pointer;
-    font: inherit;
-}
-
-.cn-pp-linked-item:hover {
-    background: var(--cn-accent-tint);
-    color: var(--cn-accent);
-    border-color: var(--cn-accent);
-}
-
-/* ---------- Catalog (M-020) — moved from CatalogOnboardPage.razor.css to the global sheet:
-   scoped-css + unfingerprinted bundle caching made page styles unreliable after deploys. ---------- */
-/* M-020/S-103a: onboarding wizard, ported from the owner-approved mock
-   (catalog-mockup.html .onb-* rules) onto the app's own cn-* design tokens. */
-
-.cn-onb-card {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    max-width: 1080px;
-}
-
-.cn-onb-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    max-width: 1080px;
-}
-
-.cn-onb-heading {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-}
-
-.cn-onb-heading p {
-    margin: 3px 0 0;
-}
-
-.cn-onb-num {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--cn-accent);
-    color: #fff;
-    font: 700 12px var(--cn-font);
-    display: grid;
-    place-items: center;
-    flex: none;
-    margin-top: 2px;
-}
-
-.cn-onb-sources {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin-left: 34px;
-}
-
-.cn-onb-source {
-    border: 1px solid var(--cn-stroke);
-    border-radius: 10px;
-    background: var(--cn-ground);
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 11px;
-    min-width: 0;
-}
-
-.cn-onb-source--primary {
-    border-color: color-mix(in srgb, var(--cn-accent) 45%, var(--cn-stroke));
-    background: color-mix(in srgb, var(--cn-accent-tint) 40%, var(--cn-card));
-}
-
-.cn-onb-source-head {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-}
-
-.cn-onb-source-head > svg {
-    width: 22px;
-    height: 22px;
-    color: var(--cn-accent);
-    margin-top: 1px;
-}
-
-.cn-onb-source h2 {
-    font: 650 14px/1.3 var(--cn-font);
-    color: var(--cn-text);
-    margin: 0;
-}
-
-.cn-onb-source p {
-    color: var(--cn-text-2);
-    font-size: 12.5px;
-    line-height: 1.45;
-    margin: 0;
-    min-height: 36px;
-}
-
-.cn-onb-source .cn-btn {
-    align-self: flex-start;
-}
-
-.cn-onb-recommended {
-    display: inline-block;
-    color: var(--cn-accent);
-    font-size: 11px;
-    font-weight: 650;
-    margin-top: 2px;
-}
-
-.cn-onb-preview {
-    display: flex;
-    gap: 14px;
-    background: var(--cn-ground);
-    border-radius: 8px;
-    padding: 14px;
-    margin-top: 8px;
-}
-
-.cn-onb-preview-body {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.cn-onb-img {
-    width: 110px;
-    height: 110px;
-    background: var(--cn-card);
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: none;
-    color: var(--cn-text-2);
-    overflow: hidden;
-}
-
-.cn-onb-img img {
-    max-width: 110px;
-    max-height: 110px;
-    object-fit: contain;
-}
-
-.cn-onb-img svg {
-    width: 32px;
-    height: 32px;
-}
-
-.cn-onb-src-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font: 600 11px var(--cn-font);
-    color: var(--cn-accent);
-    background: var(--cn-accent-tint);
-    border-radius: 10px;
-    padding: 2px 9px;
-    width: fit-content;
-}
-
-.cn-onb-review-card {
-    border-color: color-mix(in srgb, var(--cn-accent) 35%, var(--cn-stroke));
-}
-
-.cn-onb-review-fields {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin-left: 34px;
-}
-
-.cn-onb-review-fields > :first-child,
-.cn-onb-review-fields > :last-child {
-    grid-column: 1 / -1;
-}
-
-.cn-onb-import-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-left: 34px;
-}
-
-.cn-onb-ladder {
-    border-top: 1px dashed var(--cn-stroke);
-    padding-top: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    font-size: 12.5px;
-    color: var(--cn-text-2);
-}
-
-.cn-onb-ladder-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.cn-onb-ladder-row--disabled {
-    opacity: .75;
-}
-
-.cn-onb-ladder-link {
-    border: none;
-    background: none;
-    padding: 0;
-    color: var(--cn-accent);
-    font: 600 12.5px var(--cn-font);
-    cursor: pointer;
-}
-
-.cn-onb-ladder-link:disabled {
-    color: var(--cn-text-2);
-    cursor: not-allowed;
-}
-
-@media (max-width: 760px) {
-    .cn-onb-sources,
-    .cn-onb-review-fields {
-        grid-template-columns: 1fr;
-        margin-left: 0;
-    }
-
-    .cn-onb-review-fields > :first-child,
-    .cn-onb-review-fields > :last-child {
-        grid-column: auto;
-    }
-
-    .cn-onb-import-row {
-        align-items: flex-start;
-        flex-direction: column;
-        margin-left: 0;
-    }
-
-    .cn-onb-preview {
-        flex-direction: column;
-    }
-}
-
-/* ---------- Catalog product page overhaul (owner 2026-07-12) ---------- */
-.cn-pp {
-    gap: 14px;
-}
-
-.cn-pp-right {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    min-width: 0;
-}
-
-.cn-pp-specs-columns {
-    column-gap: 28px;
-}
-
-@media (min-width: 1000px) {
-    .cn-pp-specs-columns { columns: 2; }
-}
-
-@media (min-width: 1700px) {
-    .cn-pp-specs-columns { columns: 3; }
-}
-
-.cn-pp-specs-columns .cn-pp-spec-group {
-    break-inside: avoid;
-    margin-bottom: 14px;
 }
 
 /* ---------- Payment state badges (M-021/S-144, prefix pay-) ---------- */
@@ -3514,25 +3122,6 @@ tr:hover .cn-task-more,
 .cn-ctx-ico { flex: none; margin-top: 1px; color: var(--cn-text-2); }
 .cn-ctx-ico .cn-icon { width: 13px; height: 13px; }
 
-/* S-196 catalog source-aware specification refresh dialog. */
-.cn-refresh-source {
-    width: 100%;
-}
-
-.cn-refresh-source button {
-    min-height: 38px;
-    height: auto;
-    padding: 6px 10px;
-}
-
-.cn-refresh-warning {
-    margin: 0;
-    padding: 10px 12px;
-    border-radius: 7px;
-    background: var(--cn-ground);
-    color: var(--cn-text-2);
-    font-size: 12px;
-}
 /* M-035 — Project living ledger. A calm, source-led cockpit with one visual
    spine; financial meaning remains available in tables and text. */
 .project-kicker {
@@ -4981,6 +4570,226 @@ tr:hover .cn-task-more,
     .cn-status-picker__trigger,
     .cn-status-picker__readonly { justify-content: center; }
     .cn-status-picker__menu { right: auto; left: 0; }
+}
+
+/* ---------- CnActionMenu ----------
+   Secondary actions behind a "More" button. Same surface as the status
+   picker menu, one compact row per action: icon, label and, for a disabled
+   action, its short reason at the end. */
+
+.cn-action-menu { position: relative; display: inline-flex; font-family: var(--cn-font); }
+
+.cn-action-menu__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    border: 0;
+    background: transparent;
+    cursor: default;
+}
+
+.cn-action-menu__list {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    z-index: 71;
+    display: grid;
+    width: max-content;
+    min-width: 200px;
+    max-width: min(320px, calc(100vw - 32px));
+    max-height: min(420px, calc(100dvh - 96px));
+    overflow: auto;
+    padding: 4px;
+    border: 1px solid var(--cn-stroke-soft);
+    border-radius: var(--cn-radius);
+    background: var(--cn-card);
+    box-shadow: var(--cn-shadow);
+}
+
+.cn-action-menu--start .cn-action-menu__list { right: auto; left: 0; }
+
+.cn-action-menu__item {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: var(--cn-radius-s);
+    background: transparent;
+    color: var(--cn-text);
+    font: 13px/1.2 var(--cn-font);
+    text-align: left;
+    cursor: pointer;
+}
+
+.cn-action-menu__item:hover:not(.is-disabled),
+.cn-action-menu__item:focus-visible { background: var(--cn-ground); outline: none; }
+.cn-action-menu__item.is-disabled { cursor: not-allowed; }
+.cn-action-menu__item.is-disabled .cn-action-menu__icon,
+.cn-action-menu__item.is-disabled .cn-action-menu__label { opacity: .45; }
+
+.cn-action-menu__icon {
+    display: inline-flex;
+    width: 16px;
+    height: 16px;
+    align-items: center;
+    justify-content: center;
+    color: var(--cn-text-2);
+}
+
+.cn-action-menu__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.cn-action-menu__reason {
+    max-width: 18ch;
+    overflow: hidden;
+    color: var(--cn-text-3);
+    font: 11px/1.2 var(--cn-font);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-action-menu__item--danger,
+.cn-action-menu__item--danger .cn-action-menu__icon { color: var(--cn-danger); }
+.cn-action-menu__item--danger:hover:not(.is-disabled),
+.cn-action-menu__item--danger:focus-visible { background: color-mix(in srgb, var(--cn-danger) 10%, transparent); }
+
+.cn-action-menu__separator {
+    height: 1px;
+    margin: 4px 6px;
+    background: var(--cn-stroke-soft);
+}
+
+.cn-action-menu__spinner {
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid var(--cn-stroke);
+    border-top-color: var(--cn-accent);
+    border-radius: 50%;
+    animation: cn-action-menu-spin .7s linear infinite;
+}
+
+@keyframes cn-action-menu-spin { to { transform: rotate(360deg); } }
+
+/* ---------- CnAccordion ----------
+   Collapsible sections in a hairline-separated list. The chevron turns
+   from right to down; the count reads like a CnTab count. */
+
+.cn-accordion {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--cn-stroke-soft);
+    font-family: var(--cn-font);
+}
+
+.cn-accordion__item { border-bottom: 1px solid var(--cn-stroke-soft); }
+
+.cn-accordion__header {
+    display: flex;
+    width: 100%;
+    min-height: 40px;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 4px;
+    border: 0;
+    background: transparent;
+    color: var(--cn-text);
+    font: 600 14px/1.2 var(--cn-font);
+    text-align: left;
+    cursor: pointer;
+}
+
+.cn-accordion__header:hover { background: var(--cn-row-hover); }
+.cn-accordion__header:focus-visible { outline: 2px solid var(--cn-accent); outline-offset: -2px; }
+
+.cn-accordion__chevron {
+    width: 6px;
+    height: 6px;
+    flex: none;
+    margin: 0 3px 0 2px;
+    border-right: 1.5px solid var(--cn-text-2);
+    border-bottom: 1.5px solid var(--cn-text-2);
+    transform: rotate(-45deg);
+    transition: transform .15s ease;
+}
+
+.cn-accordion__item.is-open > .cn-accordion__header .cn-accordion__chevron { transform: rotate(45deg); }
+
+.cn-accordion__title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.cn-accordion__count {
+    font: 600 11.5px/1 var(--cn-font);
+    color: var(--cn-text-2);
+    background: var(--cn-ground);
+    border-radius: 9px;
+    padding: 2px 7px;
+}
+
+.cn-accordion__panel { padding: 0 4px 12px; }
+
+.cn-accordion__item--dimmed > .cn-accordion__header { color: var(--cn-text-3); }
+.cn-accordion__item--dimmed .cn-accordion__count { color: var(--cn-text-3); }
+
+@media (prefers-reduced-motion: reduce) {
+    .cn-accordion__chevron { transition: none; }
+    .cn-action-menu__spinner { animation-duration: 2s; }
+}
+
+/* ---------- CnViewSwitch ----------
+   Segmented view switch (lifted 1:1 from HCMT's timesheet tsw-views): a
+   calm framed row of tabs, the active one tinted with the accent. */
+
+.cn-view-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--cn-radius);
+    background: var(--cn-card);
+    border: 1px solid var(--cn-stroke-soft);
+}
+
+.cn-view-switch__option {
+    min-height: 28px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--cn-text-2);
+    font: 600 12.5px/1 var(--cn-font);
+    cursor: pointer;
+}
+
+.cn-view-switch__option:hover { color: var(--cn-text); }
+
+.cn-view-switch__option--active {
+    color: var(--cn-accent-hover);
+    background: var(--cn-accent-tint);
+    box-shadow: none;
+}
+
+.cn-view-switch__option:focus-visible {
+    outline: 2px solid var(--cn-accent);
+    outline-offset: 1px;
+}
+
+@media (pointer: coarse) {
+    .cn-view-switch__option { min-height: 44px; }
+}
+
+/* Solid danger button for destructive confirmations (CnConfirmDialog). The
+   plain danger role stays a quiet text button everywhere else. */
+.cn-btn--danger.cn-btn--solid {
+    background: var(--cn-danger);
+    border-color: var(--cn-danger);
+    color: var(--cn-danger-ink);
+}
+
+.cn-btn--danger.cn-btn--solid:hover {
+    background: color-mix(in srgb, var(--cn-danger) 86%, var(--cn-text));
+    border-color: color-mix(in srgb, var(--cn-danger) 86%, var(--cn-text));
+    color: var(--cn-danger-ink);
 }
 
 /* ---------- Company identity bits (M-018) ----------

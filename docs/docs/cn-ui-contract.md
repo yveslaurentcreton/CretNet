@@ -144,6 +144,75 @@ there are no symbol-specific offsets or application-level exceptions.
 This extension is source-verified before publication. Consumers must adopt the
 owner-approved published package and pass their NuGet gate before merge.
 
+### Action menu, accordion and destructive confirmation
+
+`CnActionMenu` (namespace `CretNet.Platform.Blazor.Ui.Components`): `Label` (default
+resource `More`), `Icon` (default `CnIconKind.More`), `Role`, `IconOnly`, `Disabled`,
+`AlignStart`, `CloseLabel`, `Class`, `ChildContent`. Children: `CnActionMenuItem`
+(`Label`, `Icon`, `OnClick`, `Danger`, `Disabled`, `DisabledReason`, `Loading`) and
+`CnActionMenuSeparator`. Closes on outside click, Escape, Tab and after a choice;
+arrows/Home/End move focus. Disabled items stay focusable with `aria-disabled`.
+The list aligns right under the trigger (`AlignStart` for a trigger near the left edge).
+Classes: `.cn-action-menu`, `__list`, `__item`, `__item--danger`, `__reason`, `__separator`.
+
+```razor
+<CnActionMenu>
+    <CnActionMenuItem Label="Archive" Icon="CnIconKind.Archive" Disabled DisabledReason="Open orders" />
+    <CnActionMenuSeparator />
+    <CnActionMenuItem Label="Delete" Icon="CnIconKind.Delete" Danger OnClick="DeleteAsync" />
+</CnActionMenu>
+```
+
+`CnAccordion` (`ExpandAllAsync()`, `CollapseAllAsync()`, `Class`) contains
+`CnAccordionItem` (`Title`, `Count`, `Open`/`OpenChanged`, `Dimmed`, `Class`,
+`ChildContent`). `Open` works bound or as an initial value; content renders only
+while open. Header: `aria-expanded`/`aria-controls`; the chevron transition honours
+`prefers-reduced-motion`. Classes: `.cn-accordion`, `__item`, `__header`, `__count`, `__panel`.
+
+`CnConfirmDialog.Destructive` and `ConfirmAsync(..., destructive: true)` render the
+yes button as `CnButtonRole.Danger` plus `.cn-btn--solid` (solid `--cn-danger`,
+text `--cn-danger-ink`). The plain danger role remains a quiet text button.
+`CnButton` accepts extra attributes and exposes `FocusAsync()`. `CnIconKind` appends
+`More` and `Link`, with outline, Natural and Category artwork.
+
+### View switch and grid item templates
+
+`CnViewSwitch<TValue>`: `Value`/`ValueChanged` (`@bind-Value`), `Options`,
+`OptionText`, `AriaLabel` (default resource `View`), `ControlsId` (aria-controls),
+`Class`. An ARIA tablist with roving tabindex; arrows (wrapping), Home and End
+select and focus. Classes: `.cn-view-switch`, `__option`, `__option--active`.
+
+`CnDataGrid.ItemsTemplate` (`RenderFragment<IReadOnlyList<TItem>>?`) replaces the
+table with a host presentation of the current page. Toolbar, search, sort state,
+paging footer and provider are unchanged; declared columns are not rendered. With
+no items after loading, `EmptyText` renders in `div.cn-grid-empty`. `ReloadAsync()`
+re-queries the current page, `ResetAsync()` returns to page 1.
+
+HCMT catalogue styles (`cn-prod`, `cn-pp`, `cn-onb`, `cn-cmp`, `cn-refresh`) moved to
+HCMT's `catalog.css`; the generic `.cn-num` stays here.
+
+### Timeline lanes, segments and groups
+
+`CnTimelineRow` adds `Lanes` (`IReadOnlyList<CnTimelineLane>?`), `IsGroup` and `Key`.
+`CnTimelineLane`: `Label` (short tag such as "A"/"V"), `Thin`, `Segments`.
+`CnTimelineSegment`: `From`/`To` (inclusive `DateOnly`), `Tone`
+(`CnTimelineSegmentTone`: Billed, Concept, Due, Later, Uncovered, Purchase, Neutral, Warn),
+`Title` (tooltip and accessible name; date range fallback), `Text` (a short text inside
+the segment, cut with an ellipsis — e.g. a price per period), `OpenStart`/`OpenEnd`
+(no start/end: pass `DateOnly.MinValue`/`MaxValue`; that edge is dotted instead of cut
+flat) and `Key`. `CnTimeline` adds
+`OnRowClick` (`EventCallback<CnTimelineRow>`), `OnSegmentClick`
+(`EventCallback<CnTimelineSegmentClick>` with `Row`, `Lane`, `Segment`) and `SelectedKey`.
+Rows without lanes, group or row click keep their original flat cells and single bar.
+Other rows are subgrid `.cn-gantt-row` (`--group`, `--lanes`, `--click`, `--selected`).
+Only delegates make things clickable: rows get a label button, segments become buttons
+whose click does not also raise the row click. Segments have 2px gaps and are cut flat
+(`--cut-l`/`--cut-r`) past the axis. Classes: `.cn-gantt-lane`, `.cn-gantt-lane-tag`,
+`.cn-gantt-seg--billed|concept|due|later|uncovered|purchase|neutral|warn|thin|text|open-l|open-r|selected`.
+January shows the year (`.cn-gantt-mo--year`); even months (`--alt`) hide on a narrow
+axis. Gridlines follow `--cn-gantt-months`. The label column is sticky;
+`--cn-gantt-bg` matches a non-card surface. Hover transitions honour reduced motion.
+
 ### Standalone page titles
 
 `CnPageTitle` leaves 16 px below its visible heading so following grid search
@@ -175,11 +244,10 @@ fit-content fields for checking allocated widths before/after typing and clearin
 Run from the repository root:
 
 ```powershell
-$env:ASPNETCORE_ENVIRONMENT = "Development"
-dotnet run --project src/CretNet.Platform.Blazor.Ui.Sample -- --urls http://localhost:5218
+dotnet run --project src/CretNet.Platform.Blazor.Ui.Sample   # http://localhost:5199 (launchSettings)
 ```
 
-The sample provides nullable numbers, dates/times, a picker, expandable grid,
+The sample is the control catalogue: every public Cn control, grouped, with one API line each. It provides nullable numbers, dates/times, a picker, expandable grid,
 rich-text editor, confirmation dialogs, toasts and a notification bell with
 Dutch/English and theme switches. Notification actions use an in-memory client
 scoped to the sample circuit. It supplements consumer component and browser tests.

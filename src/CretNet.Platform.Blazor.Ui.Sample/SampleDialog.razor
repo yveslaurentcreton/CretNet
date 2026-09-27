@@ -1,0 +1,18 @@
+@* Example create/edit dialog body for the control catalogue: fields plus the
+   shared CnDialogFooter. *@
+
+<div class="cn-dialog-body" style="display:grid;gap:12px">
+    <CnTextField Label="Naam" @bind-Value="_name" />
+    <CnCheckbox Label="Actief" @bind-Value="_active" />
+</div>
+<CnDialogFooter OnSave="() => Dialog.Close(true)"
+                OnCancel="() => Dialog.Cancel()"
+                OnSaveAndOpen="() => Dialog.Close(true)"
+                CanSave="@(!string.IsNullOrWhiteSpace(_name))" />
+
+@code {
+    [CascadingParameter] public CnDialogInstance Dialog { get; set; } = default!;
+
+    private string? _name = "Offerte 2026-014";
+    private bool _active = true;
+}

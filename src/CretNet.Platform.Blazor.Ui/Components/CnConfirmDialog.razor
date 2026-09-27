@@ -9,7 +9,10 @@
 </div>
 <div class="cn-dialog-footer">
     <CnButton Label="@NoLabel" OnClick="() => Dialog.Cancel()"/>
-    <CnButton Label="@YesLabel" Role="CnButtonRole.Accent" OnClick="() => Dialog.Close(true)"/>
+    <CnButton Label="@YesLabel"
+              Role="@(Destructive ? CnButtonRole.Danger : CnButtonRole.Accent)"
+              Class="@(Destructive ? "cn-btn--solid" : null)"
+              OnClick="() => Dialog.Close(true)"/>
 </div>
 
 @code {
@@ -19,4 +22,6 @@
     [Parameter] public string YesLabel { get => field ?? CnLabels.Yes; set; } = null!;
     [Parameter] public string NoLabel { get => field ?? CnLabels.No; set; } = null!;
     #pragma warning restore BL0007
+    /// <summary>Confirms an irreversible action: the yes button becomes a solid red danger button.</summary>
+    [Parameter] public bool Destructive { get; set; }
 }

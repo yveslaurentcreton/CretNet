@@ -1,0 +1,25 @@
+@using CretNet.Platform.Blazor.Ui.Components
+
+@* A host that redraws its tabs from its own state, like a page that
+   reloads its data after a dialog. *@
+<CnTabs>
+    <CnTab Label="Services" Count="Items.Count">
+        <ul class="items">
+            @foreach (var item in Items)
+            {
+                <li>@item</li>
+            }
+        </ul>
+    </CnTab>
+    <CnTab Label="Periods">periods</CnTab>
+</CnTabs>
+
+@code {
+    public List<string> Items { get; private set; } = ["domain"];
+
+    public void Replace(params string[] items)
+    {
+        Items = items.ToList();
+        StateHasChanged();
+    }
+}

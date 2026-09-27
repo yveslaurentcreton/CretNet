@@ -1,0 +1,76 @@
+@implements IDisposable
+
+@* A collapsible section: the header button carries the title, a rotating
+   chevron and an optional count. Content only renders while open. Open works
+   bound (@bind-Open) or uncontrolled (initial value only). *@
+
+<div class="cn-accordion__item @(_open ? "is-open" : null) @(Dimmed ? "cn-accordion__item--dimmed" : null) @Class">
+    <button type="button"
+            id="@HeaderId"
+            class="cn-accordion__header"
+            aria-expanded="@(_open ? "true" : "false")"
+            aria-controls="@PanelId"
+            @onclick="ToggleAsync">
+        <span class="cn-accordion__chevron" aria-hidden="true"></span>
+        <span class="cn-accordion__title">@Title</span>
+        @if (Count is not null)
+        {
+            <span class="cn-accordion__count">@Count</span>
+        }
+    </button>
+    <div id="@PanelId" class="cn-accordion__panel" aria-labelledby="@HeaderId" hidden="@(!_open)">
+        @if (_open)
+        {
+            @ChildContent
+        }
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] public CnAccordion? Accordion { get; set; }
+
+    [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
+    [Parameter] public int? Count { get; set; }
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
+
+    /// <summary>Muted presentation, e.g. a section without search matches.</summary>
+    [Parameter] public bool Dimmed { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    private readonly string _id = $"cn-accordion-{Guid.NewGuid():N}";
+    private bool _open;
+    private bool? _lastOpenParameter;
+
+    private string HeaderId => $"{_id}-header";
+    private string PanelId => $"{_id}-panel";
+
+    /// <summary>The current (possibly uncontrolled) open state.</summary>
+    public bool IsOpen => _open;
+
+    protected override void OnInitialized() => Accordion?.Register(this);
+
+    protected override void OnParametersSet()
+    {
+        if (_lastOpenParameter == Open)
+            return;
+
+        _lastOpenParameter = Open;
+        _open = Open;
+    }
+
+    internal async Task SetOpenAsync(bool open)
+    {
+        if (_open == open)
+            return;
+
+        _open = open;
+        StateHasChanged();
+        await OpenChanged.InvokeAsync(open);
+    }
+
+    private Task ToggleAsync() => SetOpenAsync(!_open);
+
+    public void Dispose() => Accordion?.Unregister(this);
+}

@@ -1,3 +1,10 @@
+# [0.13.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.12.0...v0.13.0) (2026-09-29)
+
+
+### Features
+
+* **ui:** add Porcelain and Line icon styles with own or category colours ([59d934c](https://github.com/yveslaurentcreton/CretNet/commit/59d934c3466bc6752aec4d95258c3beb0598ab2f))
+
 # [0.12.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.11.0...v0.12.0) (2026-09-27)
 
 

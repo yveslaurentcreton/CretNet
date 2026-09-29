@@ -69,21 +69,47 @@ at its form boundary. Calendar chrome now uses the library resources.
 ### Configurable icon appearance
 
 `CnIcon` retains its original outline rendering when no appearance is supplied.
-`CnIconScope Appearance="..."` opts a subtree into the dimensional Natural or
-Category styles; an individual `CnIcon.Appearance` overrides that scope.
-`CnIconAppearance` also carries Normal/Quiet intensity, subtle depth and sidebar
-sizes 18/22/26 px. Immutable replacement updates existing descendants, including
-buttons and hosted dialogs. Scope a dialog host together with the calling app.
+`CnIconScope Appearance="..."` opts a subtree into a coloured style; an
+individual `CnIcon.Appearance` overrides that scope. A coloured `CnIconStyle`
+combines two axes, exposed as `Family()` (`CnIconFamily`: Natural, Porcelain,
+Line) and `ColorMode()` (`CnIconColorMode`: Own, Category), and composed with
+`CnIconStyleExtensions.Compose`, `WithFamily` and `WithColorMode`:
 
-The 66 shared kinds cover the accepted 71 navigation/action proposals; five
+| Family | Own colours | Per category |
+|--------|-------------|--------------|
+| Natural (dimensional artwork, 48 grid) | `Natural` | `Category` |
+| Porcelain (white porcelain body, one accent, 24 grid) | `Porcelain` | `PorcelainCategory` |
+| Line (1.3 round strokes, 24 grid) | `Line` | `LineCategory` |
+
+Enum values are appended, so persisted names and numbers (`Outline` 0, `Natural`
+1, `Category` 2) keep their meaning. Porcelain fills the body with a white
+gradient and a thin outline mixed from the accent (45%) and grey, paints details
+grey and the accent in the icon's own Natural colour or its category colour
+(closed accents with a 22% tint). Line strokes the same geometry in
+`currentColor` (own) or the category colour lightened 18% (per category); depth
+has no effect on it. `CnIconAppearance` also carries Normal/Quiet intensity
+(`.cn-icon--quiet`), subtle depth (`.cn-icon--flat` removes gradient and shadow)
+and sidebar sizes 18/22/26 px. Immutable replacement updates existing
+descendants, including buttons and hosted dialogs. Scope a dialog host together
+with the calling app.
+
+The shared kinds cover the accepted 71 navigation/action proposals; five
 identical symbols are reused. Existing enum values remain stable; additional
-object silhouettes are appended. SVG geometry and paint live in
-`CnIconArtwork.Natural.cs` and `CnIconArtwork.Category.cs`. Each component uses
-a stable, unique prefix for its gradient/filter IDs. No runtime JavaScript,
-external images or network access is needed to render an icon.
+object silhouettes are appended: `Assistant` (68), then the assistant panel's
+`History`, `Compose`, `Shield`, `ChevronDown` and the view modes `LayoutNarrow`,
+`LayoutHalf`, `LayoutFull` and `LayoutWindow` (69-76). In the view modes the
+accent is the assistant's part, in its violet; their 16 px outline is the drawn
+geometry with the accent's closed shapes shaded. Natural geometry and paint
+live in `CnIconArtwork.Natural.cs` and `CnIconArtwork.Category.cs`. Porcelain
+and Line render from one geometry table, `CnIconArtwork.Parts.cs` (per kind:
+body, detail, accent on a 24 grid, plus its own and category colour), through
+`CnIconArtwork.Drawn.cs`. Each component uses a stable, unique prefix for its
+gradient/filter IDs. No runtime JavaScript, external images or network access is
+needed to render an icon.
 
-`CnIconSettings` provides resource-backed colour, intensity, size and depth
-controls. Hosts own persistence and identity, and use `ValueChanged` to replace
+`CnIconSettings` provides resource-backed style (Natural, Porcelain, Line),
+colour (own, per category), intensity, size and depth controls; depth is
+disabled for Line. Hosts own persistence and identity, and use `ValueChanged` to replace
 the scoped appearance. `--cn-nav-icon-size` only sizes navigation icons; other
 contexts retain their allocated sizes. Scope wrappers use `display: contents`.
 
@@ -173,7 +199,8 @@ while open. Header: `aria-expanded`/`aria-controls`; the chevron transition hono
 yes button as `CnButtonRole.Danger` plus `.cn-btn--solid` (solid `--cn-danger`,
 text `--cn-danger-ink`). The plain danger role remains a quiet text button.
 `CnButton` accepts extra attributes and exposes `FocusAsync()`. `CnIconKind` appends
-`More` and `Link`, with outline, Natural and Category artwork.
+`More`, `Link` and `Assistant`, with outline, Natural, Category, Porcelain and Line
+artwork.
 
 ### View switch and grid item templates
 

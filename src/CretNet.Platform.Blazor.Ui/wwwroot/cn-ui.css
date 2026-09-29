@@ -5023,6 +5023,8 @@ tr:hover .cn-task-more,
 .cn-icon-choices button:hover { background: var(--cn-row-hover); }
 .cn-icon-choices button[aria-pressed=true] { color: var(--cn-text); border-color: var(--cn-accent); background: var(--cn-accent-tint); }
 .cn-icon-choices button:focus-visible { outline: 2px solid var(--cn-accent); outline-offset: 2px; }
+/* Style and colour axes: one compact segmented row each, icon beside its label. */
+.cn-icon-choices--compact button { flex-wrap: nowrap; gap: 5px; padding: 5px 4px; }
 .cn-icon-settings .cn-check-wrap { margin-top: 4px; font-size: 12px; }
 
 /* The role chooses the visual vocabulary; host applications own entity mappings. */

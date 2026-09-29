@@ -2,6 +2,7 @@ using Bunit;
 using CretNet.Platform.Blazor.Ui.Components;
 using CretNet.Platform.Blazor.Ui.Resources;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using System.Globalization;
 
@@ -122,6 +123,26 @@ public sealed class CnIconRoleTests : BunitContext
             dutch.ShouldNotBeNullOrWhiteSpace();
             dutch.ShouldNotBe(english);
         }
+    }
+
+    [Theory]
+    [InlineData(null, "action", "0 0 16 16")]
+    [InlineData(CnIconRole.Entity, "entity", "0 0 24 24")]
+    public void Bell_IconRole_ChoosesBetweenActionAndEntityAppearance(CnIconRole? role, string expected, string viewBox)
+    {
+        Services.AddSingleton(new CretNet.Platform.Blazor.Ui.Notifications.CnNotificationState());
+        RenderFragment bell = builder =>
+        {
+            builder.OpenComponent<CnNotificationBell>(0);
+            builder.AddAttribute(1, nameof(CnNotificationBell.PollInterval), TimeSpan.Zero);
+            builder.AddAttribute(2, nameof(CnNotificationBell.IconRole), role);
+            builder.CloseComponent();
+        };
+        var cut = Render<CnIconScope>(p => p.Add(x => x.Appearance, new(CnIconStyle.Porcelain))
+            .Add(x => x.ActionAppearance, new CnActionIconAppearance()).Add(x => x.ChildContent, bell));
+        var icon = cut.Find(".cn-bell svg");
+        icon.GetAttribute("data-icon-role").ShouldBe(expected);
+        icon.GetAttribute("viewBox").ShouldBe(viewBox);
     }
 
     private static readonly RenderFragment Icons = builder =>

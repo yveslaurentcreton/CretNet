@@ -99,6 +99,9 @@ row that only reacts after a round trip feels broken.
 page: counting is cheap, listing is not. Set `PollInterval` to zero for a host
 that pushes instead.
 
+The bell icon has the Action role by default. A shell that shows its top-bar
+icons in the entity appearance passes `IconRole="CnIconRole.Entity"`.
+
 ### The row
 
 Unread sits above read, under **NEW** and **EARLIER**. Opening a row marks it

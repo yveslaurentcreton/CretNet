@@ -265,4 +265,9 @@
   <data name="IconColored" xml:space="preserve"><value>Kleurvlakken</value></data>
   <data name="IconNaturalMaterials" xml:space="preserve"><value>Natuurlijke materialen</value></data>
   <data name="IconDestructiveColor" xml:space="preserve"><value>Verwijdericonen in rood</value></data>
+  <data name="IconStyle" xml:space="preserve"><value>Stijl</value></data>
+  <data name="IconColorMode" xml:space="preserve"><value>Kleur</value></data>
+  <data name="IconOwnColors" xml:space="preserve"><value>Gewoon</value></data>
+  <data name="IconPorcelain" xml:space="preserve"><value>Porselein</value></data>
+  <data name="IconLine" xml:space="preserve"><value>Lijn</value></data>
 </root>

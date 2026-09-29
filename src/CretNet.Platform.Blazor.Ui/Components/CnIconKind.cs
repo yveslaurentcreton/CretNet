@@ -77,4 +77,18 @@ public enum CnIconKind
 
     // Chain link for linking/unlinking related records.
     Link,
+
+    // A large and a small spark for the assistant. Appended to keep existing values stable.
+    Assistant,
+
+    // The assistant panel (S-341): its history, a new conversation, read-only access, a menu
+    // chevron and the four view modes, whose accent is the assistant's part. Appended after Assistant.
+    History,
+    Compose,
+    Shield,
+    ChevronDown,
+    LayoutNarrow,
+    LayoutHalf,
+    LayoutFull,
+    LayoutWindow,
 }

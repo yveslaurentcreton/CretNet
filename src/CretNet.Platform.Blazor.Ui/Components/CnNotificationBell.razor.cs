@@ -15,6 +15,10 @@ public partial class CnNotificationBell : IDisposable
     /// polling — for a host that pushes instead.</summary>
     [Parameter] public TimeSpan PollInterval { get; set; } = TimeSpan.FromSeconds(30);
 
+    /// <summary>Role of the bell icon; null keeps the Action default. A shell that
+    /// shows its top-bar icons as entities passes <see cref="CnIconRole.Entity"/>.</summary>
+    [Parameter] public CnIconRole? IconRole { get; set; }
+
     // Resource-backed chrome strings, with host overrides; passed straight
     // through to the panel so a host localises in one place.
     #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.

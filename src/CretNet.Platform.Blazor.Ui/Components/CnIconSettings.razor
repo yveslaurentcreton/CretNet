@@ -5,14 +5,28 @@
     {
         <h3 class="cn-icon-settings-heading">@CnLabels.IconEntities</h3>
     }
-    <div class="cn-icon-settings-label">@CnLabels.IconColorStyle</div>
-    <div class="cn-icon-choices" role="group" aria-label="@CnLabels.IconColorStyle">
-        @foreach (var style in new[] { CnIconStyle.Natural, CnIconStyle.Category })
+    @* Two axes: the drawing (Natural, Porcelain, Line) and its colouring (own or per category). *@
+    <div class="cn-icon-settings-label">@CnLabels.IconStyle</div>
+    <div class="cn-icon-choices cn-icon-choices--compact" role="group" aria-label="@CnLabels.IconStyle">
+        @foreach (var family in Families)
         {
-            <button type="button" aria-pressed="@Pressed(Value.Style == style)"
+            var style = Selected.WithFamily(family);
+            <button type="button" aria-pressed="@Pressed(Selected.Family() == family)"
                     @onclick="() => Change(Value with { Style = style })">
-                <CnIcon Kind="CnIconKind.DocumentSpark" Appearance="@(Value with { Style = style })" Style="width:24px;height:24px" />
-                @(style == CnIconStyle.Natural ? CnLabels.IconNaturalColors : CnLabels.IconCategoryColors)
+                <CnIcon Kind="CnIconKind.DocumentSpark" Appearance="@(Value with { Style = style })" Style="width:18px;height:18px" />
+                @FamilyLabel(family)
+            </button>
+        }
+    </div>
+    <div class="cn-icon-settings-label">@CnLabels.IconColorMode</div>
+    <div class="cn-icon-choices cn-icon-choices--compact" role="group" aria-label="@CnLabels.IconColorMode">
+        @foreach (var color in Enum.GetValues<CnIconColorMode>())
+        {
+            var style = Selected.WithColorMode(color);
+            <button type="button" aria-pressed="@Pressed(Selected.ColorMode() == color)"
+                    @onclick="() => Change(Value with { Style = style })">
+                <CnIcon Kind="CnIconKind.DocumentSpark" Appearance="@(Value with { Style = style })" Style="width:18px;height:18px" />
+                @(color == CnIconColorMode.Own ? CnLabels.IconOwnColors : CnLabels.IconCategoryColors)
             </button>
         }
     </div>
@@ -37,7 +51,8 @@
             </button>
         }
     </div>
-    <CnCheckbox Value="Value.Depth" ValueChanged="depth => Change(Value with { Depth = depth })" Label="@CnLabels.IconSubtleDepth" />
+    <CnCheckbox Value="@(Selected.SupportsDepth() && Value.Depth)" Disabled="@(!Selected.SupportsDepth())"
+                ValueChanged="depth => Change(Value with { Depth = depth })" Label="@CnLabels.IconSubtleDepth" />
     @if (ActionValue is { } actions)
     {
         <h3 class="cn-icon-settings-heading cn-icon-settings-heading--actions">@CnLabels.IconActions</h3>
@@ -73,7 +88,18 @@
     [Parameter] public CnActionIconAppearance? ActionValue { get; set; }
     [Parameter] public EventCallback<CnActionIconAppearance> ActionValueChanged { get; set; }
 
+    private static readonly CnIconFamily[] Families = [CnIconFamily.Natural, CnIconFamily.Porcelain, CnIconFamily.Line];
+
+    // Outline is not offered here; a host passing it starts from the Natural drawing.
+    private CnIconStyle Selected => Value.Style.Family() == CnIconFamily.Outline ? CnIconStyle.Natural : Value.Style;
+
     private Task Change(CnIconAppearance value) => ValueChanged.InvokeAsync(value);
+    private static string FamilyLabel(CnIconFamily family) => family switch
+    {
+        CnIconFamily.Porcelain => CnLabels.IconPorcelain,
+        CnIconFamily.Line => CnLabels.IconLine,
+        _ => CnLabels.IconNaturalColors,
+    };
     private static string Pressed(bool selected) => selected ? "true" : "false";
     private static string ActionLabel(CnActionIconStyle style) => style switch
     {

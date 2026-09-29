@@ -7,7 +7,7 @@
 
 <div class="cn-bell-wrap">
     <button type="button" class="cn-icon-btn cn-bell" title="@Title" aria-label="@Title" @onclick="ToggleAsync">
-        <CnIcon Kind="CnIconKind.Bell" />
+        <CnIcon Kind="CnIconKind.Bell" Role="IconRole" />
         @if (State.UnreadCount > 0)
         {
             <span class="cn-bell-badge">@(State.UnreadCount > 99 ? "99+" : State.UnreadCount.ToString())</span>

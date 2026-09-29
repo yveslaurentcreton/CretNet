@@ -108,4 +108,9 @@ public static class CnLabels
     public static string IconColored => ResourceManager.GetString(nameof(IconColored), CultureInfo.CurrentUICulture)!;
     public static string IconNaturalMaterials => ResourceManager.GetString(nameof(IconNaturalMaterials), CultureInfo.CurrentUICulture)!;
     public static string IconDestructiveColor => ResourceManager.GetString(nameof(IconDestructiveColor), CultureInfo.CurrentUICulture)!;
+    public static string IconStyle => ResourceManager.GetString(nameof(IconStyle), CultureInfo.CurrentUICulture)!;
+    public static string IconColorMode => ResourceManager.GetString(nameof(IconColorMode), CultureInfo.CurrentUICulture)!;
+    public static string IconOwnColors => ResourceManager.GetString(nameof(IconOwnColors), CultureInfo.CurrentUICulture)!;
+    public static string IconPorcelain => ResourceManager.GetString(nameof(IconPorcelain), CultureInfo.CurrentUICulture)!;
+    public static string IconLine => ResourceManager.GetString(nameof(IconLine), CultureInfo.CurrentUICulture)!;
 }

@@ -1,3 +1,10 @@
+# [0.14.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.13.0...v0.14.0) (2026-09-30)
+
+
+### Features
+
+* Markdown editor with preview, shared Markdown pipeline and hardened rich text editor ([#14](https://github.com/yveslaurentcreton/CretNet/issues/14)) ([76dfd88](https://github.com/yveslaurentcreton/CretNet/commit/76dfd8876110d18cdf9f9a1a4e455aa629e137ac))
+
 # [0.13.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.12.0...v0.13.0) (2026-09-29)
 
 

@@ -22,7 +22,9 @@
     display: none;
 }
 
-.rte-btn {
+/* The palette trigger is rendered by CnPaletteButton, outside this scope. */
+.rte-btn,
+.rte-toolbar ::deep .rte-btn {
     min-width: 28px;
     height: 28px;
     padding: 0 7px;
@@ -37,7 +39,8 @@
     justify-content: center;
 }
 
-.rte-btn:hover {
+.rte-btn:hover,
+.rte-toolbar ::deep .rte-btn:hover {
     background: var(--neutral-fill-stealth-hover, #eaeaea);
     color: var(--neutral-foreground-rest, #1b1b1b);
 }
@@ -47,7 +50,8 @@
     background: var(--neutral-fill-stealth-hover, #eaeaea);
 }
 
-.rte-btn:focus-visible {
+.rte-btn:focus-visible,
+.rte-toolbar ::deep .rte-btn:focus-visible {
     outline: 2px solid var(--accent-fill-rest, #17af3d);
     outline-offset: 1px;
 }
@@ -91,6 +95,12 @@
     margin: 0.4em 0;
 }
 
+.rte-editor ::deep h2 {
+    margin: 0.9em 0 0.35em;
+    font-size: 17px;
+    font-weight: 700;
+}
+
 .rte-editor ::deep h3 {
     margin: 0.8em 0 0.3em;
     font-size: 15px;
@@ -103,6 +113,31 @@
     padding-left: 1.5em;
 }
 
+/* Nested lists sit tight under their item and change bullet per level. */
+.rte-editor ::deep li > ul,
+.rte-editor ::deep li > ol {
+    margin: 0.15em 0 0;
+}
+
+.rte-editor ::deep ul ul {
+    list-style-type: circle;
+}
+
+.rte-editor ::deep ul ul ul {
+    list-style-type: square;
+}
+
 .rte-editor ::deep li {
     margin: 0.15em 0;
 }
+
+.rte-editor ::deep a {
+    color: var(--cn-md-blauw, #3159a7);
+}
+
+/* Palette colours (S-348): the same --cn-md-* tokens as the Markdown
+   preview, so both editors show the same colours in light and dark mode. */
+.rte-editor ::deep span[data-color="accent"] { color: var(--cn-md-accent, #128a30); }
+.rte-editor ::deep span[data-color="blauw"] { color: var(--cn-md-blauw, #3159a7); }
+.rte-editor ::deep span[data-color="oranje"] { color: var(--cn-md-oranje, #b35f00); }
+.rte-editor ::deep span[data-color="rood"] { color: var(--cn-md-rood, #c42b2f); }

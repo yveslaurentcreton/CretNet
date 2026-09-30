@@ -22,6 +22,8 @@
       href: cn-status-picker.md
     - name: Toasts and notifications
       href: cn-toasts-and-notifications.md
+    - name: Rich text and Markdown
+      href: cn-rich-text.md
 
 - name: Shared UI contract
   href: cn-ui-contract.md

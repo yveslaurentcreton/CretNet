@@ -240,6 +240,16 @@ January shows the year (`.cn-gantt-mo--year`); even months (`--alt`) hide on a n
 axis. Gridlines follow `--cn-gantt-months`. The label column is sticky;
 `--cn-gantt-bg` matches a non-card surface. Hover transitions honour reduced motion.
 
+### Rich text (Markdown editor and hardened HTML editor)
+
+`CnMarkdownEditor` (textarea, toolbar, palette colours, write/preview/split,
+HTML paste converted to Markdown) and the hardened `CnRichTextEditor` share
+the palette and the UI-free pipeline in the `CretNet` package
+(`CretNet.RichText`: `CnMarkdown`, `CnMarkdownPalette`, `CnHtmlToMarkdown`,
+`CnRichTextSanitizer`). The UI package now references that core package
+(Markdig and AngleSharp come along, also in WASM bundles). See
+[Rich text and Markdown](cn-rich-text.md).
+
 ### Standalone page titles
 
 `CnPageTitle` leaves 16 px below its visible heading so following grid search

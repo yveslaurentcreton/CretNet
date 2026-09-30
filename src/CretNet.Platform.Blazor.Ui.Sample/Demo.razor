@@ -170,6 +170,14 @@
         <CnRichTextEditor @bind-Value="_richText" />
     </section>
 
+    <section id="@Anchor("CnMarkdownEditor")" class="demo-sec">
+        <h3><code>CnMarkdownEditor</code> · <code>CnMarkdownView</code></h3>
+        <p class="demo-api">Editor: Value · ValueChanged · For · Label · Placeholder · MaxLength · Compact · DefaultMode · Paper · Hint · ReadOnly · Disabled · PasteConverted — View: Value · Paper</p>
+        <CnMarkdownEditor @bind-Value="_markdown" Label="Inleiding" MaxLength="20000" Hint="voorbeeld = PDF" />
+        <CnMarkdownEditor @bind-Value="_comment" Compact Placeholder="@CnLabels.NewItem" />
+        <CnMarkdownView Value="@_comment" />
+    </section>
+
     @* ============================== Data ============================== *@
     <h2 id="data" class="demo-group">Data</h2>
 
@@ -380,7 +388,7 @@
     private static readonly TocGroup[] Toc =
     [
         new("acties", "Acties", ["CnButton", "CnActionMenu", "CnConfirmDialog", "CnDialogFooter"]),
-        new("invoer", "Invoer", ["CnTextField", "CnCheckbox", "CnNumberField", "CnDateField", "CnPicker", "CnViewSwitch", "CnStatusPicker", "CnRichTextBox"]),
+        new("invoer", "Invoer", ["CnTextField", "CnCheckbox", "CnNumberField", "CnDateField", "CnPicker", "CnViewSwitch", "CnStatusPicker", "CnRichTextBox", "CnMarkdownEditor"]),
         new("data", "Data", ["CnDataGrid", "CnStatStrip", "CnTimeline", "CnProgressBar", "CnBadge"]),
         new("navigatie", "Navigatie", ["CnTabs", "CnAccordion", "CnBreadcrumb", "CnFlowRail", "CnPageTitle"]),
         new("feedback", "Feedback", ["CnMessageBar", "CnToastHost", "CnLoading", "CnNotificationCenter"]),
@@ -509,7 +517,30 @@
     private bool _checked = true;
     private bool _loading = true;
     private CnStatIntent _selectValue;
-    private string? _richText = "<p>Vrije <b>opmaak</b>.</p>";
+    private string? _richText = "<p>Vrije <b>opmaak</b> en <span data-color=\"accent\">huiskleur</span>.</p>";
+    private string? _markdown = string.Join('\n',
+        "**Situatie**",
+        "Het netwerk is traag en er is geen aparte gastentoegang.",
+        "",
+        "## Wat we voorstellen",
+        "",
+        "- Nieuwe firewall met gescheiden netwerken:",
+        "  - kantoor",
+        "  - gasten",
+        "- Twee access points",
+        "",
+        "1. Drie werkstations",
+        "2. Overzetten van profielen",
+        "",
+        "[Onderhoud het eerste jaar inbegrepen]{.accent}. Prijzen zijn *exclusief btw*.",
+        "",
+        "### Planning",
+        "| Fase | Wanneer |",
+        "|---|---|",
+        "| Netwerk | week 44 |",
+        "",
+        "Meer uitleg: [gyves.be](https://gyves.be) · <b>HTML blijft tekst</b>");
+    private string? _comment = "Firewall besteld, levering *vrijdag*. Nog te doen:\n- VLAN voor de plotters\n- [wachtwoord gastennetwerk doorgeven]{.oranje}";
     private SampleStatus _status = SampleStatus.Sent;
     private SampleView _view = SampleView.Week;
     private CnAccordion _accordion = default!;

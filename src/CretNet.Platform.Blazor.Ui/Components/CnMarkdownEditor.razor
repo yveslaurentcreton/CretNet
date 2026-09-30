@@ -1,0 +1,100 @@
+@inherits CnInputBase<string>
+
+@* S-349 (mock "Markdown-editor v1", owner-approved): a plain textarea with a
+   toolbar that inserts Markdown, and a preview rendered by the same CnMarkdown
+   pipeline as the PDF. No contenteditable: what is stored is what is typed. *@
+<div class="cn-field cn-md-field @Class" style="@Style">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label class="cn-label" for="@_id">@Label</label>
+    }
+    <div class="cn-md @(Compact ? "cn-md--compact" : null) @(ValidationMessages.Count > 0 ? "cn-md--invalid" : null) @(Disabled ? "cn-md--disabled" : null)"
+         data-mode="@ModeName">
+        <div class="cn-md-bar" role="toolbar" aria-label="@CnLabels.Formatting" aria-controls="@_id">
+            <button type="button" class="cn-md-btn" title="@($"{CnLabels.Bold} (Ctrl+B)")" aria-label="@CnLabels.Bold"
+                    disabled="@(!CanFormat)" @onclick="() => ExecuteAsync(CnMarkdownCommand.Bold)"><b>B</b></button>
+            <button type="button" class="cn-md-btn cn-md-btn--italic" title="@($"{CnLabels.Italic} (Ctrl+I)")" aria-label="@CnLabels.Italic"
+                    disabled="@(!CanFormat)" @onclick="() => ExecuteAsync(CnMarkdownCommand.Italic)">I</button>
+            @if (!Compact)
+            {
+                <button type="button" class="cn-md-btn" title="@CnLabels.Heading" aria-label="@CnLabels.Heading"
+                        disabled="@(!CanFormat)" @onclick="() => ExecuteAsync(CnMarkdownCommand.Heading)">H2</button>
+                <button type="button" class="cn-md-btn" title="@CnLabels.Subtitle" aria-label="@CnLabels.Subtitle"
+                        disabled="@(!CanFormat)" @onclick="() => ExecuteAsync(CnMarkdownCommand.Subheading)">H3</button>
+                <span class="cn-md-sep" aria-hidden="true"></span>
+            }
+            <button type="button" class="cn-md-btn" title="@CnLabels.BulletList" aria-label="@CnLabels.BulletList"
+                    disabled="@(!CanFormat)" @onclick="() => ExecuteAsync(CnMarkdownCommand.BulletList)">
+                <svg class="cn-md-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>
+            </button>
+            @if (!Compact)
+            {
+                <button type="button" class="cn-md-btn" title="@CnLabels.NumberedList" aria-label="@CnLabels.NumberedList"
+                        disabled="@(!CanFormat)" @onclick="() => ExecuteAsync(CnMarkdownCommand.NumberedList)">
+                    <svg class="cn-md-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 6h10M10 12h10M10 18h10"/><path d="M4 5l1.5-1v5M3.5 14.5a1.5 1.5 0 1 1 2.5 1.2L3.5 19H6"/></svg>
+                </button>
+            }
+            <button type="button" class="cn-md-btn" title="@($"{CnLabels.Link} (Ctrl+K)")" aria-label="@CnLabels.Link"
+                    disabled="@(!CanFormat)" @onclick="() => ExecuteAsync(CnMarkdownCommand.Link)">
+                <svg class="cn-md-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>
+            </button>
+            @if (!Compact)
+            {
+                <CnPaletteButton ButtonClass="cn-md-btn" ShowSyntax Disabled="@(!CanFormat)"
+                                 OnPick="colour => ExecuteAsync(CnMarkdownCommand.Colour, colour)" />
+                <button type="button" class="cn-md-btn" title="@CnLabels.ClearFormatting" aria-label="@CnLabels.ClearFormatting"
+                        disabled="@(!CanFormat)" @onclick="() => ExecuteAsync(CnMarkdownCommand.ClearFormatting)">
+                    <svg class="cn-md-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h10M10 5l-3 14M15 13l6 6M21 13l-6 6"/></svg>
+                </button>
+            }
+            <span class="cn-md-modes" role="group" aria-label="@CnLabels.View">
+                @foreach (var mode in Modes)
+                {
+                    <button type="button" class="cn-md-mode" data-mode="@mode.ToString().ToLowerInvariant()"
+                            aria-pressed="@(mode == _mode ? "true" : "false")" disabled="@Disabled"
+                            @onclick="() => SetMode(mode)">@ModeLabel(mode)</button>
+                }
+            </span>
+        </div>
+        <div class="cn-md-body">
+            @* value as attribute, not child content (see CnTextArea). *@
+            <textarea @ref="_textarea"
+                      id="@_id"
+                      class="cn-md-input"
+                      spellcheck="true"
+                      placeholder="@Placeholder"
+                      readonly="@ReadOnly"
+                      disabled="@Disabled"
+                      aria-invalid="@(ValidationMessages.Count > 0 ? "true" : null)"
+                      value="@Value"
+                      @oninput="e => SetValueAsync(e.Value?.ToString())"
+                      @attributes="AdditionalAttributes"></textarea>
+            @if (_mode != CnMarkdownEditorMode.Write)
+            {
+                <div class="cn-md-preview" role="region" aria-label="@CnLabels.Preview">
+                    <CnMarkdownView Value="@Value" Paper="@(Paper ?? !Compact)" />
+                </div>
+            }
+        </div>
+        @if (!Compact || MaxLength is not null)
+        {
+            <div class="cn-md-foot">
+                <span>Markdown</span>
+                @if (!string.IsNullOrEmpty(Hint))
+                {
+                    <span aria-hidden="true">·</span>
+                    <span>@Hint</span>
+                }
+                <span class="cn-md-spacer"></span>
+                @if (MaxLength is { } max)
+                {
+                    <span class="cn-md-count @(Length > max ? "cn-md-count--over" : null)">@Length.ToString("N0", System.Globalization.CultureInfo.CurrentCulture) / @max.ToString("N0", System.Globalization.CultureInfo.CurrentCulture)</span>
+                }
+            </div>
+        }
+    </div>
+    @foreach (var message in ValidationMessages)
+    {
+        <span class="cn-field-error">@message</span>
+    }
+</div>

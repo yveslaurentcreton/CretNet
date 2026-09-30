@@ -270,4 +270,28 @@
   <data name="IconOwnColors" xml:space="preserve"><value>Gewoon</value></data>
   <data name="IconPorcelain" xml:space="preserve"><value>Porselein</value></data>
   <data name="IconLine" xml:space="preserve"><value>Lijn</value></data>
+  <data name="Heading" xml:space="preserve"><value>Kop</value></data>
+  <data name="Link" xml:space="preserve"><value>Link</value></data>
+  <data name="Colour" xml:space="preserve"><value>Kleur</value></data>
+  <data name="NoColour" xml:space="preserve"><value>Geen kleur</value></data>
+  <data name="ColourGreen" xml:space="preserve"><value>Groen</value></data>
+  <data name="ColourBlue" xml:space="preserve"><value>Blauw</value></data>
+  <data name="ColourOrange" xml:space="preserve"><value>Oranje</value></data>
+  <data name="ColourRed" xml:space="preserve"><value>Rood</value></data>
+  <data name="Formatting" xml:space="preserve"><value>Opmaak</value></data>
+  <data name="Write" xml:space="preserve"><value>Schrijven</value></data>
+  <data name="Preview" xml:space="preserve"><value>Voorbeeld</value></data>
+  <data name="SideBySide" xml:space="preserve"><value>Naast elkaar</value></data>
+  <data name="PastedAsMarkdown" xml:space="preserve"><value>Geplakt als Markdown.</value></data>
+  <data name="PasteLeftOut" xml:space="preserve"><value>Weggelaten: {0}.</value></data>
+  <data name="SelectTextToClear" xml:space="preserve"><value>Selecteer eerst de tekst waarvan je de opmaak wil wissen</value></data>
+  <data name="BoldPlaceholder" xml:space="preserve"><value>vetgedrukt</value></data>
+  <data name="ItalicPlaceholder" xml:space="preserve"><value>cursief</value></data>
+  <data name="LinkPlaceholder" xml:space="preserve"><value>linktekst</value></data>
+  <data name="ColourPlaceholder" xml:space="preserve"><value>gekleurde tekst</value></data>
+  <data name="DroppedUnderline" xml:space="preserve"><value>onderstreping</value></data>
+  <data name="DroppedFont" xml:space="preserve"><value>lettertype en -grootte</value></data>
+  <data name="DroppedBackground" xml:space="preserve"><value>achtergrondkleur</value></data>
+  <data name="DroppedImages" xml:space="preserve"><value>afbeeldingen</value></data>
+  <data name="DroppedLinks" xml:space="preserve"><value>niet-ondersteunde links</value></data>
 </root>

@@ -1,14 +1,21 @@
+using CretNet.RichText;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace CretNet.Platform.Blazor.Ui.Components;
 
 /// <summary>
-/// Minimal rich-text editor (bold/italic/underline, subtitle, lists) around a
-/// contenteditable div. Produces limited HTML that
+/// Minimal rich-text editor (bold/italic/underline, subtitle, lists, palette
+/// colour) around a contenteditable div. Produces limited HTML that
 /// <c>a host HTML renderer</c> renders into the proposal PDF.
 /// The JS module owns the toolbar state; .NET only round-trips the HTML value.
 /// </summary>
+/// <remarks>
+/// S-348: the value is always reduced to the <see cref="CnRichTextSanitizer"/>
+/// allow-list — when set from outside, on every input and on paste. Pasted
+/// HTML is sanitised by .NET (styles become tags and palette colours first),
+/// so the browser and a server that stores HTML clean identically.
+/// </remarks>
 public partial class CnRichTextEditor : IAsyncDisposable
 {
     [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
@@ -48,7 +55,7 @@ public partial class CnRichTextEditor : IAsyncDisposable
                 if (_disposed)
                     return;
 
-                await _module.InvokeVoidAsync("init", _editorElement, _toolbarElement, _dotNetRef, Value ?? string.Empty, ReadOnly);
+                await _module.InvokeVoidAsync("init", _editorElement, _toolbarElement, _dotNetRef, CnRichTextSanitizer.Sanitize(Value), ReadOnly);
                 if (AutoFocus && !ReadOnly && !_disposed)
                     await _module.InvokeVoidAsync("focusEditor", _editorElement);
                 _renderedValue = Value;
@@ -63,7 +70,7 @@ public partial class CnRichTextEditor : IAsyncDisposable
             // itself already match _renderedValue and are skipped.
             if (!string.Equals(Value ?? string.Empty, _renderedValue ?? string.Empty, StringComparison.Ordinal))
             {
-                await _module.InvokeVoidAsync("setContent", _editorElement, Value ?? string.Empty);
+                await _module.InvokeVoidAsync("setContent", _editorElement, CnRichTextSanitizer.Sanitize(Value));
                 _renderedValue = Value;
             }
 
@@ -85,9 +92,30 @@ public partial class CnRichTextEditor : IAsyncDisposable
     [JSInvokable]
     public async Task OnContentChanged(string html)
     {
-        _renderedValue = html;
-        Value = html;
-        await ValueChanged.InvokeAsync(html);
+        // The DOM is already cleaned structurally; this is the guarantee for
+        // what gets stored. An empty editor ("<p><br></p>") becomes "".
+        var clean = CnRichTextSanitizer.Sanitize(html);
+        _renderedValue = clean;
+        Value = clean;
+        await ValueChanged.InvokeAsync(clean);
+    }
+
+    /// <summary>Cleans clipboard HTML before the browser inserts it.</summary>
+    [JSInvokable]
+    public string SanitizePaste(string html) => CnRichTextSanitizer.Sanitize(html);
+
+    private async Task ApplyColourAsync(CnPaletteColor? colour)
+    {
+        if (_module is null || ReadOnly || _disposed)
+            return;
+
+        try
+        {
+            await _module.InvokeVoidAsync("applyColor", _editorElement, colour?.Name);
+        }
+        catch (JSDisconnectedException)
+        {
+        }
     }
 
     public async ValueTask DisposeAsync()

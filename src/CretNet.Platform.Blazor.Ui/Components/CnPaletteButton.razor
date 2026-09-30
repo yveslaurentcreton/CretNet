@@ -1,0 +1,83 @@
+@using CretNet.RichText
+
+@* The palette colour button of both rich-text editors: a swatch trigger and
+   a small menu with the four document colours (mock "Kleur" popover). Only
+   palette colours exist, so none can surprise anyone on paper. *@
+<span class="cn-palette" @onkeydown="HandleKeyDown">
+    <button type="button" class="@ButtonClass" title="@CnLabels.Colour" aria-label="@CnLabels.Colour"
+            aria-haspopup="menu" aria-expanded="@(_open ? "true" : "false")" disabled="@Disabled" @onclick="Toggle">
+        <span class="cn-palette__swatch" style="--cn-swatch: var(@CnMarkdownPalette.Accent.CssVariable)"></span>
+        @if (ShowLabel)
+        {
+            <span>@CnLabels.Colour</span>
+        }
+    </button>
+    @if (_open)
+    {
+        <button type="button" class="cn-palette__backdrop" tabindex="-1" aria-label="@CnLabels.Close" @onclick="Close"></button>
+        <span class="cn-palette__list" role="menu" aria-label="@CnLabels.Colour">
+            @foreach (var colour in CnMarkdownPalette.Colors)
+            {
+                <button type="button" role="menuitem" class="cn-palette__item" data-color="@colour.Name" @onclick="() => PickAsync(colour)">
+                    <span class="cn-palette__swatch" style="--cn-swatch: var(@colour.CssVariable)"></span>
+                    <span>@LabelFor(colour)</span>
+                    @if (ShowSyntax)
+                    {
+                        <code>.@colour.Name</code>
+                    }
+                </button>
+            }
+            @if (IncludeNone)
+            {
+                <button type="button" role="menuitem" class="cn-palette__item" data-color="" @onclick="() => PickAsync(null)">
+                    <span class="cn-palette__swatch cn-palette__swatch--none"></span>
+                    <span>@CnLabels.NoColour</span>
+                </button>
+            }
+        </span>
+    }
+</span>
+
+@code {
+    /// <summary>Receives the chosen colour; null is "no colour" (<see cref="IncludeNone"/>).</summary>
+    [Parameter] public EventCallback<CnPaletteColor?> OnPick { get; set; }
+
+    [Parameter] public bool IncludeNone { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>Shows "Colour" next to the swatch on the trigger.</summary>
+    [Parameter] public bool ShowLabel { get; set; } = true;
+
+    /// <summary>Shows the Markdown class (<c>.accent</c>) beside each colour.</summary>
+    [Parameter] public bool ShowSyntax { get; set; }
+
+    [Parameter] public string? ButtonClass { get; set; }
+
+    private bool _open;
+
+    /// <summary>The translated name of a palette colour.</summary>
+    public static string LabelFor(CnPaletteColor colour) => colour.Name switch
+    {
+        "accent" => CnLabels.ColourGreen,
+        "blauw" => CnLabels.ColourBlue,
+        "oranje" => CnLabels.ColourOrange,
+        "rood" => CnLabels.ColourRed,
+        _ => colour.Name,
+    };
+
+    private void Toggle() => _open = !_open && !Disabled;
+
+    private void Close() => _open = false;
+
+    private async Task PickAsync(CnPaletteColor? colour)
+    {
+        _open = false;
+        await OnPick.InvokeAsync(colour);
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key is "Escape" or "Tab")
+            _open = false;
+    }
+}

@@ -22,4 +22,11 @@
         <PackageReference Include="SmartFormat" />
     </ItemGroup>
 
+    <ItemGroup>
+        <!-- The Markdown pipeline, HTML-to-Markdown conversion and rich-text
+             sanitiser live in the UI-free core package so servers render and
+             clean exactly as the editors do. -->
+        <ProjectReference Include="..\CretNet\CretNet.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -270,4 +270,28 @@
   <data name="IconOwnColors" xml:space="preserve"><value>Own colours</value></data>
   <data name="IconPorcelain" xml:space="preserve"><value>Porcelain</value></data>
   <data name="IconLine" xml:space="preserve"><value>Line</value></data>
+  <data name="Heading" xml:space="preserve"><value>Heading</value></data>
+  <data name="Link" xml:space="preserve"><value>Link</value></data>
+  <data name="Colour" xml:space="preserve"><value>Colour</value></data>
+  <data name="NoColour" xml:space="preserve"><value>No colour</value></data>
+  <data name="ColourGreen" xml:space="preserve"><value>Green</value></data>
+  <data name="ColourBlue" xml:space="preserve"><value>Blue</value></data>
+  <data name="ColourOrange" xml:space="preserve"><value>Orange</value></data>
+  <data name="ColourRed" xml:space="preserve"><value>Red</value></data>
+  <data name="Formatting" xml:space="preserve"><value>Formatting</value></data>
+  <data name="Write" xml:space="preserve"><value>Write</value></data>
+  <data name="Preview" xml:space="preserve"><value>Preview</value></data>
+  <data name="SideBySide" xml:space="preserve"><value>Side by side</value></data>
+  <data name="PastedAsMarkdown" xml:space="preserve"><value>Pasted as Markdown.</value></data>
+  <data name="PasteLeftOut" xml:space="preserve"><value>Left out: {0}.</value></data>
+  <data name="SelectTextToClear" xml:space="preserve"><value>Select the text whose formatting you want to clear first</value></data>
+  <data name="BoldPlaceholder" xml:space="preserve"><value>bold text</value></data>
+  <data name="ItalicPlaceholder" xml:space="preserve"><value>italic text</value></data>
+  <data name="LinkPlaceholder" xml:space="preserve"><value>link text</value></data>
+  <data name="ColourPlaceholder" xml:space="preserve"><value>coloured text</value></data>
+  <data name="DroppedUnderline" xml:space="preserve"><value>underline</value></data>
+  <data name="DroppedFont" xml:space="preserve"><value>font and size</value></data>
+  <data name="DroppedBackground" xml:space="preserve"><value>background colour</value></data>
+  <data name="DroppedImages" xml:space="preserve"><value>images</value></data>
+  <data name="DroppedLinks" xml:space="preserve"><value>unsupported links</value></data>
 </root>

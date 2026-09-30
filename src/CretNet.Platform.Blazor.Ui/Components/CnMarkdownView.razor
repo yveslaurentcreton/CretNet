@@ -1,0 +1,27 @@
+@using CretNet.RichText
+
+@* Read-only Markdown, rendered by the shared CnMarkdown pipeline: raw HTML
+   stays text and only palette colours exist. Paper approximates the printed
+   document (light sheet, document type sizes) in both themes. *@
+<div class="cn-md-doc @(Paper ? "cn-md-paper" : null) @Class">@((MarkupString)_html)</div>
+
+@code {
+    [Parameter] public string? Value { get; set; }
+
+    /// <summary>Shows the text on a light sheet with document typography.</summary>
+    [Parameter] public bool Paper { get; set; }
+
+    [Parameter] public string? Class { get; set; }
+
+    private string? _source;
+    private string _html = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        if (_source is not null && string.Equals(_source, Value ?? string.Empty, StringComparison.Ordinal))
+            return;
+
+        _source = Value ?? string.Empty;
+        _html = CnMarkdown.ToSafeHtml(_source);
+    }
+}

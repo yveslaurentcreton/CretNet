@@ -27,6 +27,7 @@
     <PackageVersion Include="Fluxor.Blazor.Web" Version="5.9.1" />
     <PackageVersion Include="GitVersion.MsBuild" Version="6.3.0" />
     <PackageVersion Include="ISO3166" Version="1.0.4" />
+    <PackageVersion Include="Markdig" Version="1.4.0" />
     <PackageVersion Include="IsoNames.NETStandard" Version="1.2.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.2" />

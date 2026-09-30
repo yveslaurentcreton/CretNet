@@ -1,3 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- The core package stays free of UI dependencies. RichText holds the one
+         Markdown interpretation (Markdig) shared by the Blazor editor preview
+         and server-side renderers such as PDF, plus the HTML clean-up
+         (AngleSharp) used for paste conversion and stored-HTML sanitising. -->
+    <ItemGroup>
+        <PackageReference Include="AngleSharp" />
+        <PackageReference Include="Markdig" />
+    </ItemGroup>
 
 </Project>

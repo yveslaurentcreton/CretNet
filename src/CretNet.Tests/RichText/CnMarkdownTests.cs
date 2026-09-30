@@ -12,6 +12,11 @@ public class CnMarkdownTests
         new HtmlParser().ParseDocument(CnMarkdown.ToSafeHtml(markdown)).Body!;
 
     [Fact]
+    public void LineUnderASubtitle_StartsANewLine() =>
+        CnMarkdown.ToSafeHtml("**Situatie**\nWood Architects werkt vandaag met één router.")
+            .ShouldBe("<p><strong>Situatie</strong><br />\nWood Architects werkt vandaag met één router.</p>\n");
+
+    [Fact]
     public void BoldSubtitle_RendersBold() =>
         CnMarkdown.ToSafeHtml("**Subtitel**").Trim().ShouldBe("<p><strong>Subtitel</strong></p>");
 

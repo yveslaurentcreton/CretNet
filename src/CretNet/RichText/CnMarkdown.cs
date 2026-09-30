@@ -26,6 +26,8 @@ namespace CretNet.RichText;
 /// <item>Links other than http, https and mailto, and all images, become
 /// their text.</item>
 /// <item>No element carries attributes except safe link targets.</item>
+/// <item>A single line break is a line break, as people expect when typing a
+/// bold subtitle above its text; a blank line starts a new paragraph.</item>
 /// </list>
 /// </remarks>
 public static class CnMarkdown
@@ -39,6 +41,8 @@ public static class CnMarkdown
         var builder = new MarkdownPipelineBuilder()
             .UseEmphasisExtras(Markdig.Extensions.EmphasisExtras.EmphasisExtraOptions.Strikethrough)
             .UsePipeTables()
+            // Business text: a line typed under a bold subtitle stays on its own line.
+            .UseSoftlineBreakAsHardlineBreak()
             .DisableHtml()
             .Use<CnPaletteExtension>();
         builder.DocumentProcessed += Normalize;

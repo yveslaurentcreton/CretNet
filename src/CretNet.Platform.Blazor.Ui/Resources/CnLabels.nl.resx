@@ -294,4 +294,5 @@
   <data name="DroppedBackground" xml:space="preserve"><value>achtergrondkleur</value></data>
   <data name="DroppedImages" xml:space="preserve"><value>afbeeldingen</value></data>
   <data name="DroppedLinks" xml:space="preserve"><value>niet-ondersteunde links</value></data>
+  <data name="MoreInTheManual" xml:space="preserve"><value>Meer in de handleiding</value></data>
 </root>

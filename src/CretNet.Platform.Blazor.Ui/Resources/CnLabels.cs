@@ -123,6 +123,7 @@ public static class CnLabels
     public static string ColourRed => ResourceManager.GetString(nameof(ColourRed), CultureInfo.CurrentUICulture)!;
     public static string Formatting => ResourceManager.GetString(nameof(Formatting), CultureInfo.CurrentUICulture)!;
     public static string Write => ResourceManager.GetString(nameof(Write), CultureInfo.CurrentUICulture)!;
+    public static string MoreInTheManual => ResourceManager.GetString(nameof(MoreInTheManual), CultureInfo.CurrentUICulture)!;
     public static string Preview => ResourceManager.GetString(nameof(Preview), CultureInfo.CurrentUICulture)!;
     public static string SideBySide => ResourceManager.GetString(nameof(SideBySide), CultureInfo.CurrentUICulture)!;
     public static string PastedAsMarkdown => ResourceManager.GetString(nameof(PastedAsMarkdown), CultureInfo.CurrentUICulture)!;

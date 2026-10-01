@@ -151,6 +151,7 @@ public sealed class CnIconAppearanceTests : BunitContext
         {
             CnIconKind.History, CnIconKind.Compose, CnIconKind.Shield, CnIconKind.ChevronDown,
             CnIconKind.LayoutNarrow, CnIconKind.LayoutHalf, CnIconKind.LayoutFull, CnIconKind.LayoutWindow,
+            CnIconKind.QuestionCircle, CnIconKind.SignOut, CnIconKind.BookOpen,
         }
         select new object[] { kind };
 

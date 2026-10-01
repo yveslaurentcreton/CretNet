@@ -91,4 +91,9 @@ public enum CnIconKind
     LayoutHalf,
     LayoutFull,
     LayoutWindow,
+
+    // The manual (CnHelpLink, the profile menu): a question mark that opens the manual at a
+    // section, and signing out. Appended after the assistant panel kinds.
+    QuestionCircle,
+    SignOut,
 }

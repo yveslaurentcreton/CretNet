@@ -263,6 +263,19 @@ on a composed heading containing a `CnIcon` and a text `span`. It retains a
 10 px gap and allows long names to wrap. `Hide` still omits the entire heading;
 icons never enter the document title or breadcrumb text.
 
+### Help links to a manual
+
+`CnHelpLink` is the small, quiet "?" a host places next to a section title.
+It opens `Href` (the host builds it: base path, language, `#anchor`) in a new
+tab, with "More in the manual" / "Meer in de handleiding" as its tooltip and
+accessible name unless `Title` says otherwise. It draws
+`CnIconKind.QuestionCircle` in the quiet line style by default; pass
+`Appearance` to follow another style. Screens stay to the point: the
+explanation belongs in the host's manual, not in hint text on the screen.
+
+`CnIconKind.QuestionCircle` and `CnIconKind.SignOut` exist in every icon
+style; a manual entry uses the existing `CnIconKind.BookOpen`.
+
 ### Field widths
 
 Date, time, date-time and date-range borders fill the width allocated to their

@@ -294,4 +294,5 @@
   <data name="DroppedBackground" xml:space="preserve"><value>background colour</value></data>
   <data name="DroppedImages" xml:space="preserve"><value>images</value></data>
   <data name="DroppedLinks" xml:space="preserve"><value>unsupported links</value></data>
+  <data name="MoreInTheManual" xml:space="preserve"><value>More in the manual</value></data>
 </root>

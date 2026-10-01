@@ -1,0 +1,27 @@
+@using CretNet.Platform.Blazor.Ui.Resources
+
+@* A small question mark next to a title that opens the manual at the section
+   explaining it, in a new tab. Screens stay to the point; the explanation
+   lives in the manual. The host builds the address (base path, language,
+   anchor). *@
+<a class="cn-help-link @Class"
+   href="@Href"
+   target="_blank"
+   rel="noopener"
+   title="@(Title ?? CnLabels.MoreInTheManual)"
+   aria-label="@(Title ?? CnLabels.MoreInTheManual)">
+    <CnIcon Kind="CnIconKind.QuestionCircle" Appearance="@Appearance" />
+</a>
+
+@code {
+    /// <summary>The manual page and section, e.g. <c>/docs/company/fiscal-years/#what-follows</c>.</summary>
+    [Parameter, EditorRequired] public string Href { get; set; } = string.Empty;
+
+    /// <summary>The tooltip and accessible name; defaults to "More in the manual".</summary>
+    [Parameter] public string? Title { get; set; }
+
+    /// <summary>The icon's look; the quiet line style by default, so it never competes with the title.</summary>
+    [Parameter] public CnIconAppearance? Appearance { get; set; } = new(CnIconStyle.Line, CnIconIntensity.Quiet);
+
+    [Parameter] public string? Class { get; set; }
+}

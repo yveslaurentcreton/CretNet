@@ -96,4 +96,8 @@ public enum CnIconKind
     // section, and signing out. Appended after the assistant panel kinds.
     QuestionCircle,
     SignOut,
+
+    // Hiding amounts (a host's "hide amounts" switch): an eye, and the same eye struck through.
+    Eye,
+    EyeOff,
 }

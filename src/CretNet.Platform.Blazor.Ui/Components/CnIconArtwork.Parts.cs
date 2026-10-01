@@ -409,6 +409,16 @@ internal static partial class CnIconArtwork
             """<path d="M10.5 12.2h.01"/>""",
             """<path d="M11.5 12H21M17.5 8.5 21 12l-3.5 3.5"/>""",
             "#e05561", "#7c91ac"),
+        CnIconKind.Eye => new(
+            """<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/>""",
+            "",
+            """<circle cx="12" cy="12" r="3"/>""",
+            "#458fdc", "#388ce7"),
+        CnIconKind.EyeOff => new(
+            """<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/>""",
+            """<circle cx="12" cy="12" r="3"/>""",
+            """<path d="M4 20 20 4"/>""",
+            "#e05561", "#388ce7"),
         _ => default,
     };
 }

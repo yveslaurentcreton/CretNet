@@ -275,6 +275,8 @@ explanation belongs in the host's manual, not in hint text on the screen.
 
 `CnIconKind.QuestionCircle` and `CnIconKind.SignOut` exist in every icon
 style; a manual entry uses the existing `CnIconKind.BookOpen`.
+`CnIconKind.Eye` and `CnIconKind.EyeOff` (the eye struck through) serve a
+host's switch that hides amounts on screen.
 
 ### Field widths
 

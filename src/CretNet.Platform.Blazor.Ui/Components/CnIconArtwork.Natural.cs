@@ -2924,6 +2924,100 @@ internal static partial class CnIconArtwork
             <path d="M12 20.5H36" fill="none" stroke="#fff" stroke-width="1.5" opacity=".55" />
             </g>
             """,
+        CnIconKind.QuestionCircle => """
+            <defs>
+            <linearGradient id="__CN_ICON__-blue-front" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#458fdc">
+            <stop class="cn-icon-tone-hi" stop-color="#95ceff"/>
+            <stop offset=".55" stop-color="#458fdc"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#285a9b"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__-paper-front" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#f4f6f8">
+            <stop class="cn-icon-tone-hi" stop-color="#ffffff"/>
+            <stop offset=".55" stop-color="#f4f6f8"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#dce3ea"/>
+            </linearGradient>
+            <filter id="__CN_ICON__s" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy=".8" stdDeviation=".65" flood-color="#354354" flood-opacity=".2"/>
+            </filter>
+            </defs>
+            <g class="cn-icon-shadow" filter="url(#__CN_ICON__s)">
+            <circle cx="24" cy="25" r="20" fill="#285a9b" class="cn-icon-bevel"/>
+            <circle cx="24" cy="23" r="20" fill="url(#__CN_ICON__-blue-front)" />
+            <path d="M18.6 17.6a5.6 5.6 0 0 1 10.9 1.6c0 4-5.5 4.6-5.5 8.6" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="24" cy="33.6" r="2.3" fill="url(#__CN_ICON__-paper-front)" />
+            </g>
+            """,
+        CnIconKind.SignOut => """
+            <defs>
+            <linearGradient id="__CN_ICON__-wood-front" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#ca965b">
+            <stop class="cn-icon-tone-hi" stop-color="#f0c48f"/>
+            <stop offset=".55" stop-color="#ca965b"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#8d6235"/>
+            </linearGradient>
+            <filter id="__CN_ICON__s" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy=".8" stdDeviation=".65" flood-color="#354354" flood-opacity=".2"/>
+            </filter>
+            </defs>
+            <g class="cn-icon-shadow" filter="url(#__CN_ICON__s)">
+            <rect x="8" y="7" width="20" height="37" rx="2.5" fill="#8d6235" class="cn-icon-bevel"/>
+            <rect x="8" y="5" width="20" height="37" rx="2.5" fill="url(#__CN_ICON__-wood-front)" />
+            <rect x="11.5" y="9" width="13" height="12" rx="1.5" fill="#fff" opacity=".18" />
+            <rect x="11.5" y="24.5" width="13" height="13" rx="1.5" fill="#fff" opacity=".12" />
+            <circle cx="23.5" cy="23.5" r="1.7" fill="#ffe49a" />
+            <path d="M21 24h18.5" fill="none" stroke="#a8323a" stroke-width="5.4" stroke-linecap="round" />
+            <path d="M33.5 17.5 40 24 33.5 30.5" fill="none" stroke="#a8323a" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M21 23.5h18.5" fill="none" stroke="#e05561" stroke-width="3.8" stroke-linecap="round" />
+            <path d="M33.5 17 40 23.5 33.5 30" fill="none" stroke="#e05561" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" />
+            </g>
+            """,
+        CnIconKind.Eye => """
+            <defs>
+            <linearGradient id="__CN_ICON__-blue-front" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#458fdc">
+            <stop class="cn-icon-tone-hi" stop-color="#95ceff"/>
+            <stop offset=".55" stop-color="#458fdc"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#285a9b"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__-paper-front" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#dce3ea">
+            <stop stop-color="#ffffff"/>
+            <stop offset="1" stop-color="#dce3ea"/>
+            </linearGradient>
+            <filter id="__CN_ICON__s" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy=".8" stdDeviation=".65" flood-color="#354354" flood-opacity=".2"/>
+            </filter>
+            </defs>
+            <g class="cn-icon-shadow" filter="url(#__CN_ICON__s)">
+            <path d="M3 26C9 15 16 10 24 10s15 5 21 16c-6 11-13 16-21 16S9 37 3 26Z" fill="#285a9b" class="cn-icon-bevel"/>
+            <path d="M3 24C9 13 16 8 24 8s15 5 21 16c-6 11-13 16-21 16S9 35 3 24Z" fill="url(#__CN_ICON__-paper-front)" />
+            <circle cx="24" cy="24" r="9" fill="url(#__CN_ICON__-blue-front)" />
+            <circle cx="24" cy="24" r="4" fill="#1b2a44" />
+            <circle cx="27" cy="21" r="1.8" fill="#fff" />
+            </g>
+            """,
+        CnIconKind.EyeOff => """
+            <defs>
+            <linearGradient id="__CN_ICON__-blue-front" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#458fdc">
+            <stop class="cn-icon-tone-hi" stop-color="#95ceff"/>
+            <stop offset=".55" stop-color="#458fdc"/>
+            <stop class="cn-icon-tone-lo" offset="1" stop-color="#285a9b"/>
+            </linearGradient>
+            <linearGradient id="__CN_ICON__-paper-front" x1="0" y1="0" x2="1" y2="1" style="--cn-icon-mid:#dce3ea">
+            <stop stop-color="#ffffff"/>
+            <stop offset="1" stop-color="#dce3ea"/>
+            </linearGradient>
+            <filter id="__CN_ICON__s" x="-20%" y="-20%" width="140%" height="150%">
+            <feDropShadow dx="0" dy=".8" stdDeviation=".65" flood-color="#354354" flood-opacity=".2"/>
+            </filter>
+            </defs>
+            <g class="cn-icon-shadow" filter="url(#__CN_ICON__s)">
+            <path d="M3 26C9 15 16 10 24 10s15 5 21 16c-6 11-13 16-21 16S9 37 3 26Z" fill="#285a9b" class="cn-icon-bevel"/>
+            <path d="M3 24C9 13 16 8 24 8s15 5 21 16c-6 11-13 16-21 16S9 35 3 24Z" fill="url(#__CN_ICON__-paper-front)" />
+            <circle cx="24" cy="24" r="9" fill="url(#__CN_ICON__-blue-front)" />
+            <circle cx="24" cy="24" r="4" fill="#1b2a44" />
+            <circle cx="27" cy="21" r="1.8" fill="#fff" />
+            <path d="M9 41 39 7" fill="none" stroke="#a8323a" stroke-width="5.4" stroke-linecap="round" />
+            <path d="M9 40.5 39 6.5" fill="none" stroke="#e05561" stroke-width="3.8" stroke-linecap="round" />
+            </g>
+            """,
         _ => string.Empty,
     };
 }

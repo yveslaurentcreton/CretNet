@@ -1,0 +1,23 @@
+.cn-help-link {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    flex: none;
+    border-radius: 50%;
+    color: var(--cn-text-3);
+    vertical-align: middle;
+    text-decoration: none;
+}
+
+.cn-help-link:hover,
+.cn-help-link:focus-visible {
+    color: var(--cn-accent-hover);
+    background: var(--cn-accent-tint);
+    outline: none;
+}
+
+.cn-help-link ::deep svg {
+    width: 16px;
+    height: 16px;
+}

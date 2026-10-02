@@ -1,3 +1,10 @@
+# [0.15.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.14.0...v0.15.0) (2026-10-02)
+
+
+### Features
+
+* **ui:** help link to a manual and question-mark, sign-out, eye and eye-off icons ([#15](https://github.com/yveslaurentcreton/CretNet/issues/15)) ([85ad6f8](https://github.com/yveslaurentcreton/CretNet/commit/85ad6f8da8bc9015dcc72710683c17301f294942))
+
 # [0.14.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.13.0...v0.14.0) (2026-09-30)
 
 

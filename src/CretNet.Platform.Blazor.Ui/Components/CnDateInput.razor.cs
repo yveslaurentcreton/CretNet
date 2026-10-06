@@ -100,6 +100,30 @@ public partial class CnDateInput : IAsyncDisposable
         }
     }
 
+    /// <summary>Puts the caret at the end of the text, unless the field already
+    /// has focus (a click into the text itself placed the caret where the user
+    /// wanted it). Used when the frame around the field is clicked.</summary>
+    public async Task FocusAtEndAsync()
+    {
+        if (_disposed || ReadOnly || Disabled)
+            return;
+
+        _suppressFocusCallback = true;
+        try
+        {
+            var module = await ModuleAsync();
+            if (!_disposed)
+                await module.InvokeVoidAsync("focusAtEnd", Element);
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        finally
+        {
+            _suppressFocusCallback = false;
+        }
+    }
+
     /// <summary>Seeds this field with digits that overflowed from another one:
     /// they start it over rather than appending to what stood here.</summary>
     public async Task TakeOverflowAsync(string digits)

@@ -119,6 +119,12 @@
             </div>
             <CnPercentField Label="%" @bind-Value="_percent" />
         </div>
+        <p class="demo-api">Compact · Unit</p>
+        <div class="demo-row">
+            <CnCurrencyField Label="@CnLabels.Amount" Compact @bind-Value="_amount" />
+            <CnNumberField Label="@CnLabels.Value" Unit="dagen" ParsingMode="CnNumberParsingMode.Decimal" MaxDecimals="0" Compact @bind-Value="_quantity" />
+            <CnDateField Label="@CnLabels.Date" Compact @bind-Value="_date" />
+        </div>
     </section>
 
     <section id="@Anchor("CnDateField")" class="demo-sec">

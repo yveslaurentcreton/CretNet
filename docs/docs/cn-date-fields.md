@@ -179,7 +179,10 @@ when there is more room up there.
 | Backspace | steps back digit by digit, over the separators; at the start of a range's second half it hops to the first |
 
 Tabbing into a field selects its whole value, so typing replaces it. Clicking
-puts the caret where you clicked, for fixing one digit.
+puts the caret where you clicked, for fixing one digit. The single field's
+frame counts as the field: a click on the calendar icon or on the room between
+the date and the **×** opens the calendar and puts the caret at the end of the
+text, ready to append or backspace.
 
 ## Parameters
 
@@ -187,10 +190,13 @@ puts the caret where you clicked, for fixing one digit.
 
 Inherits `CnInputBase<DateTime?>`, so `Value`, `ValueChanged`, `Label`, `For`,
 `ReadOnly`, `Disabled`, `Subtle`, `Class` and `Style` behave as on every other
-Cn input, including inline validation through `For`.
+Cn input, including inline validation through `For`. Any other attribute
+(`data-*`, `autofocus`) lands on the text input, as on the number and currency
+fields.
 
 | Parameter | Default | Meaning |
 | :--- | :--- | :--- |
+| `Compact` | `false` | the dense variant: label before the field, 26px high (see the UI contract) |
 | `MinDate` / `MaxDate` | `null` | days outside the window are shown but not selectable |
 | `Placeholder` | the format hint | text while the field is empty |
 | `DateFormatHint` | `dd/mm/yyyy` | the shape shown as placeholder |

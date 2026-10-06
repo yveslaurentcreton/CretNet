@@ -4,7 +4,7 @@
 @* Percentage entry mirrors CnCurrencyField: a locale-aware text input avoids
    the browser's clunky number spinners while keeping the unit visible. *@
 
-<label class="cn-field @Class" style="@Style">
+<label class="cn-field @CompactClass @Class" style="@Style">
     @if (!string.IsNullOrEmpty(Label))
     {
         <span class="cn-label">@Label</span>
@@ -28,6 +28,13 @@
 
 @code {
     [Parameter] public CnNumberParsingMode ParsingMode { get; set; } = CnNumberParsingMode.Decimal;
+    /// <summary>The dense variant for a dialog's header row and the cells of
+    /// its line list: the label before the field instead of above it, a 26px
+    /// input with 13px text. Combines with Subtle; off, the field is unchanged.</summary>
+    [Parameter] public bool Compact { get; set; }
+
+    private string? CompactClass => Compact ? "cn-field--compact" : null;
+
 
     private Task OnChange(ChangeEventArgs e) => SetValueAsync(
         CnAmountParser.Parse(e.Value?.ToString()?.Replace("%", string.Empty), ParsingMode));

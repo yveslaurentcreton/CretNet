@@ -43,6 +43,33 @@ Here `optionalQuantity` is `decimal?` and `requiredAmount` is `decimal`. Only
 choose zero as the required-field fallback where the host's domain permits it;
 use a nullable form draft with validation when a blank must remain visible.
 
+`Unit` puts a suffix inside a number or currency field ("dagen", "/u", "%").
+The input keeps room for the whole unit: the field passes the unit's length as
+`--cn-unit-chars` and the right padding grows with it (never below the former
+30px), so a word unit no longer runs into the digits. Hosts need no width or
+padding overrides for it.
+
+## Compact fields
+
+`Compact` on `CnTextField`, `CnNumberField`, `CnCurrencyField`,
+`CnPercentField` and `CnDateField` is the dense variant for a dialog's header
+row ("Ontvangen op [date]") and the cells of its line list: the label sits
+before the field in the secondary colour, the input is 26px high with 13px
+text, and the date field's icon and clear button shrink with it. It combines
+with `Subtle` (borderless until hover or focus). Parsing, nullability and
+keyboard behaviour do not change, and without `Compact` a field looks exactly
+as before. The wrapper carries `cn-field--compact`; width stays with the host's
+layout, as for every field.
+
+```razor
+<CnDateField Label="Ontvangen op" @bind-Value="receivedOn" Compact />
+<CnCurrencyField AriaLabel="Prijs" @bind-Value="price" Compact Subtle />
+<CnNumberField Label="Betaaltermijn" Unit="dagen" @bind-Value="days" Compact />
+```
+
+`CnMarkdownEditor` has its own, older `Compact` (a minimal toolbar); it is not
+this field variant.
+
 ## Lifted behavior
 
 The remaining HCMT controls now live here: `CnCard`, `CnCheckbox`, `CnFlowRail`,

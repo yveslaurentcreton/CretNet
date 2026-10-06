@@ -17,6 +17,13 @@ public partial class CnNumberField
 {
     /// <summary>A suffix inside the field — "%", "h".</summary>
     [Parameter] public string? Unit { get; set; }
+    /// <summary>The dense variant for a dialog's header row and the cells of
+    /// its line list: the label before the field instead of above it, a 26px
+    /// input with 13px text. Combines with Subtle; off, the field is unchanged.</summary>
+    [Parameter] public bool Compact { get; set; }
+
+    private string? CompactClass => Compact ? "cn-field--compact" : null;
+
 
     /// <summary>Clamped on commit: a percentage stays between 0 and 100
     /// without a spinner to say so.</summary>
@@ -36,6 +43,12 @@ public partial class CnNumberField
     [Parameter] public string? AriaLabel { get; set; }
 
     private string? UnitClass => string.IsNullOrEmpty(Unit) ? null : "cn-money-input--unit";
+
+    /// <summary>The unit's length in characters, so the input keeps room for
+    /// the whole unit before its digits: "dagen" needs more than "%".</summary>
+    private string? UnitStyle => string.IsNullOrEmpty(Unit)
+        ? null
+        : string.Create(CultureInfo.InvariantCulture, $"--cn-unit-chars: {Unit.Length}");
 
     private string Text
     {

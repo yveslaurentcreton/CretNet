@@ -230,6 +230,12 @@ resource `More`), `Icon` (default `CnIconKind.More`), `Role`, `IconOnly`, `Disab
 `CnActionMenuSeparator`. Closes on outside click, Escape, Tab and after a choice;
 arrows/Home/End move focus. Disabled items stay focusable with `aria-disabled`.
 The list aligns right under the trigger (`AlignStart` for a trigger near the left edge).
+While open, `CnActionMenu.razor.js` lifts the backdrop and the list into the browser's top
+layer (`popover="manual"`) and pins the list with fixed coordinates from the trigger, so a
+scrolling ancestor (a grid, document lines, a dialog body) never clips or covers it; it flips
+above the trigger when there is more room there, shifts inward at the viewport edge, caps its
+height to the room it has and follows the trigger on scroll and resize. Without script it keeps
+its absolute position under the trigger.
 Classes: `.cn-action-menu`, `__list`, `__item`, `__item--danger`, `__reason`, `__separator`.
 
 ```razor

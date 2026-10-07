@@ -79,6 +79,45 @@ public sealed class CnActionMenuAccordionTests : CnTestContext
     }
 
     [Fact]
+    public void ActionMenu_OpenLiftsTheListOverItsTrigger_AndCloseStopsFollowing()
+    {
+        // A row kebab sits in a scrolling grid or in a document's lines: the
+        // open list goes to the top layer at the trigger, never clipped.
+        var module = JSInterop.SetupModule(ActionMenuModule);
+        module.Mode = JSRuntimeMode.Loose;
+        var cut = Render<ActionMenuFixture>();
+        module.Invocations.ShouldBeEmpty();
+
+        cut.Find(".cn-action-menu > button.cn-btn").Click();
+
+        var show = module.VerifyInvoke("show");
+        show.Arguments[0].ShouldBe(cut.Find("[role=menu]").Id);
+        show.Arguments[4].ShouldBe(false);
+        module.Invocations.Where(call => call.Identifier == "hide").ShouldBeEmpty();
+
+        cut.Find(".cn-action-menu").KeyDown(new KeyboardEventArgs { Key = "Escape" });
+
+        cut.FindAll("[role=menu]").ShouldBeEmpty();
+        module.VerifyInvoke("hide").Arguments[0].ShouldBe(show.Arguments[0]);
+    }
+
+    [Fact]
+    public void ActionMenu_AlignStartIsPassedToThePlacement()
+    {
+        var module = JSInterop.SetupModule(ActionMenuModule);
+        module.Mode = JSRuntimeMode.Loose;
+        var cut = Render<CnActionMenu>(parameters => parameters
+            .Add(menu => menu.AlignStart, true)
+            .AddChildContent<CnActionMenuItem>(item => item.Add(x => x.Label, "Edit")));
+
+        cut.Find(".cn-action-menu > button.cn-btn").Click();
+
+        module.VerifyInvoke("show").Arguments[4].ShouldBe(true);
+    }
+
+    private const string ActionMenuModule = "./_content/CretNet.Platform.Blazor.Ui/Components/CnActionMenu.razor.js";
+
+    [Fact]
     public void ActionMenu_ArrowDownOnClosedTriggerOpensTheMenu()
     {
         var cut = Render<ActionMenuFixture>();

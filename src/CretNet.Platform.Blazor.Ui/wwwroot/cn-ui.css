@@ -4732,16 +4732,27 @@ tr:hover .cn-task-more,
     position: fixed;
     inset: 0;
     z-index: 70;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
     border: 0;
     background: transparent;
     cursor: default;
 }
 
+/* While open, CnActionMenu.razor.js lifts the backdrop and the list into the
+   top layer (popover) and pins the list with fixed coordinates from the
+   trigger, so a scrolling ancestor (a grid, the lines of a document, a dialog
+   body) never clips it. The absolute position below is the fallback without
+   script. The margin and colour undo the user agent's [popover] defaults. */
 .cn-action-menu__list {
     position: absolute;
     top: calc(100% + 4px);
     right: 0;
     z-index: 71;
+    margin: 0;
+    color: var(--cn-text);
     display: grid;
     width: max-content;
     min-width: 200px;

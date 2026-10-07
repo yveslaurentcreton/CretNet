@@ -3956,6 +3956,94 @@ tr:hover .cn-task-more,
 .cn-field--compact .cn-date-icon { width: 13px; height: 13px; }
 .cn-field--compact .cn-date-clear { width: 18px; height: 18px; }
 
+/* ---------- CnQuantityField ----------
+   A number and its unit in one frame, "[ 15 | minuten ▾ ]". The span carries
+   the .cn-input frame (border, height, Subtle, invalid, Compact) and lights up
+   while either part has focus; the number and the native unit select inside
+   it are borderless. The select keeps the width of its longest unit. */
+.cn-input.cn-quantity-frame {
+    display: flex;
+    align-items: stretch;
+    padding: 0;
+    overflow: hidden;
+    cursor: text;
+}
+
+.cn-quantity-frame:focus-within {
+    border-color: var(--cn-accent);
+    box-shadow: 0 0 0 1px var(--cn-accent) inset;
+}
+
+.cn-quantity-frame.cn-input--invalid:focus-within {
+    border-color: var(--cn-danger);
+    box-shadow: 0 0 0 1px var(--cn-danger) inset;
+}
+
+.cn-input--subtle.cn-quantity-frame:focus-within { background: var(--cn-card); }
+
+.cn-quantity-frame--disabled,
+.cn-quantity-frame--readonly {
+    color: var(--cn-text-2);
+    background: var(--cn-ground);
+    cursor: default;
+}
+
+.cn-input--subtle.cn-quantity-frame--disabled,
+.cn-input--subtle.cn-quantity-frame--readonly { background: transparent; }
+.cn-input.cn-input--subtle.cn-quantity-frame--disabled:hover { border-color: transparent; }
+
+.cn-quantity-input {
+    flex: 1 1 auto;
+    width: 5em;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    outline: none;
+    padding: 0 6px 0 8px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.cn-quantity-input::placeholder { color: var(--cn-text-2); }
+.cn-quantity-input:disabled,
+.cn-quantity-input[readonly] { cursor: default; }
+.cn-input--subtle .cn-quantity-input { padding-left: 6px; }
+
+.cn-quantity-unit {
+    flex: none;
+    max-width: 60%;
+    height: 100%;
+    border: 0;
+    border-left: 1px solid var(--cn-stroke-soft);
+    border-radius: 0;
+    outline: none;
+    padding: 0 4px 0 8px;
+    background: transparent;
+    color: var(--cn-text-2);
+    font: 13px var(--cn-font);
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.cn-quantity-unit:hover:not(:disabled),
+.cn-quantity-unit:focus-visible { color: var(--cn-text); }
+.cn-quantity-unit:focus-visible { background: var(--cn-accent-tint); }
+/* A locked unit reads as a plain suffix: no arrow that promises a choice. */
+.cn-quantity-unit:disabled { cursor: default; color: var(--cn-text-2); opacity: 1; appearance: none; padding-right: 8px; }
+.cn-quantity-unit option { background: var(--cn-card); color: var(--cn-text); }
+
+.cn-input--subtle .cn-quantity-unit { border-left-color: transparent; }
+.cn-input--subtle:hover .cn-quantity-unit,
+.cn-input--subtle:focus-within .cn-quantity-unit { border-left-color: var(--cn-stroke-soft); }
+
+/* Beside its label the frame sizes on its content and then grows: a 100%
+   basis would wrap it under the label. */
+.cn-field--compact > .cn-quantity-frame { width: auto; }
+.cn-field--compact .cn-quantity-unit { padding-left: 6px; font-size: 12px; }
+
 /* ---------- CnTimeField / CnDateTimeField ----------
    Sized on the placeholder rather than the value: "hh:mm" is proportional
    letters where "09:30" is tabular digits, so the hint is what would clip. */

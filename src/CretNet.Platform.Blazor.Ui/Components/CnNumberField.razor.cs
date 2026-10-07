@@ -50,35 +50,35 @@ public partial class CnNumberField
         ? null
         : string.Create(CultureInfo.InvariantCulture, $"--cn-unit-chars: {Unit.Length}");
 
-    private string Text
-    {
-        get
-        {
-            if (Value is not { } number)
-                return string.Empty;
+    private string Text => Format(Value, ParsingMode, MaxDecimals);
 
-            // A grouped integer (1.234) would read back as a fraction in Decimal
-            // mode. Keep its editable representation ungrouped in that mode.
-            var format = ParsingMode == CnNumberParsingMode.Decimal ? "0" : "#,##0";
-            if (MaxDecimals > 0)
-                format += "." + new string('#', Math.Min(28, MaxDecimals));
-            return number.ToString(format, CultureInfo.CurrentCulture);
-        }
+    private Task OnChangeAsync(ChangeEventArgs args) =>
+        SetValueAsync(Clamp(CnAmountParser.Parse(args.Value?.ToString(), ParsingMode), Min, Max));
+
+    /// <summary>The editable text for a number in the current culture; empty
+    /// for null. Shared with <see cref="CnQuantityField{TUnit}"/>.</summary>
+    internal static string Format(decimal? value, CnNumberParsingMode mode, int maxDecimals)
+    {
+        if (value is not { } number)
+            return string.Empty;
+
+        // A grouped integer (1.234) would read back as a fraction in Decimal
+        // mode. Keep its editable representation ungrouped in that mode.
+        var format = mode == CnNumberParsingMode.Decimal ? "0" : "#,##0";
+        if (maxDecimals > 0)
+            format += "." + new string('#', Math.Min(28, maxDecimals));
+        return number.ToString(format, CultureInfo.CurrentCulture);
     }
 
-    private Task OnChangeAsync(ChangeEventArgs args)
+    /// <summary>Clamps a committed number; null stays null.</summary>
+    internal static decimal? Clamp(decimal? value, decimal? min, decimal? max)
     {
-        var value = CnAmountParser.Parse(args.Value?.ToString(), ParsingMode);
-
-        if (value is { } number)
-        {
-            if (Min is { } min && number < min)
-                number = min;
-            if (Max is { } max && number > max)
-                number = max;
-            value = number;
-        }
-
-        return SetValueAsync(value);
+        if (value is not { } number)
+            return null;
+        if (min is { } lower && number < lower)
+            number = lower;
+        if (max is { } upper && number > upper)
+            number = upper;
+        return number;
     }
 }

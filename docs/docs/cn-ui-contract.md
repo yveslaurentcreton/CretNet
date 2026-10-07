@@ -52,7 +52,7 @@ padding overrides for it.
 ## Compact fields
 
 `Compact` on `CnTextField`, `CnNumberField`, `CnCurrencyField`,
-`CnPercentField` and `CnDateField` is the dense variant for a dialog's header
+`CnPercentField`, `CnQuantityField` and `CnDateField` is the dense variant for a dialog's header
 row ("Ontvangen op [date]") and the cells of its line list: the label sits
 before the field in the secondary colour, the input is 26px high with 13px
 text, and the date field's icon and clear button shrink with it. It combines
@@ -69,6 +69,30 @@ layout, as for every field.
 
 `CnMarkdownEditor` has its own, older `Compact` (a minimal toolbar); it is not
 this field variant.
+
+## Quantity with a unit
+
+`CnQuantityField<TUnit>` is one field holding a number and a small unit
+dropdown, "[ 15 | minuten ▾ ]". `Value`/`ValueChanged` (`decimal?`) is the
+quantity, read and shown like `CnNumberField` with `ParsingMode` Decimal and
+`MaxDecimals` 4 by default (`Min`/`Max` clamp, empty stays null).
+`Unit`/`UnitChanged` (`TUnit?`) is the unit, chosen from `Units` and worded
+by `UnitText(unit, quantity)` so a host can say "1 minuut" but "15 minuten".
+`TUnit` is the host's own type (enum, record, `readonly record struct`); a
+struct's default counts as no unit, so use `TUnit="Unit?"` when that default
+is a real unit. A unit that is set but missing from `Units` is still offered
+and selected. `UnitDisabled` locks only the unit; `Disabled`/`ReadOnly` lock
+both. `For` validates the quantity, `Id` and `AriaLabel` go on the number,
+and `UnitAriaLabel` (resource "Unit"/"Eenheid") names the select. Tab goes
+from the number to the unit. Classes: `.cn-quantity`, `.cn-quantity-frame`
+(the `.cn-input` frame, lit on `:focus-within`), `.cn-quantity-input`,
+`.cn-quantity-unit`, `--disabled`/`--readonly` on the frame.
+
+```razor
+<CnQuantityField TUnit="DurationUnit" Label="Duur" Units="units"
+                 UnitText="(unit, quantity) => unit.Text(quantity)" Min="0"
+                 @bind-Value="line.Quantity" @bind-Unit="line.Unit" Compact />
+```
 
 ## Lifted behavior
 

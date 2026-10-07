@@ -1,0 +1,46 @@
+@typeparam TUnit
+@inherits CnInputBase<decimal?>
+
+@* A quantity with its unit: one frame holding a number and a small unit
+   dropdown, "[ 15 | minuten ▾ ]". The number reads like CnNumberField (a
+   text input, a Belgian comma, commits on change); the unit is a native
+   select, index-mapped like CnSelect so TUnit never round-trips through
+   strings. Tab goes from the number to the unit. *@
+
+<label class="cn-field cn-quantity @CompactClass @Class" style="@Style">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span class="cn-label">@Label</span>
+    }
+    <span class="cn-input cn-quantity-frame @SubtleClass @InvalidClass @FrameStateClass">
+        <input type="text"
+               inputmode="decimal"
+               id="@Id"
+               class="cn-quantity-input"
+               value="@Text"
+               placeholder="@Placeholder"
+               readonly="@ReadOnly"
+               disabled="@Disabled"
+               aria-label="@(Label ?? AriaLabel)"
+               @onchange="OnQuantityChangeAsync"
+               @attributes="AdditionalAttributes" />
+        <select class="cn-quantity-unit"
+                aria-label="@UnitAriaLabel"
+                disabled="@(ReadOnly || Disabled || UnitDisabled)"
+                @onchange="OnUnitChangeAsync">
+            @if (SelectedIndex < 0)
+            {
+                <option value="-1" selected></option>
+            }
+            @for (var i = 0; i < _options.Count; i++)
+            {
+                var index = i;
+                <option value="@index" selected="@(index == SelectedIndex)">@UnitText(_options[index], Value)</option>
+            }
+        </select>
+    </span>
+    @foreach (var message in ValidationMessages)
+    {
+        <span class="cn-field-error">@message</span>
+    }
+</label>

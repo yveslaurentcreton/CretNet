@@ -274,7 +274,9 @@ re-queries the current page, `ResetAsync()` returns to page 1.
 
 The toolbar is the grid's own: the search field (`ShowSearch`, on by default,
 debounced, server-side through the provider's `CnGridRequest.Search`) and
-`FilterContent` for filter pills (`cn-chip-row`). A list the host already holds
+`FilterContent` for filter pills (`cn-chip-row`). `ToolbarActions` render as one
+group (`div.cn-grid-actions`, right-aligned, never split when the toolbar wraps),
+so an add button and its Meer menu stay side by side. A list the host already holds
 uses the same toolbar through `CnGridPage.From(items, request, matches)`: it
 filters with `matches(item, search)` when there is a search (trimmed), pages and
 counts the hits; `CnGridPage.Matches(search, texts…)` is a case-insensitive

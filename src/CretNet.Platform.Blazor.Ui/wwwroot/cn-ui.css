@@ -1148,6 +1148,16 @@ select.cn-input:disabled { cursor: default; }
 
 .cn-grid-search { width: min(320px, 100%); }
 
+/* The toolbar's actions are one unbreakable group, kept on the right when the
+   toolbar wraps. */
+.cn-grid-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: none;
+    margin-left: auto;
+}
+
 .cn-grid-scroll { overflow-x: auto; }
 
 /* S-263: the mock's table idiom — 13px cells on tight rows, uppercase

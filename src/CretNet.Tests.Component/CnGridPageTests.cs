@@ -44,6 +44,24 @@ public class CnGridPageTests : CnTestContext
     }
 
     [Fact]
+    public void Grid_ToolbarActions_StayTogetherInOneGroup()
+    {
+        var cut = Render<GridLocalFixture>();
+
+        var group = cut.Find(".cn-grid-toolbar > .cn-grid-actions");
+        group.QuerySelector("#add").ShouldNotBeNull();
+        group.QuerySelector("#more").ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void Grid_WithoutToolbarActions_RendersNoActionGroup()
+    {
+        var cut = Render<GridFixture>();
+
+        cut.FindAll(".cn-grid-actions").ShouldBeEmpty();
+    }
+
+    [Fact]
     public void Grid_WithAnInMemoryProvider_SearchesFromItsOwnToolbar()
     {
         var cut = Render<GridLocalFixture>();

@@ -1,7 +1,13 @@
 @using CretNet.Platform.Blazor.Ui.Components
 
 <CnDataGrid TItem="string" Provider="Fetch" PageSize="2">
-    <CnGridColumn TItem="string" Title="Name" Value="row => row" />
+    <ChildContent>
+        <CnGridColumn TItem="string" Title="Name" Value="row => row" />
+    </ChildContent>
+    <ToolbarActions>
+        <button type="button" id="add">Add</button>
+        <button type="button" id="more">More</button>
+    </ToolbarActions>
 </CnDataGrid>
 
 @code {

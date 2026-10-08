@@ -17,7 +17,12 @@
         }
         @FilterContent
         <span class="cn-card-spacer"></span>
-        @ToolbarActions
+        @if (ToolbarActions is not null)
+        {
+            @* One group: when the toolbar wraps, the actions (＋ Item and Meer)
+               stay side by side on the right instead of wrapping apart. *@
+            <div class="cn-grid-actions">@ToolbarActions</div>
+        }
     </div>
 
     @if (ItemsTemplate is not null)

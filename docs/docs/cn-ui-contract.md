@@ -272,6 +272,15 @@ paging footer and provider are unchanged; declared columns are not rendered. Wit
 no items after loading, `EmptyText` renders in `div.cn-grid-empty`. `ReloadAsync()`
 re-queries the current page, `ResetAsync()` returns to page 1.
 
+The toolbar is the grid's own: the search field (`ShowSearch`, on by default,
+debounced, server-side through the provider's `CnGridRequest.Search`) and
+`FilterContent` for filter pills (`cn-chip-row`). A list the host already holds
+uses the same toolbar through `CnGridPage.From(items, request, matches)`: it
+filters with `matches(item, search)` when there is a search (trimmed), pages and
+counts the hits; `CnGridPage.Matches(search, texts…)` is a case-insensitive
+contains over any of the texts. Call `ReloadAsync()` after the host's list
+changes.
+
 HCMT catalogue styles (`cn-prod`, `cn-pp`, `cn-onb`, `cn-cmp`, `cn-refresh`) moved to
 HCMT's `catalog.css`; the generic `.cn-num` stays here.
 

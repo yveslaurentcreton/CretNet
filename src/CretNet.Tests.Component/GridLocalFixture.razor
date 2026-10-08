@@ -1,0 +1,12 @@
+@using CretNet.Platform.Blazor.Ui.Components
+
+<CnDataGrid TItem="string" Provider="Fetch" PageSize="2">
+    <CnGridColumn TItem="string" Title="Name" Value="row => row" />
+</CnDataGrid>
+
+@code {
+    private static readonly string[] Rows = ["Monitor", "Mouse", "Keyboard", "Modem"];
+
+    private static Task<CnGridPage<string>> Fetch(CnGridRequest request) =>
+        Task.FromResult(CnGridPage.From(Rows, request, (row, search) => CnGridPage.Matches(search, row)));
+}

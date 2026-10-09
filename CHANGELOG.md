@@ -1,3 +1,10 @@
+# [0.16.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.15.0...v0.16.0) (2026-10-09)
+
+
+### Features
+
+* **ui:** quantity field, compact fields, overlay action menus and host-held grid pages ([#16](https://github.com/yveslaurentcreton/CretNet/issues/16)) ([0fffe00](https://github.com/yveslaurentcreton/CretNet/commit/0fffe00dac9888220014ed45dfcd3b1cdbe8b183))
+
 # [0.15.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.14.0...v0.15.0) (2026-10-02)
 
 

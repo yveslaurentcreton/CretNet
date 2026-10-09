@@ -84,6 +84,18 @@ export function focus(input, selectText) {
     if (selectText) input.select();
 }
 
+/** A click on the frame around the field (the icon, the padding) lands the
+ *  caret at the end of the text, the way a click on the empty part of a text
+ *  input does. When the input already has focus the click went into the text
+ *  itself and the browser placed the caret there; that is left alone. */
+export function focusAtEnd(input) {
+    if (!input?.isConnected) return;
+    if (input.ownerDocument?.activeElement === input) return;
+    input.focus();
+    const end = (input.value ?? '').length;
+    try { input.setSelectionRange(end, end); } catch { }
+}
+
 /** Digits that ran past the end of this field, so the caller can hand them to
  *  whatever comes next. */
 export function overflow(input, max) {

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 const source = await readFile(new URL('../../src/CretNet.Platform.Blazor.Ui/Components/CnDateInput.razor.js', import.meta.url), 'utf8');
-const { placePanel, focus } = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
+const { placePanel, focus, focusAtEnd } = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
 
 function panel() {
     return {
@@ -45,4 +45,39 @@ test('returning from an async date change tolerates a closed host', () => {
     const calls = [];
     focus({ isConnected: true, focus() { calls.push('focus'); }, select() { calls.push('select'); } }, true);
     assert.deepEqual(calls, ['focus', 'select']);
+});
+
+function dateInput(document, overrides = {}) {
+    return {
+        isConnected: true,
+        ownerDocument: document,
+        value: '06/10/2026',
+        ...overrides,
+    };
+}
+
+test('a click on the frame puts the caret at the end of the text', () => {
+    const document = { activeElement: null };
+    const calls = [];
+    const input = dateInput(document, {
+        focus() { document.activeElement = this; calls.push('focus'); },
+        setSelectionRange(start, end) { calls.push([start, end]); },
+    });
+
+    focusAtEnd(input);
+
+    assert.deepEqual(calls, ['focus', [10, 10]]);
+});
+
+test('a click into the text itself keeps the caret where it landed', () => {
+    const document = { activeElement: null };
+    const input = dateInput(document, {
+        focus() { assert.fail('the focused input was focused again'); },
+        setSelectionRange() { assert.fail('the caret was moved'); },
+    });
+    document.activeElement = input;
+
+    focusAtEnd(input);
+    focusAtEnd(null);
+    focusAtEnd({ isConnected: false, focus() { assert.fail('detached input received focus'); } });
 });

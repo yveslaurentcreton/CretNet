@@ -1,6 +1,6 @@
 @inherits CnInputBase<string>
 
-<label class="cn-field @Class" style="@Style">
+<label class="cn-field @CompactClass @Class" style="@Style">
     @if (!string.IsNullOrEmpty(Label))
     {
         <span class="cn-label">@Label</span>
@@ -22,4 +22,11 @@
 @code {
     [Parameter] public string? Placeholder { get; set; }
     [Parameter] public string? InputClass { get; set; }
+    /// <summary>The dense variant for a dialog's header row and the cells of
+    /// its line list: the label before the field instead of above it, a 26px
+    /// input with 13px text. Combines with Subtle; off, the field is unchanged.</summary>
+    [Parameter] public bool Compact { get; set; }
+
+    private string? CompactClass => Compact ? "cn-field--compact" : null;
+
 }

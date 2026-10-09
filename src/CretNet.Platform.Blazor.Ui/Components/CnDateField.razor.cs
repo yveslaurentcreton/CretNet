@@ -11,6 +11,13 @@ public partial class CnDateField : IAsyncDisposable
     [Parameter] public string? AriaLabel { get; set; }
     [Parameter] public DateTime? MinDate { get; set; }
     [Parameter] public DateTime? MaxDate { get; set; }
+    /// <summary>The dense variant for a dialog's header row and the cells of
+    /// its line list: the label before the field instead of above it, a 26px
+    /// input with 13px text. Combines with Subtle; off, the field is unchanged.</summary>
+    [Parameter] public bool Compact { get; set; }
+
+    private string? CompactClass => Compact ? "cn-field--compact" : null;
+
 
     // CretNet resources supply control chrome; hosts can override for their context.
     #pragma warning disable BL0007 // Pure resource fallback stays culture-aware; explicit parameter values remain unchanged.
@@ -131,6 +138,19 @@ public partial class CnDateField : IAsyncDisposable
     }
 
     private void Close() => _open = false;
+
+    /// <summary>The whole frame acts as the field: a click on the icon or on
+    /// the room between the text and the clear button opens the calendar and
+    /// puts the caret at the end of the text, ready to retype or append.</summary>
+    private async Task OnShellClickAsync()
+    {
+        if (ReadOnly || Disabled)
+            return;
+
+        Open();
+        if (_input is not null)
+            await _input.FocusAtEndAsync();
+    }
 
     /// <summary>Escape puts back what was there before the popover opened.</summary>
     private async Task RevertAsync()

@@ -1,9 +1,10 @@
 @* Secondary actions behind one "More" button. The trigger is a CnButton so
    it follows the shared button roles and icon appearance; the list is the
    same compact surface as the status picker menu. Items register while the
-   menu is open so arrow keys can move between them. *@
+   menu is open so arrow keys can move between them. While open the list is
+   lifted above every scrolling ancestor (CnActionMenu.razor.js). *@
 
-<div class="cn-action-menu @(AlignStart ? "cn-action-menu--start" : null) @Class" @onkeydown="HandleKeyDownAsync">
+<div @ref="_root" class="cn-action-menu @(AlignStart ? "cn-action-menu--start" : null) @Class" @onkeydown="HandleKeyDownAsync">
     <CnButton @ref="_trigger"
               Label="@(IconOnly ? null : Label)"
               Title="@(IconOnly ? Label : null)"
@@ -17,8 +18,8 @@
 
     @if (_open)
     {
-        <button type="button" class="cn-action-menu__backdrop" tabindex="-1" aria-label="@CloseLabel" @onclick="CloseAsync"></button>
-        <div id="@_menuId" class="cn-action-menu__list" role="menu" aria-label="@Label">
+        <button @ref="_backdrop" type="button" class="cn-action-menu__backdrop" tabindex="-1" aria-label="@CloseLabel" @onclick="CloseAsync"></button>
+        <div @ref="_list" id="@_menuId" class="cn-action-menu__list" role="menu" aria-label="@Label">
             <CascadingValue Value="this" IsFixed="true">@ChildContent</CascadingValue>
         </div>
     }

@@ -4,12 +4,12 @@
    number input: no spinners, and it reads a Belgian comma the way the
    currency field does. Commits on change. *@
 
-<label class="cn-field @Class" style="@Style">
+<label class="cn-field @CompactClass @Class" style="@Style">
     @if (!string.IsNullOrEmpty(Label))
     {
         <span class="cn-label">@Label</span>
     }
-    <span class="cn-money">
+    <span class="cn-money" style="@UnitStyle">
         <input type="text"
                inputmode="decimal"
                class="cn-input cn-input--right @UnitClass @SubtleClass @InvalidClass"

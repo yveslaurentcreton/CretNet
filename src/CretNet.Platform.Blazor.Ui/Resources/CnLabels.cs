@@ -86,6 +86,7 @@ public static class CnLabels
     public static string Today => ResourceManager.GetString(nameof(Today), CultureInfo.CurrentUICulture)!;
     public static string TryAgain => ResourceManager.GetString(nameof(TryAgain), CultureInfo.CurrentUICulture)!;
     public static string Underline => ResourceManager.GetString(nameof(Underline), CultureInfo.CurrentUICulture)!;
+    public static string Unit => ResourceManager.GetString(nameof(Unit), CultureInfo.CurrentUICulture)!;
     public static string Unread => ResourceManager.GetString(nameof(Unread), CultureInfo.CurrentUICulture)!;
     public static string Value => ResourceManager.GetString(nameof(Value), CultureInfo.CurrentUICulture)!;
     public static string View => ResourceManager.GetString(nameof(View), CultureInfo.CurrentUICulture)!;

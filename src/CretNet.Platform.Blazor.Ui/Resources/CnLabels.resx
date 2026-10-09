@@ -234,6 +234,9 @@
   <data xml:space="preserve" name="Unread">
     <value>Unread</value>
   </data>
+  <data xml:space="preserve" name="Unit">
+    <value>Unit</value>
+  </data>
   <data xml:space="preserve" name="Value">
     <value>Value</value>
   </data>

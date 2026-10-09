@@ -234,6 +234,9 @@
   <data xml:space="preserve" name="Unread">
     <value>Ongelezen</value>
   </data>
+  <data xml:space="preserve" name="Unit">
+    <value>Eenheid</value>
+  </data>
   <data xml:space="preserve" name="Value">
     <value>Waarde</value>
   </data>

@@ -43,6 +43,57 @@ Here `optionalQuantity` is `decimal?` and `requiredAmount` is `decimal`. Only
 choose zero as the required-field fallback where the host's domain permits it;
 use a nullable form draft with validation when a blank must remain visible.
 
+`Unit` puts a suffix inside a number or currency field ("dagen", "/u", "%").
+The input keeps room for the whole unit: the field passes the unit's length as
+`--cn-unit-chars` and the right padding grows with it (never below the former
+30px), so a word unit no longer runs into the digits. Hosts need no width or
+padding overrides for it.
+
+## Compact fields
+
+`Compact` on `CnTextField`, `CnNumberField`, `CnCurrencyField`,
+`CnPercentField`, `CnQuantityField` and `CnDateField` is the dense variant for a dialog's header
+row ("Ontvangen op [date]") and the cells of its line list: the label sits
+before the field in the secondary colour, the input is 26px high with 13px
+text, and the date field's icon and clear button shrink with it. It combines
+with `Subtle` (borderless until hover or focus). Parsing, nullability and
+keyboard behaviour do not change, and without `Compact` a field looks exactly
+as before. The wrapper carries `cn-field--compact`; width stays with the host's
+layout, as for every field.
+
+```razor
+<CnDateField Label="Ontvangen op" @bind-Value="receivedOn" Compact />
+<CnCurrencyField AriaLabel="Prijs" @bind-Value="price" Compact Subtle />
+<CnNumberField Label="Betaaltermijn" Unit="dagen" @bind-Value="days" Compact />
+```
+
+`CnMarkdownEditor` has its own, older `Compact` (a minimal toolbar); it is not
+this field variant.
+
+## Quantity with a unit
+
+`CnQuantityField<TUnit>` is one field holding a number and a small unit
+dropdown, "[ 15 | minuten ▾ ]". `Value`/`ValueChanged` (`decimal?`) is the
+quantity, read and shown like `CnNumberField` with `ParsingMode` Decimal and
+`MaxDecimals` 4 by default (`Min`/`Max` clamp, empty stays null).
+`Unit`/`UnitChanged` (`TUnit?`) is the unit, chosen from `Units` and worded
+by `UnitText(unit, quantity)` so a host can say "1 minuut" but "15 minuten".
+`TUnit` is the host's own type (enum, record, `readonly record struct`); a
+struct's default counts as no unit, so use `TUnit="Unit?"` when that default
+is a real unit. A unit that is set but missing from `Units` is still offered
+and selected. `UnitDisabled` locks only the unit; `Disabled`/`ReadOnly` lock
+both. `For` validates the quantity, `Id` and `AriaLabel` go on the number,
+and `UnitAriaLabel` (resource "Unit"/"Eenheid") names the select. Tab goes
+from the number to the unit. Classes: `.cn-quantity`, `.cn-quantity-frame`
+(the `.cn-input` frame, lit on `:focus-within`), `.cn-quantity-input`,
+`.cn-quantity-unit`, `--disabled`/`--readonly` on the frame.
+
+```razor
+<CnQuantityField TUnit="DurationUnit" Label="Duur" Units="units"
+                 UnitText="(unit, quantity) => unit.Text(quantity)" Min="0"
+                 @bind-Value="line.Quantity" @bind-Unit="line.Unit" Compact />
+```
+
 ## Lifted behavior
 
 The remaining HCMT controls now live here: `CnCard`, `CnCheckbox`, `CnFlowRail`,
@@ -179,6 +230,12 @@ resource `More`), `Icon` (default `CnIconKind.More`), `Role`, `IconOnly`, `Disab
 `CnActionMenuSeparator`. Closes on outside click, Escape, Tab and after a choice;
 arrows/Home/End move focus. Disabled items stay focusable with `aria-disabled`.
 The list aligns right under the trigger (`AlignStart` for a trigger near the left edge).
+While open, `CnActionMenu.razor.js` lifts the backdrop and the list into the browser's top
+layer (`popover="manual"`) and pins the list with fixed coordinates from the trigger, so a
+scrolling ancestor (a grid, document lines, a dialog body) never clips or covers it; it flips
+above the trigger when there is more room there, shifts inward at the viewport edge, caps its
+height to the room it has and follows the trigger on scroll and resize. Without script it keeps
+its absolute position under the trigger.
 Classes: `.cn-action-menu`, `__list`, `__item`, `__item--danger`, `__reason`, `__separator`.
 
 ```razor
@@ -214,6 +271,17 @@ table with a host presentation of the current page. Toolbar, search, sort state,
 paging footer and provider are unchanged; declared columns are not rendered. With
 no items after loading, `EmptyText` renders in `div.cn-grid-empty`. `ReloadAsync()`
 re-queries the current page, `ResetAsync()` returns to page 1.
+
+The toolbar is the grid's own: the search field (`ShowSearch`, on by default,
+debounced, server-side through the provider's `CnGridRequest.Search`) and
+`FilterContent` for filter pills (`cn-chip-row`). `ToolbarActions` render as one
+group (`div.cn-grid-actions`, right-aligned, never split when the toolbar wraps),
+so an add button and its Meer menu stay side by side. A list the host already holds
+uses the same toolbar through `CnGridPage.From(items, request, matches)`: it
+filters with `matches(item, search)` when there is a search (trimmed), pages and
+counts the hits; `CnGridPage.Matches(search, texts…)` is a case-insensitive
+contains over any of the texts. Call `ReloadAsync()` after the host's list
+changes.
 
 HCMT catalogue styles (`cn-prod`, `cn-pp`, `cn-onb`, `cn-cmp`, `cn-refresh`) moved to
 HCMT's `catalog.css`; the generic `.cn-num` stays here.

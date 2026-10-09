@@ -17,6 +17,13 @@ public partial class CnNumberField
 {
     /// <summary>A suffix inside the field — "%", "h".</summary>
     [Parameter] public string? Unit { get; set; }
+    /// <summary>The dense variant for a dialog's header row and the cells of
+    /// its line list: the label before the field instead of above it, a 26px
+    /// input with 13px text. Combines with Subtle; off, the field is unchanged.</summary>
+    [Parameter] public bool Compact { get; set; }
+
+    private string? CompactClass => Compact ? "cn-field--compact" : null;
+
 
     /// <summary>Clamped on commit: a percentage stays between 0 and 100
     /// without a spinner to say so.</summary>
@@ -37,35 +44,41 @@ public partial class CnNumberField
 
     private string? UnitClass => string.IsNullOrEmpty(Unit) ? null : "cn-money-input--unit";
 
-    private string Text
-    {
-        get
-        {
-            if (Value is not { } number)
-                return string.Empty;
+    /// <summary>The unit's length in characters, so the input keeps room for
+    /// the whole unit before its digits: "dagen" needs more than "%".</summary>
+    private string? UnitStyle => string.IsNullOrEmpty(Unit)
+        ? null
+        : string.Create(CultureInfo.InvariantCulture, $"--cn-unit-chars: {Unit.Length}");
 
-            // A grouped integer (1.234) would read back as a fraction in Decimal
-            // mode. Keep its editable representation ungrouped in that mode.
-            var format = ParsingMode == CnNumberParsingMode.Decimal ? "0" : "#,##0";
-            if (MaxDecimals > 0)
-                format += "." + new string('#', Math.Min(28, MaxDecimals));
-            return number.ToString(format, CultureInfo.CurrentCulture);
-        }
+    private string Text => Format(Value, ParsingMode, MaxDecimals);
+
+    private Task OnChangeAsync(ChangeEventArgs args) =>
+        SetValueAsync(Clamp(CnAmountParser.Parse(args.Value?.ToString(), ParsingMode), Min, Max));
+
+    /// <summary>The editable text for a number in the current culture; empty
+    /// for null. Shared with <see cref="CnQuantityField{TUnit}"/>.</summary>
+    internal static string Format(decimal? value, CnNumberParsingMode mode, int maxDecimals)
+    {
+        if (value is not { } number)
+            return string.Empty;
+
+        // A grouped integer (1.234) would read back as a fraction in Decimal
+        // mode. Keep its editable representation ungrouped in that mode.
+        var format = mode == CnNumberParsingMode.Decimal ? "0" : "#,##0";
+        if (maxDecimals > 0)
+            format += "." + new string('#', Math.Min(28, maxDecimals));
+        return number.ToString(format, CultureInfo.CurrentCulture);
     }
 
-    private Task OnChangeAsync(ChangeEventArgs args)
+    /// <summary>Clamps a committed number; null stays null.</summary>
+    internal static decimal? Clamp(decimal? value, decimal? min, decimal? max)
     {
-        var value = CnAmountParser.Parse(args.Value?.ToString(), ParsingMode);
-
-        if (value is { } number)
-        {
-            if (Min is { } min && number < min)
-                number = min;
-            if (Max is { } max && number > max)
-                number = max;
-            value = number;
-        }
-
-        return SetValueAsync(value);
+        if (value is not { } number)
+            return null;
+        if (min is { } lower && number < lower)
+            number = lower;
+        if (max is { } upper && number > upper)
+            number = upper;
+        return number;
     }
 }

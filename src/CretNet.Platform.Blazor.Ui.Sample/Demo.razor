@@ -119,6 +119,30 @@
             </div>
             <CnPercentField Label="%" @bind-Value="_percent" />
         </div>
+        <p class="demo-api">Compact · Unit</p>
+        <div class="demo-row">
+            <CnCurrencyField Label="@CnLabels.Amount" Compact @bind-Value="_amount" />
+            <CnNumberField Label="@CnLabels.Value" Unit="dagen" ParsingMode="CnNumberParsingMode.Decimal" MaxDecimals="0" Compact @bind-Value="_quantity" />
+            <CnDateField Label="@CnLabels.Date" Compact @bind-Value="_date" />
+        </div>
+    </section>
+
+    <section id="@Anchor("CnQuantityField")" class="demo-sec">
+        <h3><code>CnQuantityField</code></h3>
+        <p class="demo-api">decimal? Value · TUnit? Unit · Units · UnitText(unit, quantity) · MaxDecimals · Min · Max · Compact · Subtle · UnitDisabled</p>
+        <div class="demo-fields">
+            <div>
+                <CnQuantityField TUnit="SampleDurationUnit" Label="Duur" Units="DurationUnits" UnitText="DurationText"
+                                 Min="0" @bind-Value="_duration" @bind-Unit="_durationUnit" />
+                <output id="duration">@(_duration?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "null") @_durationUnit</output>
+            </div>
+            <CnQuantityField TUnit="SampleDurationUnit" Label="UnitDisabled" Units="DurationUnits" UnitText="DurationText"
+                             UnitDisabled @bind-Value="_duration" Unit="SampleDurationUnit.Uren" />
+        </div>
+        <div class="demo-row">
+            <CnQuantityField TUnit="SampleDurationUnit" Label="Duur" Units="DurationUnits" UnitText="DurationText"
+                             Compact @bind-Value="_duration" @bind-Unit="_durationUnit" />
+        </div>
     </section>
 
     <section id="@Anchor("CnDateField")" class="demo-sec">
@@ -382,13 +406,25 @@
 @code {
     public enum SampleView { Dag, Week, Maand, Lijst }
     public enum SampleStatus { Draft, Sent, Paid, Cancelled }
+    public enum SampleDurationUnit { Minuten, Uren, Dagen }
+
+    private static readonly SampleDurationUnit[] DurationUnits = Enum.GetValues<SampleDurationUnit>();
+
+    private static string DurationText(SampleDurationUnit unit, decimal? quantity) => (unit, quantity == 1m) switch
+    {
+        (SampleDurationUnit.Minuten, true) => "minuut",
+        (SampleDurationUnit.Minuten, false) => "minuten",
+        (SampleDurationUnit.Uren, _) => "uur",
+        (SampleDurationUnit.Dagen, true) => "dag",
+        _ => "dagen",
+    };
 
     private sealed record TocGroup(string Id, string Title, string[] Controls);
 
     private static readonly TocGroup[] Toc =
     [
         new("acties", "Acties", ["CnButton", "CnActionMenu", "CnConfirmDialog", "CnDialogFooter"]),
-        new("invoer", "Invoer", ["CnTextField", "CnCheckbox", "CnNumberField", "CnDateField", "CnPicker", "CnViewSwitch", "CnStatusPicker", "CnRichTextBox", "CnMarkdownEditor"]),
+        new("invoer", "Invoer", ["CnTextField", "CnCheckbox", "CnNumberField", "CnQuantityField", "CnDateField", "CnPicker", "CnViewSwitch", "CnStatusPicker", "CnRichTextBox", "CnMarkdownEditor"]),
         new("data", "Data", ["CnDataGrid", "CnStatStrip", "CnTimeline", "CnProgressBar", "CnBadge"]),
         new("navigatie", "Navigatie", ["CnTabs", "CnAccordion", "CnBreadcrumb", "CnFlowRail", "CnPageTitle"]),
         new("feedback", "Feedback", ["CnMessageBar", "CnToastHost", "CnLoading", "CnNotificationCenter"]),
@@ -504,6 +540,8 @@
     private decimal? _amount;
     private decimal? _quantity;
     private decimal? _percent;
+    private decimal? _duration = 15m;
+    private SampleDurationUnit _durationUnit = SampleDurationUnit.Minuten;
     private DateTime? _date;
     private TimeOnly? _time;
     private DateTime? _moment;

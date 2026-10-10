@@ -489,6 +489,188 @@ button.cn-gantt-seg--warn:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(-
     .cn-gantt-seg { transition: none; }
 }
 
+/* No figures at all (ShowValue = false): label and track only. */
+.cn-gantt--novalue { grid-template-columns: 190px minmax(200px, 1fr); }
+
+/* ---- Scrolling through time (HCMT M-064) ----
+   Every month gets the same width: the visible track (the scroller's width
+   minus the fixed columns) divided by --cn-gantt-visible. The track column
+   is that times --cn-gantt-months, so only the track scrolls; the name
+   column sticks left and the figure columns stick right. A zoom is only a
+   different --cn-gantt-visible. CnTimeline.razor.js moves the position and
+   marks data-more-l / data-more-r on the scroller when time is hidden on
+   that side. */
+.cn-gantt-frame { display: grid; gap: 6px; min-width: 0; }
+
+.cn-gantt-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+}
+
+.cn-gantt-range {
+    min-width: 0;
+    color: var(--cn-text);
+    font: 600 12.5px/1.3 var(--cn-font);
+    font-variant-numeric: tabular-nums;
+}
+
+.cn-gantt-ctl {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+}
+
+.cn-gantt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 9px;
+    border: 1px solid var(--cn-stroke);
+    border-radius: 6px;
+    background: var(--cn-card);
+    color: var(--cn-text);
+    font: 600 12.5px/1 var(--cn-font);
+    cursor: pointer;
+}
+
+.cn-gantt-btn:hover:not([disabled]) { border-color: var(--cn-text-3); background: var(--cn-row-hover); }
+.cn-gantt-btn[disabled] { opacity: .45; cursor: default; }
+.cn-gantt-btn:focus-visible { outline: 2px solid var(--cn-accent); outline-offset: 1px; }
+
+.cn-gantt-btn svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.cn-gantt-scroll {
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    container-type: inline-size;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    cursor: grab;
+}
+
+.cn-gantt-scroll[data-dragging] { cursor: grabbing; user-select: none; }
+.cn-gantt-scroll:focus-visible { outline: 2px solid var(--cn-accent); outline-offset: 2px; }
+
+.cn-gantt.cn-gantt--scroll {
+    --cn-gantt-name-w: 190px;
+    --cn-gantt-v1-w: 130px;
+    --cn-gantt-v2-w: 104px;
+    --cn-gantt-view: max(80px, calc(100cqw - var(--cn-gantt-name-w) - var(--cn-gantt-v1-w) - var(--cn-gantt-v2-w)));
+    --cn-gantt-month-w: calc(var(--cn-gantt-view) / var(--cn-gantt-visible, 12));
+    --cn-gantt-edge: color-mix(in srgb, var(--cn-text) 16%, transparent);
+    grid-template-columns:
+        var(--cn-gantt-name-w)
+        calc(var(--cn-gantt-month-w) * var(--cn-gantt-months, 12))
+        var(--cn-gantt-v1-w)
+        var(--cn-gantt-v2-w);
+    width: max-content;
+    min-width: 100%;
+}
+
+.cn-gantt.cn-gantt--scroll.cn-gantt--novalue2 { --cn-gantt-v2-w: 0px; }
+.cn-gantt.cn-gantt--scroll.cn-gantt--novalue { --cn-gantt-v1-w: 0px; --cn-gantt-v2-w: 0px; }
+
+/* Every row is a subgrid row here; the figure columns stick right. */
+.cn-gantt--scroll .cn-gantt-h--v1,
+.cn-gantt--scroll .cn-gantt-h--v2,
+.cn-gantt--scroll .cn-gantt-n--v1,
+.cn-gantt--scroll .cn-gantt-n--v2 {
+    position: sticky;
+    z-index: 3;
+    background-color: var(--cn-gantt-bg, var(--cn-card));
+}
+
+.cn-gantt--scroll .cn-gantt-h--v1 { right: var(--cn-gantt-v2-w); }
+.cn-gantt--scroll .cn-gantt-h--v2 { right: 0; }
+.cn-gantt--scroll .cn-gantt-n--v1 { right: var(--cn-gantt-v2-w); }
+.cn-gantt--scroll .cn-gantt-n--v2 { right: 0; }
+.cn-gantt--scroll .cn-gantt-h--name,
+.cn-gantt--scroll .cn-gantt-h--v1,
+.cn-gantt--scroll .cn-gantt-h--v2 { display: flex; align-items: flex-end; }
+.cn-gantt--scroll .cn-gantt-h--r { justify-content: flex-end; }
+
+/* The group cell spans name and track; only its title sticks. */
+.cn-gantt--scroll .cn-gantt-row--group .cn-gantt-name { position: relative; }
+
+/* A shadow on the fixed columns while time is hidden behind them. */
+.cn-gantt-scroll[data-more-l] .cn-gantt-h--name,
+.cn-gantt-scroll[data-more-l] .cn-gantt-row:not(.cn-gantt-row--group) > .cn-gantt-name {
+    box-shadow: 6px 0 6px -6px var(--cn-gantt-edge);
+}
+
+.cn-gantt-scroll[data-more-r] .cn-gantt-h--v1,
+.cn-gantt-scroll[data-more-r] .cn-gantt-n--v1 {
+    box-shadow: -6px 0 6px -6px var(--cn-gantt-edge);
+}
+
+/* The axis: a row of years whose label sticks just right of the name
+   column, and a row of months under it. */
+.cn-gantt--scroll .cn-gantt-axis { height: 34px; container-type: normal; }
+.cn-gantt--scroll .cn-gantt-mo { top: 18px; overflow: hidden; }
+.cn-gantt--scroll .cn-gantt-mo--now { color: var(--cn-warn); font-weight: 700; }
+
+.cn-gantt-yr {
+    position: absolute;
+    top: 0;
+    height: 16px;
+    border-left: 1px solid var(--cn-stroke);
+}
+
+.cn-gantt-yr > span {
+    position: sticky;
+    left: calc(var(--cn-gantt-name-w) + 4px);
+    display: inline-block;
+    padding: 0 6px;
+    background: var(--cn-gantt-bg, var(--cn-card));
+    color: var(--cn-text-2);
+    font: 700 11px/16px var(--cn-font);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+/* Fewer month labels as more months share the view. */
+.cn-gantt--labels-half .cn-gantt-mo--alt,
+.cn-gantt--labels-quarter .cn-gantt-mo--minor,
+.cn-gantt--labels-year .cn-gantt-mo { color: transparent; }
+
+/* A line per month and a stronger one per year, in pixels of the track. */
+.cn-gantt--scroll .cn-gantt-track {
+    background-image:
+        repeating-linear-gradient(to right, var(--cn-stroke) 0 1px, transparent 1px calc(var(--cn-gantt-month-w) * 12)),
+        repeating-linear-gradient(to right, var(--cn-stroke-soft) 0 1px, transparent 1px var(--cn-gantt-month-w));
+    background-position: calc(var(--cn-gantt-month-w) * var(--cn-gantt-year-at, 0)) 0, 0 0;
+}
+
+/* Phone: a narrow name column, only the first figure column; swipe to move. */
+@media (max-width: 640px) {
+    .cn-gantt.cn-gantt--scroll { --cn-gantt-name-w: 112px; --cn-gantt-v1-w: 92px; --cn-gantt-v2-w: 0px; }
+    .cn-gantt.cn-gantt--scroll.cn-gantt--novalue { --cn-gantt-v1-w: 0px; }
+    .cn-gantt--scroll .cn-gantt-h--v2,
+    .cn-gantt--scroll .cn-gantt-n--v2 { display: none; }
+    .cn-gantt--scroll .cn-gantt-mo--minor { color: transparent; }
+    .cn-gantt-ctl { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cn-gantt-scroll { scroll-behavior: auto; }
+}
+
 /* ---------- CnButton ---------- */
 .cn-btn {
     height: 32px;

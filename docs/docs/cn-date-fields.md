@@ -91,9 +91,14 @@ the wrong way round is still a period: the earliest day becomes the start.
 
 ## The calendar
 
-Clicking the field opens it. A range is dragged out: the first click sets the
-start, the days colour along under your cursor, the second click closes it.
-Moving before the start flips the range rather than refusing it.
+Clicking the field opens it on the month of its value — every time, however
+far you browsed the last time — and on today's month only when it is empty. A
+range opens on its start (on its end when only the end is set); opening it from
+the second half brings the end's month into view.
+
+A range is dragged out: the first click sets the start, the days colour along
+under your cursor, the second click closes it. Moving before the start flips
+the range rather than refusing it.
 
 The band is painted per cell, so the tint runs on uninterrupted across a week
 while every day stays a circle; it rounds off where the band actually stops —

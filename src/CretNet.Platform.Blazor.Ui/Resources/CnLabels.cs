@@ -139,4 +139,10 @@ public static class CnLabels
     public static string DroppedBackground => ResourceManager.GetString(nameof(DroppedBackground), CultureInfo.CurrentUICulture)!;
     public static string DroppedImages => ResourceManager.GetString(nameof(DroppedImages), CultureInfo.CurrentUICulture)!;
     public static string DroppedLinks => ResourceManager.GetString(nameof(DroppedLinks), CultureInfo.CurrentUICulture)!;
+    public static string Later => ResourceManager.GetString(nameof(Later), CultureInfo.CurrentUICulture)!;
+    public static string Zoom => ResourceManager.GetString(nameof(Zoom), CultureInfo.CurrentUICulture)!;
+    public static string Timeline => ResourceManager.GetString(nameof(Timeline), CultureInfo.CurrentUICulture)!;
+    public static string TimelineMonths => ResourceManager.GetString(nameof(TimelineMonths), CultureInfo.CurrentUICulture)!;
+    public static string TimelineOneYear => ResourceManager.GetString(nameof(TimelineOneYear), CultureInfo.CurrentUICulture)!;
+    public static string TimelineYears => ResourceManager.GetString(nameof(TimelineYears), CultureInfo.CurrentUICulture)!;
 }

@@ -307,6 +307,32 @@ whose click does not also raise the row click. Segments have 2px gaps and are cu
 January shows the year (`.cn-gantt-mo--year`); even months (`--alt`) hide on a narrow
 axis. Gridlines follow `--cn-gantt-months`. The label column is sticky;
 `--cn-gantt-bg` matches a non-card surface. Hover transitions honour reduced motion.
+`ShowValue="false"` drops both figure columns (`.cn-gantt--novalue`).
+
+### Timeline scrolling through time (HCMT M-064)
+
+`Scrollable` (default false, which renders exactly the classic timeline) wraps the grid
+in `.cn-gantt-frame` with a `CnTimelineNavigator` (`.cn-gantt-tools`: the months in
+view as `.cn-gantt-range`, ‹ Earlier/Eerder, Today/Vandaag, › Later and a
+`CnViewSwitch` zoom 6 months · 1 year · 3 years · All) above a focusable
+`.cn-gantt-scroll`. The axis runs from the first of `From`'s month to the last of
+`To`'s; every month gets the same width, the visible track divided by
+`VisibleMonths` (default 12, 0 = the whole axis without scrolling), all in CSS
+(`--cn-gantt-visible`, `container-type: inline-size`), and dates are placed within
+their month. Every row is a subgrid row; the name column sticks left and the figure
+columns (`.cn-gantt-n--v1|v2`) stick right. The axis has a year row whose label sticks
+beside the name column (`.cn-gantt-yr`) and names every month, thinning the labels
+as more months share the view (`--labels-half|quarter|year`). `CnTimeline.razor.js`
+starts with today a third from the left, pans by mouse/pen drag (touch scrolls
+natively; the click that ends a drag is swallowed), moves a month with ←/→ and to
+the ends with Home/End, keeps the middle day in place when the track changes width,
+marks `data-more-l`/`data-more-r` for the edge shadows and reports the view back.
+`ZoomStorageKey` remembers the zoom per kind of timeline in `localStorage`
+(`cn-timeline-zoom:<key>`; failures are ignored); the position is never remembered.
+On a phone the name column narrows, only the first figure column stays.
+`CnTimelineAxis.Extent(dates, today)` gives the owner's extent rule: back to the
+first date (at least four months before today), forward to a year past today or past
+the last date, whichever is later.
 
 ### Rich text (Markdown editor and hardened HTML editor)
 

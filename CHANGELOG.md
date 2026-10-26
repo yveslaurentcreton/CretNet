@@ -1,3 +1,10 @@
+# [0.17.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.16.0...v0.17.0) (2026-10-26)
+
+
+### Features
+
+* **ui:** CnTimeline scrolls through time ([#17](https://github.com/yveslaurentcreton/CretNet/issues/17)) ([4804084](https://github.com/yveslaurentcreton/CretNet/commit/4804084b93cc83cc2d900f283e1a4dbb26b657d0))
+
 # [0.16.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.15.0...v0.16.0) (2026-10-09)
 
 

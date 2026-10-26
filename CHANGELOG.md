@@ -1,3 +1,10 @@
+## [0.17.1](https://github.com/yveslaurentcreton/CretNet/compare/v0.17.0...v0.17.1) (2026-10-26)
+
+
+### Bug Fixes
+
+* **ui:** the date calendar opens on the field's value ([#18](https://github.com/yveslaurentcreton/CretNet/issues/18)) ([aa685fb](https://github.com/yveslaurentcreton/CretNet/commit/aa685fbea793e2970a83cc65d02d3470c7c404d8))
+
 # [0.17.0](https://github.com/yveslaurentcreton/CretNet/compare/v0.16.0...v0.17.0) (2026-10-26)
 
 

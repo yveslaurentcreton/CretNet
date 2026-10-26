@@ -58,11 +58,17 @@ public partial class CnDateRangeField : IAsyncDisposable
     // apart without needing relatedTarget, which Blazor does not surface.
     private int _focusDepth;
 
-    private void OnFieldFocused(bool programmatic)
+    private void OnFromFocused(bool programmatic) => OnFieldFocused(programmatic, null);
+
+    /// <summary>Opening from the second half brings its day into view, even
+    /// when it lies further out than the months shown from the start.</summary>
+    private void OnToFocused(bool programmatic) => OnFieldFocused(programmatic, To);
+
+    private void OnFieldFocused(bool programmatic, DateTime? focus)
     {
         _focusDepth++;
         if (!programmatic)
-            Open();
+            OpenOn(focus);
     }
 
     private async Task OnFieldBlurredAsync()
@@ -118,6 +124,10 @@ public partial class CnDateRangeField : IAsyncDisposable
 
     private bool _open;
 
+    // The day the half the popover was opened from holds, if that was the
+    // second half. The calendar is mounted on opening and reads it then.
+    private DateTime? _openFocus;
+
     // The mouse flow: the day of the first click, and the day under the
     // cursor while the second is being chosen.
     private DateTime? _anchor;
@@ -166,15 +176,19 @@ public partial class CnDateRangeField : IAsyncDisposable
         _committedTo = To;
     }
 
-    private void Open()
+    private void Open() => OpenOn(null);
+
+    /// <summary>The calendar is mounted as the popover opens, so it starts on
+    /// the month of the range by itself — or of <paramref name="focus"/>.</summary>
+    private void OpenOn(DateTime? focus)
     {
         if (_open || ReadOnly || Disabled)
             return;
 
         _committedFrom = From;
         _committedTo = To;
+        _openFocus = focus;
         _open = true;
-        _calendar?.Reset(From);
     }
 
     private void Close()

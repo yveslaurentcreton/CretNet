@@ -14,6 +14,11 @@ public partial class CnCalendarPanel
     [Parameter] public DateTime? From { get; set; }
     [Parameter] public DateTime? To { get; set; }
 
+    /// <summary>A day to bring into view on opening when it is not the start
+    /// of the band — the end of a range, say, when that is the half the user
+    /// opened. <c>null</c> opens on the band alone.</summary>
+    [Parameter] public DateTime? Focus { get; set; }
+
     [Parameter] public int MonthCount { get; set; } = 1;
     [Parameter] public DateTime? MinDate { get; set; }
     [Parameter] public DateTime? MaxDate { get; set; }
@@ -32,7 +37,7 @@ public partial class CnCalendarPanel
     #pragma warning restore BL0007
 
     private Level _level = Level.Days;
-    private DateTime _view = new(DateTime.Today.Year, DateTime.Today.Month, 1);
+    private DateTime _view = FirstOfMonth(DateTime.Today);
 
     private static DateTime Today => DateTime.Today;
 
@@ -67,25 +72,43 @@ public partial class CnCalendarPanel
         return (offset + 7) % 7;
     }
 
+    /// <summary>The hosts mount the panel afresh each time their popover
+    /// opens, so this is where it decides what to show first: the month of
+    /// the value, with <see cref="Focus"/> brought into view when it falls
+    /// outside, and today's month only when there is no value at all.</summary>
+    protected override void OnInitialized() => _view = OpeningMonth(Focus);
+
+    private DateTime OpeningMonth(DateTime? focus)
+    {
+        var view = FirstOfMonth(From ?? To ?? Today);
+        if (focus is { } day && !IsShown(day, view))
+            view = FirstOfMonth(day).AddMonths(1 - Math.Max(1, MonthCount));
+        return view;
+    }
+
+    private static DateTime FirstOfMonth(DateTime date) => new(date.Year, date.Month, 1);
+
+    private bool IsShown(DateTime date, DateTime view) =>
+        date.Date >= view && date.Date < view.AddMonths(Math.Max(1, MonthCount));
+
     /// <summary>Shows the month a value lives in, and drops back to the day
     /// level: a zoom level is a way to navigate, not a state worth keeping.</summary>
     public void ShowMonthOf(DateTime date)
     {
-        var last = _view.AddMonths(MonthCount).AddDays(-1);
-        if (_level != Level.Days || date < _view || date > last)
+        if (_level != Level.Days || !IsShown(date, _view))
         {
-            _view = new DateTime(date.Year, date.Month, 1);
+            _view = FirstOfMonth(date);
             _level = Level.Days;
             StateHasChanged();
         }
     }
 
-    /// <summary>Called when the popover opens, so it always starts on days.</summary>
+    /// <summary>Goes back to what the panel shows on opening — the days of the
+    /// value's month — for a host that keeps the panel mounted.</summary>
     public void Reset(DateTime? focus)
     {
         _level = Level.Days;
-        var anchor = focus ?? From ?? Today;
-        _view = new DateTime(anchor.Year, anchor.Month, 1);
+        _view = OpeningMonth(focus ?? Focus);
         StateHasChanged();
     }
 
